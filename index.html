@@ -1104,6 +1104,7 @@ function bezierLength(x0,y0, cx1,cy1, cx2,cy2, x1,y1, steps=20){
 let S_bends = {};  // {segmentKey: [{x, y, t}]} — böjpunkter längs kurvan
 let S_labels = {}; // {segmentKey: {x, y, rot, hidden}} — metertal-plattornas läge (sparas med banan)
 let _chainLabelsSVG = ''; // fylls av chainSVG(), ritas överst i render()
+let _chainHandlesSVG = ''; // ridvägens gula prickar: ritas över hindren så de syns och går att ta
 /* BÖJBARA LINJER (order 48.0): ridvägen kan dras på handtagen för att böja sig */
 function cubicLen(x0,y0,x1,y1,x2,y2,x3,y3){ let L=0,px=x0,py=y0;
   for(let i=1;i<=18;i++){ const t=i/18,mt=1-t;
@@ -1111,7 +1112,7 @@ function cubicLen(x0,y0,x1,y1,x2,y2,x3,y3){ let L=0,px=x0,py=y0;
     const y=mt*mt*mt*y0+3*mt*mt*t*y1+3*mt*t*t*y2+t*t*t*y3;
     L+=Math.hypot(x-px,y-py); px=x;py=y; } return L; }
 function chainSVG(){
-  _chainLabelsSVG = '';
+  _chainLabelsSVG = ''; _chainHandlesSVG = '';
   if(!routeOn()) return '';
   const chain=S.obstacles.filter(o=>o.num!=null&&o.num!=='' && !isMarker(o.type))
     .sort((a,b)=> a.num-b.num || S.obstacles.indexOf(a)-S.obstacles.indexOf(b));
@@ -1184,14 +1185,14 @@ function chainSVG(){
     [['1',1/3],['2',2/3]].forEach(([w,t])=>{ const pt=bez(t);
       handles+=`<g class="bend-handle" data-key="${key}" data-which="${w}" style="cursor:grab">
         <circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="18" fill="transparent"/>
-        <circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="8" fill="#f5a623" opacity="0.95"
+        <circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="9.5" fill="#f5a623" opacity="0.98"
           stroke="#141414" stroke-width="2" style="pointer-events:none"/>
-        <text x="${pt[0].toFixed(1)}" y="${(pt[1]+3).toFixed(1)}" text-anchor="middle" font-size="9"
+        <text x="${pt[0].toFixed(1)}" y="${(pt[1]+3.5).toFixed(1)}" text-anchor="middle" font-size="10.5"
           font-weight="700" fill="#141414" style="pointer-events:none">↔</text></g>`; });
   }
   // etiketterna ritas ÖVERST (efter hindren) så de aldrig täcks — render() hämtar dem här
-  _chainLabelsSVG = labels;
-  return `<path d="${d}" fill="none" stroke="#5a6472" stroke-width="1.3" stroke-dasharray="7 5" opacity="0.85"/>`+handles;
+  _chainLabelsSVG = labels; _chainHandlesSVG = handles;
+  return `<path d="${d}" fill="none" stroke="#5a6472" stroke-width="1.3" stroke-dasharray="7 5" opacity="0.85"/>`;
 }
 function obstacleSVG(o, i){
   const def = OBSTACLES[o.type]; if(!def) return '';
@@ -1282,7 +1283,7 @@ function courtMarkup(sl){
       ${gridSVG()}${islandSVG()}${chainSVG()}
       ${S.obstacles.map(obstacleSVG).join('')}
       <g id="marksLayer" class="marks">${marksHTML(sl)}</g>
-      ${_chainLabelsSVG}${polyDrawSVG()}
+      ${_chainHandlesSVG}${_chainLabelsSVG}${polyDrawSVG()}
     </svg>`;
 }
 function render(){
@@ -3291,8 +3292,8 @@ var _markTool='move', _markColor='#5a6472', _pend=null, _hd=null, _pres=null, _r
 const MARK_COLORS=['#5a6472','#c92a2a','#2f9e44','#e8590c'];   // grå = samma som ridvägen när man numrerar
 function escH(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function arrowHead(x,y,ang,c){
-  const s=10, w=5.5, ca=Math.cos(ang), sa=Math.sin(ang), bx=x-s*ca, by=y-s*sa;
-  return `<polygon points="${x.toFixed(1)},${y.toFixed(1)} ${(bx-w*sa).toFixed(1)},${(by+w*ca).toFixed(1)} ${(bx+w*sa).toFixed(1)},${(by-w*ca).toFixed(1)}" fill="${c}"/>`;
+  const s=17, w=9, ca=Math.cos(ang), sa=Math.sin(ang), bx=x-s*ca, by=y-s*sa;   // stor pilspets med vit kant så den syns över linjer och hinder
+  return `<polygon class="mhead" points="${x.toFixed(1)},${y.toFixed(1)} ${(bx-w*sa).toFixed(1)},${(by+w*ca).toFixed(1)} ${(bx+w*sa).toFixed(1)},${(by-w*ca).toFixed(1)}" fill="${c}" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" paint-order="stroke"/>`;
 }
 const obsById=id=>S.obstacles.find(o=>o.id===id);
 const curSlide=()=>(S.slides && _pres) ? S.slides[_pres.i] : null;
@@ -3340,17 +3341,17 @@ function voltPts(m){ const P=m.pts||defaultVoltPts(m.r||7); return P.map(q=>({x:
 function voltSegs(m){ return splineSegs(voltPts(m),true); }
 function handleSVG(x,y,i,h,glyph){
   const X=mx(x).toFixed(1), Y=my(y).toFixed(1);
-  return `<g class="mhandle" data-mi="${i}" data-h="${h}" style="cursor:grab"><circle cx="${X}" cy="${Y}" r="17" fill="transparent"/><circle cx="${X}" cy="${Y}" r="8.5" fill="#f5a623" stroke="#141414" stroke-width="2" opacity=".95" style="pointer-events:none"/><text x="${X}" y="${(+Y+3).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="700" fill="#141414" style="pointer-events:none">${glyph}</text></g>`;
+  return `<g class="mhandle" data-mi="${i}" data-h="${h}" style="cursor:grab"><circle cx="${X}" cy="${Y}" r="18" fill="transparent"/><circle cx="${X}" cy="${Y}" r="9.5" fill="#f5a623" stroke="#141414" stroke-width="2" opacity=".98" style="pointer-events:none"/><text x="${X}" y="${(+Y+3.5).toFixed(1)}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#141414" style="pointer-events:none">${glyph}</text></g>`;
 }
-function marksSVG(arr,handles){
-  let shapes='', hs='';
+function marksParts(arr,handles){
+  let shapes='', heads='', hs='';
   (arr||[]).forEach((m,i)=>{
     const c=m.c||'#5a6472';
     if(m.t==='line'){
       const g=lineGeom(m), last=g.segs[g.segs.length-1];
       shapes+=`<path d="${splineD(g.segs,false)}" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
       let tx=last.b.x-last.c2.x, ty=last.b.y-last.c2.y; if(Math.hypot(tx,ty)<0.05){ tx=last.b.x-last.a.x; ty=last.b.y-last.a.y; }
-      shapes+=arrowHead(mx(last.b.x),my(last.b.y),Math.atan2(ty,tx),c);
+      heads+=arrowHead(mx(last.b.x),my(last.b.y),Math.atan2(ty,tx),c);
       if(handles){
         g.via.forEach((q,k)=>{ hs+=handleSVG(q.x,q.y,i,'v'+k,'↔'); });
         if(!m.a.id) hs+=handleSVG(g.a.x,g.a.y,i,'a','●');
@@ -3360,17 +3361,18 @@ function marksSVG(arr,handles){
       const P=voltPts(m), segs=splineSegs(P,true);
       shapes+=`<path d="${splineD(segs,true)}" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
       const s0=segs[0], q=bezAt(s0,0.5); let t=bezTan(s0,0.5); if(m.ccw) t={x:-t.x,y:-t.y};
-      shapes+=arrowHead(mx(q.x),my(q.y),Math.atan2(t.y,t.x),c);
+      heads+=arrowHead(mx(q.x),my(q.y),Math.atan2(t.y,t.x),c);
       if(handles){ P.forEach((p,k)=>{ hs+=handleSVG(p.x,p.y,i,'p'+k,'↔'); }); hs+=handleSVG(m.x,m.y,i,'ctr','✥'); }
     } else {                                              // gamla fria linjer (från tidigare version)
       const P=m.p||[]; if(P.length<2) return;
       shapes+=`<polyline points="${P.map(q=>px1(q[0],q[1]).replace(' ',',')).join(' ')}" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
       const e=P[P.length-1]; let k=P.length-2; while(k>0 && Math.hypot(e[0]-P[k][0],e[1]-P[k][1])<1.2) k--;
-      shapes+=arrowHead(mx(e[0]),my(e[1]),Math.atan2(e[1]-P[k][1],e[0]-P[k][0]),c);
+      heads+=arrowHead(mx(e[0]),my(e[1]),Math.atan2(e[1]-P[k][1],e[0]-P[k][0]),c);
     }
   });
-  return shapes+hs;
+  return {shapes,heads,hs};                                 // linjer underst, pilspetsar över linjerna, gula prickar överst
 }
+function marksSVG(arr,handles){ const p=marksParts(arr,handles); return p.shapes+p.heads+p.hs; }
 function pendSVG(){
   if(!_pend) return '';
   const o=_pend.id?obsById(_pend.id):null, x=o?o.x:_pend.x, y=o?o.y:_pend.y;
@@ -3379,10 +3381,8 @@ function pendSVG(){
 function marksHTML(sl){
   const edit = (_markTool==='line'||_markTool==='voltR'||_markTool==='voltL') && !sl;   // gula prickar bara när man ritar (aldrig i visning/utskrift, inte när man suddar)
   const s = sl || ((_pres&&_pres.mode==='edit') ? curSlide() : null);
-  let h=marksSVG(S.marks, edit && !s);
-  if(s) h+=marksSVG(s.marks, edit);
-  if(edit) h+=pendSVG();
-  return h;
+  const a=marksParts(S.marks, edit && !s), b=s ? marksParts(s.marks, edit) : {shapes:'',heads:'',hs:''};
+  return a.shapes+b.shapes+a.heads+b.heads+a.hs+b.hs+(edit ? pendSVG() : '');
 }
 function redrawMarks(){ const g=document.getElementById('marksLayer'); if(g) g.innerHTML=marksHTML(); }
 function markTarget(){ return (_pres&&_pres.mode==='edit'&&curSlide()) ? curSlide().marks : (S.marks||(S.marks=[])); }

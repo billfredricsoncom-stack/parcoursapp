@@ -1111,52 +1111,39 @@ function cubicLen(x0,y0,x1,y1,x2,y2,x3,y3){ let L=0,px=x0,py=y0;
     const x=mt*mt*mt*x0+3*mt*mt*t*x1+3*mt*t*t*x2+t*t*t*x3;
     const y=mt*mt*mt*y0+3*mt*mt*t*y1+3*mt*t*t*y2+t*t*t*y3;
     L+=Math.hypot(x-px,y-py); px=x;py=y; } return L; }
-function chainSVG(){
+function chainSVG(sl){
   _chainLabelsSVG = ''; _chainHandlesSVG = '';
   if(!routeOn()) return '';
+  if(typeof _markTool!=='undefined' && _markTool!=='move' && !sl) return '';   // medan man ritar syns bara dina egna linjer — ingen andra linje
+  const _cs = sl || ((_pres&&_pres.mode==='edit') ? curSlide() : null);
+  const drawn = (S.marks||[]).concat((_cs&&_cs.marks)||[]).filter(m=>m.t==='line'&&m.a&&m.b&&m.a.id&&m.b.id);
   const chain=S.obstacles.filter(o=>o.num!=null&&o.num!=='' && !isMarker(o.type))
     .sort((a,b)=> a.num-b.num || S.obstacles.indexOf(a)-S.obstacles.indexOf(b));
   if(chain.length<2) return '';
-  const a=2.2;
-  const pts=chain.map((o,idx)=>{ let dir=jumpDir(o);
-    if(o.dirMode==='both'||o.dirMode==='none'){      // ingen fast riktning: vänd mot nästa hinder (sista: bort från föregående)
-      const nb=chain[idx+1], pv=chain[idx-1];
-      const vx = nb ? nb.x-o.x : (pv ? o.x-pv.x : dir.x), vy = nb ? nb.y-o.y : (pv ? o.y-pv.y : dir.y);
-      if(dir.x*vx+dir.y*vy<0) dir={x:-dir.x,y:-dir.y};
-    }
-    return { o, dir, inx:mx(o.x)-dir.x*M(a), iny:my(o.y)-dir.y*M(a),
-             outx:mx(o.x)+dir.x*M(a), outy:my(o.y)+dir.y*M(a) }; });
-  let d=`M ${pts[0].inx.toFixed(1)} ${pts[0].iny.toFixed(1)} L ${pts[0].outx.toFixed(1)} ${pts[0].outy.toFixed(1)}`;
-  let labels='', handles='';
-  for(let i=0;i<pts.length-1;i++){
-    const p=pts[i], q=pts[i+1];
-    const centerDist=Math.hypot(q.o.x-p.o.x, q.o.y-p.o.y);
-    const key=`${chain[i].id}-${chain[i+1].id}`;
-    // TVÅ böjpunkter per linje, utan gräns: c1 (nära första hindret), c2 (nära andra)
-    const bend = S_bends[key] || {};
-    const k=Math.min(M(centerDist)*0.45, M(9));
-    let c1x=p.outx+p.dir.x*k, c1y=p.outy+p.dir.y*k;
-    let c2x=q.inx-q.dir.x*k, c2y=q.iny-q.dir.y*k;
-    if(bend.c1){ c1x=mx(bend.c1.x); c1y=my(bend.c1.y); }
-    if(bend.c2){ c2x=mx(bend.c2.x); c2y=my(bend.c2.y); }
-    d+=` C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${q.inx.toFixed(1)} ${q.iny.toFixed(1)}`;
-    d+=` L ${q.outx.toFixed(1)} ${q.outy.toFixed(1)}`;
-
-    // AVSTÅND mitt-till-mitt längs (den ev. böjda) ridvägen
-    const distM = cubicLen(p.outx,p.outy,c1x,c1y,c2x,c2y,q.inx,q.iny)/SCALE + 2*a;
-    const dm = Math.max(0, distM).toFixed(1).replace('.',',');
-    const bx=(p.outx+3*c1x+3*c2x+q.inx)/8, by=(p.outy+3*c1y+3*c2y+q.iny)/8;
-    // metertal-plattan är ett eget objekt: flyttbar, roterbar, borttagbar, sparas med banan.
-    // Startläge = vinkelrätt ut från kurvans mitt så den inte krockar med böjhandtaget.
-    // Dölj siffran automatiskt vid stor sväng (> ~kvartscirkel). Tangenternas
-    // riktning i början (p.out→c1) och slutet (c2→q.in) jämförs; över 78° = stor
-    // sväng där ett metertal inte är meningsfullt.
-    const _a1=Math.atan2(c1y-p.outy, c1x-p.outx), _a2=Math.atan2(q.iny-c2y, q.inx-c2x);
-    let _turn=Math.abs((_a2-_a1)*180/Math.PI)%360; if(_turn>180)_turn=360-_turn;
-    const bigTurn=_turn>78;
+  /* Ridvägen går RAKT från mitten av ett hinder till mitten av nästa — precis som de ritade linjerna.
+     Flera gula prickar ligger PÅ linjen: dra dem för att forma. Högerklick på en prick rätar ut sträckan. */
+  let d='', labels='', handles='';
+  for(let i=0;i<chain.length-1;i++){
+    const p=chain[i], q=chain[i+1], key=`${p.id}-${q.id}`;
+    const A={x:p.x,y:p.y}, B={x:q.x,y:q.y}, bend=S_bends[key]||{};
+    // finns redan en ritad linje mellan dessa två hinder är DEN ridvägen: ingen andra linje, bara metertalet
+    const dup=drawn.find(m=>(m.a.id===p.id&&m.b.id===q.id)||(m.a.id===q.id&&m.b.id===p.id));
+    const vias=dup ? [] : (bend.via||defaultVia(A,B)).map(v=>({t:v.t, x:A.x+(B.x-A.x)*v.t+(v.dx||0), y:A.y+(B.y-A.y)*v.t+(v.dy||0)}));
+    const segs=dup ? lineGeom(dup).segs : splineSegs([A].concat(vias,[B]),false);
+    if(!dup) d+=(d?' ':'')+splineD(segs,false);
+    // AVSTÅND mitt-till-mitt längs linjen, och en punkt mitt på linjen för metertalet
+    const poly=[]; segs.forEach(sg=>{ for(let k=0;k<=12;k++) poly.push(bezAt(sg,k/12)); });
+    let len=0; for(let k=1;k<poly.length;k++) len+=Math.hypot(poly[k].x-poly[k-1].x,poly[k].y-poly[k-1].y);
+    let acc=0, mid=poly[0];
+    for(let k=1;k<poly.length;k++){ const sl=Math.hypot(poly[k].x-poly[k-1].x,poly[k].y-poly[k-1].y);
+      if(acc+sl>=len/2){ const f=sl?(len/2-acc)/sl:0; mid={x:poly[k-1].x+(poly[k].x-poly[k-1].x)*f, y:poly[k-1].y+(poly[k].y-poly[k-1].y)*f}; break; }
+      acc+=sl; }
+    const dm=len.toFixed(1).replace('.',',');
+    const bx=mx(mid.x), by=my(mid.y);
     const lab = S_labels[key];
-    if(!(lab && lab.hidden) && !bigTurn){
-      const tx=q.inx-p.outx, ty=q.iny-p.outy, tl=Math.hypot(tx,ty)||1;
+    // metertal-plattan är ett eget objekt: flyttbar, roterbar, borttagbar, sparas med banan.
+    if(!(lab && lab.hidden)){
+      const tx=mx(B.x)-mx(A.x), ty=my(B.y)-my(A.y), tl=Math.hypot(tx,ty)||1;
       let lx = bx + (-ty/tl)*26, ly = by + (tx/tl)*26, lrot = 0;
       if(lab){ if(lab.x!=null){ lx=mx(lab.x); ly=my(lab.y); } lrot=lab.rot||0; }
       const selL = S.selLabel===key;
@@ -1177,22 +1164,27 @@ function chainSVG(){
         <text x="0" y="4.5" text-anchor="middle" font-size="12.5" font-weight="800" fill="#1a1d22">${dm} m</text>
         ${extra}</g>`;
     }
-
-    // TVÅ dragbara böjhandtag på kurvan (vid 1/3 och 2/3). Dra fritt — ingen gräns.
-    const bez=(t)=>{ const mt=1-t;
-      return [mt*mt*mt*p.outx+3*mt*mt*t*c1x+3*mt*t*t*c2x+t*t*t*q.inx,
-              mt*mt*mt*p.outy+3*mt*mt*t*c1y+3*mt*t*t*c2y+t*t*t*q.iny]; };
-    [['1',1/3],['2',2/3]].forEach(([w,t])=>{ const pt=bez(t);
-      handles+=`<g class="bend-handle" data-key="${key}" data-which="${w}" style="cursor:grab">
-        <circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="18" fill="transparent"/>
-        <circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="9.5" fill="#f5a623" opacity="0.98"
-          stroke="#141414" stroke-width="2" style="pointer-events:none"/>
-        <text x="${pt[0].toFixed(1)}" y="${(pt[1]+3.5).toFixed(1)}" text-anchor="middle" font-size="10.5"
-          font-weight="700" fill="#141414" style="pointer-events:none">↔</text></g>`; });
+    vias.forEach((v,k)=>{ const X=mx(v.x).toFixed(1), Y=my(v.y).toFixed(1);
+      handles+=`<g class="bend-handle" data-key="${key}" data-which="v${k}" data-t="${v.t}" data-ax="${A.x}" data-ay="${A.y}" data-bx="${B.x}" data-by="${B.y}" style="cursor:grab">
+        <circle cx="${X}" cy="${Y}" r="18" fill="transparent"/>
+        <circle cx="${X}" cy="${Y}" r="9.5" fill="#f5a623" opacity="0.98" stroke="#141414" stroke-width="2" style="pointer-events:none"/>
+        <text x="${X}" y="${(+Y+3.5).toFixed(1)}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#141414" style="pointer-events:none">↔</text></g>`; });
   }
-  // etiketterna ritas ÖVERST (efter hindren) så de aldrig täcks — render() hämtar dem här
+  // etiketterna och prickarna ritas ÖVERST (efter hindren) så de aldrig täcks
   _chainLabelsSVG = labels; _chainHandlesSVG = handles;
-  return `<path d="${d}" fill="none" stroke="#5a6472" stroke-width="1.3" stroke-dasharray="7 5" opacity="0.85"/>`;
+  return d ? `<path d="${d}" fill="none" stroke="#5a6472" stroke-width="1.3" stroke-dasharray="7 5" opacity="0.85"/>` : '';
+}
+/* Hoppriktningens pil: stor, med ljus kant, och ritad ÖVER ridvägar och linjer så den alltid syns */
+function dirArrowSVG(o){
+  if(!OBSTACLES[o.type] || isMarker(o.type)) return '';
+  const dm=o.dirMode||'one'; if(dm==='none') return '';     // 'one' = en riktning, 'both' = båda, 'none' = ingen pil
+  const dir=o.flip?-1:1, ay=M(2)*dir, hl=16*dir, hw=8, C='#20252c';
+  const head=(y,k)=>`<polygon points="0,${y} ${-hw},${y-hl*k} ${hw},${y-hl*k}" fill="${C}" stroke="#fff" stroke-width="2" stroke-linejoin="round" paint-order="stroke"/>`;
+  const y1=dm==='both' ? ay : ay*0.72;
+  return `<g class="dirarrow" data-id="${o.id}" transform="translate(${mx(o.x)} ${my(o.y)}) rotate(${o.rot})">`+
+    `<line x1="0" y1="${-ay}" x2="0" y2="${y1}" stroke="#fff" stroke-width="6.5" stroke-linecap="round" opacity=".8"/>`+
+    `<line x1="0" y1="${-ay}" x2="0" y2="${y1}" stroke="${C}" stroke-width="3" stroke-linecap="round"/>`+
+    head(ay,1)+(dm==='both' ? head(-ay,-1) : '')+`</g>`;
 }
 function obstacleSVG(o, i){
   const def = OBSTACLES[o.type]; if(!def) return '';
@@ -1201,14 +1193,7 @@ function obstacleSVG(o, i){
   // flip vänder både pil och hindrets kropp (trippelbarr/vatten är riktade)
   const dir = o.flip ? -1 : 1;
   const body = `<g transform="scale(1 ${dir})">${def.draw(o)}${o.sugar? sugarCubes(o.w):''}</g>`;
-  const ay=M(1.5)*dir;
-  const dm = o.dirMode||'one';            // 'one' = en riktning, 'both' = båda, 'none' = ingen pil
-  const arrow = (isMarker(o.type)||dm==='none') ? '' : dm==='both' ?
-    `<line x1="0" y1="${-ay}" x2="0" y2="${ay}" stroke="#20252c" stroke-width="2" opacity="0.85"/>
-    <polygon points="0,${ay} ${-5},${ay-9*dir} 5,${ay-9*dir}" fill="#20252c" opacity="0.85"/>
-    <polygon points="0,${-ay} ${-5},${-ay+9*dir} 5,${-ay+9*dir}" fill="#20252c" opacity="0.85"/>` :
-    `<line x1="0" y1="${-ay}" x2="0" y2="${ay*0.72}" stroke="#20252c" stroke-width="2" opacity="0.85"/>
-    <polygon points="0,${ay} ${-5},${ay-9*dir} 5,${ay-9*dir}" fill="#20252c" opacity="0.85"/>`;
+  // hoppriktningens pil ritas i ett eget lager OVANPÅ ridvägarna (se dirArrowSVG)
   // hindernumret sätts MANUELLT (order 35) — onumrerade hinder har ingen bricka.
   // KOMBINATIONER: delar flera hinder samma nummer visas de som 6A, 6B, 6C
   // (i den ordning de ligger i banan) — precis som på riktiga banskisser.
@@ -1240,7 +1225,7 @@ function obstacleSVG(o, i){
   const ring = (sel||aSel) ? `<rect class="selring" x="${-M(o.w/2)-20}" y="${-M(1.4)}" width="${M(o.w)+40}" height="${M(2.8)}" fill="${aSel?'rgba(46,139,87,0.14)':'none'}" stroke="${aSel?'#2e8b57':'#f5a623'}" stroke-width="${aSel?2.2:1.5}" stroke-dasharray="4 3" rx="4"/>`:'';
   const hitR = isZone(o.type) ? '' : `<rect class="hit" x="${-M(o.w/2)-20}" y="${-M(1.4)}" width="${M(o.w)+40}" height="${M(2.8)}" fill="transparent"/>`;
   return `<g class="obst" data-id="${o.id}" transform="translate(${mx(o.x)} ${my(o.y)}) rotate(${o.rot})" style="cursor:grab">
-            ${hitR}${ring}${arrow}${body}${label}${deg}${handle}</g>`;
+            ${hitR}${ring}${body}${label}${deg}${handle}</g>`;
 }
 
 /* ---------- ÅNGRA / GÖR OM (undo/redo) ---------- */
@@ -1280,9 +1265,10 @@ function courtMarkup(sl){
           <rect width="8" height="8" fill="#aeb6c0" fill-opacity="0.35"/>
           <line x1="0" y1="0" x2="0" y2="8" stroke="#6b7684" stroke-width="2.5" opacity="0.55"/>
         </pattern></defs>
-      ${gridSVG()}${islandSVG()}${chainSVG()}
+      ${gridSVG()}${islandSVG()}${chainSVG(sl)}
       ${S.obstacles.map(obstacleSVG).join('')}
       <g id="marksLayer" class="marks">${marksHTML(sl)}</g>
+      <g class="dirlayer" style="pointer-events:none">${S.obstacles.map(o=>dirArrowSVG(o)).join('')}</g>
       ${_chainHandlesSVG}${_chainLabelsSVG}${polyDrawSVG()}
     </svg>`;
 }
@@ -1771,9 +1757,8 @@ function onStagePointerDown(e){
   if(e.button===2){
     const bendHandle = e.target.closest('.bend-handle');
     if(bendHandle){
-      const key = bendHandle.dataset.key, slot=(bendHandle.dataset.which==='2')?'c2':'c1';
-      if(S_bends[key]){ delete S_bends[key][slot]; if(!S_bends[key].c1&&!S_bends[key].c2) delete S_bends[key]; }
-      render();
+      delete S_bends[bendHandle.dataset.key];           // högerklick på en gul prick = räta ut sträckan
+      render(); commit();
       e.preventDefault();
       return;
     }
@@ -1807,9 +1792,11 @@ function onStagePointerDown(e){
   // Drag på böjpunkter — MÅSTE KOMMA FÖRE hinder-drag (order 48.0)
   const bendHandle = e.target.closest('.bend-handle');
   if(bendHandle){
-    const key = bendHandle.dataset.key;
-    const idx = parseInt(bendHandle.dataset.idx, 10);
-    drag={kind:'bend', key, which: bendHandle.dataset.which||'1'};
+    const key = bendHandle.dataset.key, ds = bendHandle.dataset;
+    const A={x:+ds.ax,y:+ds.ay}, B={x:+ds.bx,y:+ds.by};
+    if(!S_bends[key]) S_bends[key]={};
+    if(!S_bends[key].via) S_bends[key].via=defaultVia(A,B);
+    drag={kind:'bend', key, which: ds.which||'v0', A, B};
     e.preventDefault();
     return;
   }
@@ -1916,11 +1903,10 @@ function onPointerMove(e){
     e.preventDefault(); return;
   }
   if(drag.kind==='bend'){
-    // Dra en av de två böjpunkterna — fritt, långt utanför banan tillåtet
-    const p = clientToMeter(e.clientX, e.clientY);
-    if(!S_bends[drag.key]) S_bends[drag.key] = {};
-    const slot = (drag.which==='2') ? 'c2' : 'c1';
-    S_bends[drag.key][slot] = { x:clamp(p.x, -S.W, 2*S.W), y:clamp(p.y, -S.H, 2*S.H) };
+    // Dra en gul prick: den ligger PÅ linjen och följer pekaren exakt
+    const p = clientToMeter(e.clientX, e.clientY), x=clamp(p.x,-S.W,2*S.W), y=clamp(p.y,-S.H,2*S.H);
+    const bv = S_bends[drag.key] && S_bends[drag.key].via, v = bv && bv[+String(drag.which).slice(1)];
+    if(v){ v.dx=+(x-(drag.A.x+(drag.B.x-drag.A.x)*v.t)).toFixed(3); v.dy=+(y-(drag.A.y+(drag.B.y-drag.A.y)*v.t)).toFixed(3); }
     scheduleRender();
     e.preventDefault();
     return;
@@ -3292,8 +3278,8 @@ var _markTool='move', _markColor='#5a6472', _pend=null, _hd=null, _pres=null, _r
 const MARK_COLORS=['#5a6472','#c92a2a','#2f9e44','#e8590c'];   // grå = samma som ridvägen när man numrerar
 function escH(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function arrowHead(x,y,ang,c){
-  const s=17, w=9, ca=Math.cos(ang), sa=Math.sin(ang), bx=x-s*ca, by=y-s*sa;   // stor pilspets med vit kant så den syns över linjer och hinder
-  return `<polygon class="mhead" points="${x.toFixed(1)},${y.toFixed(1)} ${(bx-w*sa).toFixed(1)},${(by+w*ca).toFixed(1)} ${(bx+w*sa).toFixed(1)},${(by-w*ca).toFixed(1)}" fill="${c}" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" paint-order="stroke"/>`;
+  const s=10, w=5.5, ca=Math.cos(ang), sa=Math.sin(ang), bx=x-s*ca, by=y-s*sa;
+  return `<polygon points="${x.toFixed(1)},${y.toFixed(1)} ${(bx-w*sa).toFixed(1)},${(by+w*ca).toFixed(1)} ${(bx+w*sa).toFixed(1)},${(by-w*ca).toFixed(1)}" fill="${c}"/>`;
 }
 const obsById=id=>S.obstacles.find(o=>o.id===id);
 const curSlide=()=>(S.slides && _pres) ? S.slides[_pres.i] : null;
@@ -3313,7 +3299,7 @@ function splineSegs(P,closed){
   }
   return segs;
 }
-const px1=(x,y)=>mx(x).toFixed(1)+' '+my(y).toFixed(1);
+function px1(x,y){ return mx(x).toFixed(1)+' '+my(y).toFixed(1); }
 function splineD(segs,closed){
   let d=`M ${px1(segs[0].a.x,segs[0].a.y)}`;
   segs.forEach(s=>{ d+=` C ${px1(s.c1.x,s.c1.y)} ${px1(s.c2.x,s.c2.y)} ${px1(s.b.x,s.b.y)}`; });
@@ -3348,10 +3334,8 @@ function marksParts(arr,handles){
   (arr||[]).forEach((m,i)=>{
     const c=m.c||'#5a6472';
     if(m.t==='line'){
-      const g=lineGeom(m), last=g.segs[g.segs.length-1];
+      const g=lineGeom(m);
       shapes+=`<path d="${splineD(g.segs,false)}" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
-      let tx=last.b.x-last.c2.x, ty=last.b.y-last.c2.y; if(Math.hypot(tx,ty)<0.05){ tx=last.b.x-last.a.x; ty=last.b.y-last.a.y; }
-      heads+=arrowHead(mx(last.b.x),my(last.b.y),Math.atan2(ty,tx),c);
       if(handles){
         g.via.forEach((q,k)=>{ hs+=handleSVG(q.x,q.y,i,'v'+k,'↔'); });
         if(!m.a.id) hs+=handleSVG(g.a.x,g.a.y,i,'a','●');
@@ -3366,8 +3350,6 @@ function marksParts(arr,handles){
     } else {                                              // gamla fria linjer (från tidigare version)
       const P=m.p||[]; if(P.length<2) return;
       shapes+=`<polyline points="${P.map(q=>px1(q[0],q[1]).replace(' ',',')).join(' ')}" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
-      const e=P[P.length-1]; let k=P.length-2; while(k>0 && Math.hypot(e[0]-P[k][0],e[1]-P[k][1])<1.2) k--;
-      heads+=arrowHead(mx(e[0]),my(e[1]),Math.atan2(e[1]-P[k][1],e[0]-P[k][0]),c);
     }
   });
   return {shapes,heads,hs};                                 // linjer underst, pilspetsar över linjerna, gula prickar överst
@@ -3466,9 +3448,9 @@ function syncTools(){
   const d=document.getElementById('drawBtn'); if(d) d.classList.toggle('on', _markTool!=='move' && !_pres);
 }
 function setTool(t){
-  _markTool=t; _pend=null; _hd=null;
+  const was=_markTool; _markTool=t; _pend=null; _hd=null;
   document.body.classList.toggle('draw-on', t!=='move');
-  if(t!=='move'){ S.sel=null; S.selLabel=null; cancelModes(); render(); } else redrawMarks();
+  if(t!=='move'){ S.sel=null; S.selLabel=null; cancelModes(); render(); } else if(was!=='move') render(); else redrawMarks();   // ridvägen ritas om när man slutat rita
   syncTools();
 }
 function setMarkColor(c){ _markColor=c; syncTools(); }

@@ -1,11 +1,4 @@
-<!doctype html>
-<html lang="sv">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-<title>Banskiss — rita hoppbanor gratis</title>
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><title>Banskiss — rita hoppbanor gratis</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2320252c'/%3E%3Crect x='15' y='20' width='6' height='30' rx='2' fill='%239aa6b3'/%3E%3Crect x='43' y='20' width='6' height='30' rx='2' fill='%239aa6b3'/%3E%3Crect x='15' y='26' width='34' height='5' rx='2.5' fill='%23f5a623'/%3E%3Crect x='15' y='37' width='34' height='5' rx='2.5' fill='%23f5a623'/%3E%3C/svg%3E"><link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2320252c'/%3E%3Crect x='15' y='20' width='6' height='30' rx='2' fill='%239aa6b3'/%3E%3Crect x='43' y='20' width='6' height='30' rx='2' fill='%239aa6b3'/%3E%3Crect x='15' y='26' width='34' height='5' rx='2.5' fill='%23f5a623'/%3E%3Crect x='15' y='37' width='34' height='5' rx='2.5' fill='%23f5a623'/%3E%3C/svg%3E">
 <style>
   /* Enkelt, snabbt, ingen onödig polish. Funktion före finish. */
@@ -3224,7 +3217,7 @@ function advTry(i){ const d=advDone(); if(!d.includes(i)){ d.push(i); try{localS
 const APP_VERSION='2026-11-01';
 const NEWS=[
   ['🎞','Presentation','Gör en bildserie av banan för en klinik eller genomgång: välj hur många bilder, rita ridvägar och voltar på varje bild, skriv en bildtext och bläddra med piltangenterna. Visningen är låst — tryck Redigera för att ändra.','2026-10-31'],
-  ['✏️','Enklare att rita ridvägar','Tryck ✏️ Rita ridväg, klicka på ett hinder och sedan på nästa så dras en tunn grå linje — utan nummer. Volt: välj Volt och klicka på hindret. Forma med de gula prickarna. Sudda tar bort en linje.','2026-11-01'],
+  ['✏️','Enklare att rita ridvägar','Tryck ✏️ Rita ridväg, klicka på ett hinder och sedan på nästa så dras en tunn grå linje som börjar och slutar mitt på hindret — utan nummer. Volt: välj Volt och klicka på hindret. Forma med de många gula prickarna (flera längs linjen, åtta runt en volt). Sudda tar bort en linje.','2026-11-01'],
   ['🧰','Renare meny','Övre menyn är nu en tunn rad. Resten finns bakom ☰ Meny. Sparade banor längst ner visas när du för markören dit eller trycker på pilen.','2026-11-01'],
     ['⇄','Hoppriktning: en, båda eller ingen','Markera ett hinder och välj hoppriktning i rutan till höger.','2026-10-31'],
   ['📚','Övningar på egen knapp','Träningsmode är borttaget. Koner, bommar och sockerbitar ligger nu bland vanliga hinder, och Övningar har en egen knapp i menyn.','2026-10-31'],
@@ -3291,9 +3284,9 @@ function setDirMode(v){
 }
 
 /* =================== RITADE LINJER OCH VOLTAR (ridväg utan nummer) ===================
-   Linje:  klicka på ett hinder och sedan på nästa (eller på en plats på marken).
+   Linje:  klicka på ett hinder och sedan på nästa (eller på en plats på marken). Linjen börjar och slutar mitt på hindret.
    Volt:   välj Volt och klicka på hindret.
-   Forma efteråt med de gula prickarna. Sudda: klicka på en linje för att ta bort den. */
+   Forma efteråt med de gula prickarna (flera längs linjen, åtta runt en volt). Sudda: klicka på en linje för att ta bort den. */
 var _markTool='move', _markColor='#5a6472', _pend=null, _hd=null, _pres=null, _routeOverride=null;
 const MARK_COLORS=['#5a6472','#c92a2a','#2f9e44','#e8590c'];   // grå = samma som ridvägen när man numrerar
 function escH(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -3308,33 +3301,43 @@ function routeOn(){
   const s=(_pres&&_pres.mode==='edit')?curSlide():null;
   return s ? !!s.route : S.showLines;
 }
-/* Var en linje fäster vid ett hinder. Raka linjer som standard; följer hindrets hoppriktning
-   bara när linjen kommer ungefär längs den (inom ca 60°). Annars rakt mot det andra hindret. */
-function attachPt(o,other,role){
-  const A=2.2, vx=other.x-o.x, vy=other.y-o.y, L=Math.hypot(vx,vy)||1, ux=vx/L, uy=vy/L;
-  if(isMarker(o.type)||isZone(o.type)) return {x:o.x+ux*1.3, y:o.y+uy*1.3, dx:ux, dy:uy};
-  const trav = role==='out' ? {x:ux,y:uy} : {x:-ux,y:-uy};          // färdriktning vid hindret
-  let d=jumpDir(o);
-  if((o.dirMode==='both'||o.dirMode==='none') && d.x*trav.x+d.y*trav.y<0) d={x:-d.x,y:-d.y};
-  const dd = (d.x*trav.x+d.y*trav.y>0.5) ? d : trav;
-  return role==='out' ? {x:o.x+dd.x*A, y:o.y+dd.y*A, dx:dd.x, dy:dd.y} : {x:o.x-dd.x*A, y:o.y-dd.y*A, dx:dd.x, dy:dd.y};
+/* ---- mjuka kurvor genom punkter (varje gul prick ligger PÅ kurvan) ---- */
+function splineSegs(P,closed){
+  const n=P.length, T=1/6, segs=[];
+  const at=i=>closed ? P[((i%n)+n)%n] : P[Math.max(0,Math.min(n-1,i))];
+  const cnt=closed ? n : n-1;
+  for(let i=0;i<cnt;i++){
+    const p0=at(i-1), p1=at(i), p2=at(i+1), p3=at(i+2);
+    segs.push({a:p1,b:p2,c1:{x:p1.x+(p2.x-p0.x)*T,y:p1.y+(p2.y-p0.y)*T},c2:{x:p2.x-(p3.x-p1.x)*T,y:p2.y-(p3.y-p1.y)*T}});
+  }
+  return segs;
 }
-function endpoint(e){ const o=e.id?obsById(e.id):null; return o?{x:o.x,y:o.y,o}:{x:e.x,y:e.y,o:null}; }
-function lineGeom(m){
-  const ea=endpoint(m.a), eb=endpoint(m.b);
-  const A=ea.o?attachPt(ea.o,eb,'out'):{x:ea.x,y:ea.y,dx:null,dy:null};
-  const B=eb.o?attachPt(eb.o,ea,'in'):{x:eb.x,y:eb.y,dx:null,dy:null};
-  const dist=Math.hypot(B.x-A.x,B.y-A.y)||0.001, ux=(B.x-A.x)/dist, uy=(B.y-A.y)/dist, k=Math.min(dist*0.45,9);
-  const c1=m.c1||(A.dx!=null?{x:A.x+A.dx*k,y:A.y+A.dy*k}:{x:A.x+ux*dist/3,y:A.y+uy*dist/3});
-  const c2=m.c2||(B.dx!=null?{x:B.x-B.dx*k,y:B.y-B.dy*k}:{x:B.x-ux*dist/3,y:B.y-uy*dist/3});
-  return {a:A,b:B,c1,c2};
+const px1=(x,y)=>mx(x).toFixed(1)+' '+my(y).toFixed(1);
+function splineD(segs,closed){
+  let d=`M ${px1(segs[0].a.x,segs[0].a.y)}`;
+  segs.forEach(s=>{ d+=` C ${px1(s.c1.x,s.c1.y)} ${px1(s.c2.x,s.c2.y)} ${px1(s.b.x,s.b.y)}`; });
+  return closed ? d+' Z' : d;
 }
 function bezAt(g,t){ const u=1-t;
   return {x:u*u*u*g.a.x+3*u*u*t*g.c1.x+3*u*t*t*g.c2.x+t*t*t*g.b.x, y:u*u*u*g.a.y+3*u*u*t*g.c1.y+3*u*t*t*g.c2.y+t*t*t*g.b.y}; }
-function voltPts(m){ const r=m.r||7, P=m.pts||[[0,-r],[r,0],[0,r],[-r,0]]; return P.map(q=>({x:m.x+q[0],y:m.y+q[1]})); }
-function voltBez(P,i){ const k=0.2761, p0=P[i], p1=P[(i+1)%4], pm=P[(i+3)%4], p2=P[(i+2)%4];
-  return {a:p0,b:p1,c1:{x:p0.x+k*(p1.x-pm.x),y:p0.y+k*(p1.y-pm.y)},c2:{x:p1.x-k*(p2.x-p0.x),y:p1.y-k*(p2.y-p0.y)}}; }
-const px1=(x,y)=>mx(x).toFixed(1)+' '+my(y).toFixed(1);
+function bezTan(g,t){ const u=1-t;
+  return {x:3*(u*u*(g.c1.x-g.a.x)+2*u*t*(g.c2.x-g.c1.x)+t*t*(g.b.x-g.c2.x)), y:3*(u*u*(g.c1.y-g.a.y)+2*u*t*(g.c2.y-g.c1.y)+t*t*(g.b.y-g.c2.y))}; }
+function endpoint(e){ const o=e.id?obsById(e.id):null; return o?{x:o.x,y:o.y,o}:{x:e.x,y:e.y,o:null}; }
+/* ---- linjer: mitt på hindret, flera gula prickar längs vägen ---- */
+function defaultVia(A,B){
+  const len=Math.hypot(B.x-A.x,B.y-A.y), k=Math.max(3,Math.min(7,Math.round(len/7)));   // längre linje = fler prickar
+  return Array.from({length:k},(_,i)=>({t:(i+1)/(k+1),dx:0,dy:0}));
+}
+function lineGeom(m){
+  const ea=endpoint(m.a), eb=endpoint(m.b), A={x:ea.x,y:ea.y}, B={x:eb.x,y:eb.y};
+  const via=(m.via||defaultVia(A,B)).map(v=>({x:A.x+(B.x-A.x)*v.t+v.dx, y:A.y+(B.y-A.y)*v.t+v.dy}));
+  const pts=[A].concat(via,[B]);
+  return {a:A,b:B,via,pts,segs:splineSegs(pts,false)};
+}
+/* ---- voltar: åtta gula prickar runt, en i mitten ---- */
+function defaultVoltPts(r){ return Array.from({length:8},(_,i)=>{ const a=i*Math.PI/4; return [+(r*Math.sin(a)).toFixed(3), +(-r*Math.cos(a)).toFixed(3)]; }); }
+function voltPts(m){ const P=m.pts||defaultVoltPts(m.r||7); return P.map(q=>({x:m.x+q[0],y:m.y+q[1]})); }
+function voltSegs(m){ return splineSegs(voltPts(m),true); }
 function handleSVG(x,y,i,h,glyph){
   const X=mx(x).toFixed(1), Y=my(y).toFixed(1);
   return `<g class="mhandle" data-mi="${i}" data-h="${h}" style="cursor:grab"><circle cx="${X}" cy="${Y}" r="17" fill="transparent"/><circle cx="${X}" cy="${Y}" r="8.5" fill="#f5a623" stroke="#141414" stroke-width="2" opacity=".95" style="pointer-events:none"/><text x="${X}" y="${(+Y+3).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="700" fill="#141414" style="pointer-events:none">${glyph}</text></g>`;
@@ -3342,25 +3345,22 @@ function handleSVG(x,y,i,h,glyph){
 function marksSVG(arr,handles){
   let shapes='', hs='';
   (arr||[]).forEach((m,i)=>{
-    const c=m.c||'#20252c';
+    const c=m.c||'#5a6472';
     if(m.t==='line'){
-      const g=lineGeom(m);
-      shapes+=`<path d="M ${px1(g.a.x,g.a.y)} C ${px1(g.c1.x,g.c1.y)} ${px1(g.c2.x,g.c2.y)} ${px1(g.b.x,g.b.y)}" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
-      let tx=g.b.x-g.c2.x, ty=g.b.y-g.c2.y; if(Math.hypot(tx,ty)<0.05){ tx=g.b.x-g.c1.x; ty=g.b.y-g.c1.y; }
-      shapes+=arrowHead(mx(g.b.x),my(g.b.y),Math.atan2(ty,tx),c);
+      const g=lineGeom(m), last=g.segs[g.segs.length-1];
+      shapes+=`<path d="${splineD(g.segs,false)}" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
+      let tx=last.b.x-last.c2.x, ty=last.b.y-last.c2.y; if(Math.hypot(tx,ty)<0.05){ tx=last.b.x-last.a.x; ty=last.b.y-last.a.y; }
+      shapes+=arrowHead(mx(last.b.x),my(last.b.y),Math.atan2(ty,tx),c);
       if(handles){
-        [[1/3,'c1'],[2/3,'c2']].forEach(([t,h])=>{ const q=bezAt(g,t); hs+=handleSVG(q.x,q.y,i,h,'↔'); });
+        g.via.forEach((q,k)=>{ hs+=handleSVG(q.x,q.y,i,'v'+k,'↔'); });
         if(!m.a.id) hs+=handleSVG(g.a.x,g.a.y,i,'a','●');
         if(!m.b.id) hs+=handleSVG(g.b.x,g.b.y,i,'b','●');
       }
     } else if(m.t==='volt'){
-      const P=voltPts(m); let d=`M ${px1(P[0].x,P[0].y)}`;
-      for(let k=0;k<4;k++){ const s=voltBez(P,k); d+=` C ${px1(s.c1.x,s.c1.y)} ${px1(s.c2.x,s.c2.y)} ${px1(s.b.x,s.b.y)}`; }
-      shapes+=`<path d="${d} Z" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
-      const s0=voltBez(P,0), q=bezAt(s0,0.5);
-      let tx=0.75*(s0.c1.x-s0.a.x)+1.5*(s0.c2.x-s0.c1.x)+0.75*(s0.b.x-s0.c2.x), ty=0.75*(s0.c1.y-s0.a.y)+1.5*(s0.c2.y-s0.c1.y)+0.75*(s0.b.y-s0.c2.y);
-      if(m.ccw){ tx=-tx; ty=-ty; }
-      shapes+=arrowHead(mx(q.x),my(q.y),Math.atan2(ty,tx),c);
+      const P=voltPts(m), segs=splineSegs(P,true);
+      shapes+=`<path d="${splineD(segs,true)}" fill="none" stroke="${c}" stroke-width="1.8" stroke-dasharray="7 5" opacity=".9"/>`;
+      const s0=segs[0], q=bezAt(s0,0.5); let t=bezTan(s0,0.5); if(m.ccw) t={x:-t.x,y:-t.y};
+      shapes+=arrowHead(mx(q.x),my(q.y),Math.atan2(t.y,t.x),c);
       if(handles){ P.forEach((p,k)=>{ hs+=handleSVG(p.x,p.y,i,'p'+k,'↔'); }); hs+=handleSVG(m.x,m.y,i,'ctr','✥'); }
     } else {                                              // gamla fria linjer (från tidigare version)
       const P=m.p||[]; if(P.length<2) return;
@@ -3377,7 +3377,7 @@ function pendSVG(){
   return `<circle class="mpend" cx="${mx(x).toFixed(1)}" cy="${my(y).toFixed(1)}" r="24" fill="rgba(245,166,35,.15)" stroke="#f5a623" stroke-width="3" stroke-dasharray="5 4"/>`;
 }
 function marksHTML(sl){
-  const edit = _markTool!=='move' && !sl;                 // gula prickar bara när man ritar (aldrig i visning/utskrift)
+  const edit = (_markTool==='line'||_markTool==='voltR'||_markTool==='voltL') && !sl;   // gula prickar bara när man ritar (aldrig i visning/utskrift, inte när man suddar)
   const s = sl || ((_pres&&_pres.mode==='edit') ? curSlide() : null);
   let h=marksSVG(S.marks, edit && !s);
   if(s) h+=marksSVG(s.marks, edit);
@@ -3400,10 +3400,15 @@ function toolDown(e){
     else{
       const same=(_pend.id&&_pend.id===pt.id)||(!_pend.id&&!pt.id&&Math.hypot(_pend.x-pt.x,_pend.y-pt.y)<1);
       if(same) _pend=null;                                  // klick på samma ställe = avsluta linjen
-      else{ arr.push({t:'line',c:_markColor,a:Object.assign({},_pend),b:Object.assign({},pt),c1:null,c2:null}); _pend=Object.assign({},pt); commit(); }
+      else{
+        const mk={t:'line',c:_markColor,a:Object.assign({},_pend),b:Object.assign({},pt)};
+        const lg=lineGeom(mk); mk.via=defaultVia(lg.a,lg.b); arr.push(mk);
+        _pend=Object.assign({},pt); commit();
+      }
     }
   } else if(_markTool==='voltR'||_markTool==='voltL'){
-    arr.push({t:'volt',c:_markColor,x:pt.x,y:pt.y,r:+Math.min(8,S.H*0.25).toFixed(1),ccw:_markTool==='voltL',pts:null}); commit();
+    const r=+Math.min(8,S.H*0.25).toFixed(1);
+    arr.push({t:'volt',c:_markColor,x:pt.x,y:pt.y,r,ccw:_markTool==='voltL',pts:defaultVoltPts(r)}); commit();
   } else if(_markTool==='erase'){ eraseAt(p.x,p.y); }
   redrawMarks(); syncTools(); e.preventDefault();
 }
@@ -3411,17 +3416,16 @@ function toolDown(e){
 function handleStart(e,el){
   const arr=markTarget(), m=arr[+el.dataset.mi]; if(!m) return;
   _hd={arr,m,h:el.dataset.h};
-  if(m.t==='line'){ const g=lineGeom(m); if(!m.c1) m.c1={x:g.c1.x,y:g.c1.y}; if(!m.c2) m.c2={x:g.c2.x,y:g.c2.y}; }
-  if(m.t==='volt' && !m.pts) m.pts=voltPts(m).map(q=>[q.x-m.x,q.y-m.y]);
+  if(m.t==='line' && !m.via){ const g=lineGeom(m); m.via=defaultVia(g.a,g.b); }
+  if(m.t==='volt' && !m.pts) m.pts=defaultVoltPts(m.r||7);
   e.preventDefault();
 }
 function handleMove(e){
   const m=_hd.m, p=clientToMeter(e.clientX,e.clientY), x=clamp(p.x,-3,S.W+3), y=clamp(p.y,-3,S.H+3);
   if(m.t==='line'){
-    if(_hd.h==='c1'||_hd.h==='c2'){                          // kurvan ska gå genom pekaren (inget hopp)
-      const g=lineGeom(m), t=_hd.h==='c1'?1/3:2/3, u=1-t;
-      if(_hd.h==='c1'){ const k=3*u*u*t; m.c1={x:(x-u*u*u*g.a.x-3*u*t*t*m.c2.x-t*t*t*g.b.x)/k, y:(y-u*u*u*g.a.y-3*u*t*t*m.c2.y-t*t*t*g.b.y)/k}; }
-      else { const k=3*u*t*t; m.c2={x:(x-u*u*u*g.a.x-3*u*u*t*m.c1.x-t*t*t*g.b.x)/k, y:(y-u*u*u*g.a.y-3*u*u*t*m.c1.y-t*t*t*g.b.y)/k}; }
+    if(_hd.h[0]==='v'){                                      // prickarna ligger på kurvan: den följer pekaren exakt
+      const g=lineGeom(m), v=m.via[+_hd.h.slice(1)];
+      if(v){ v.dx=+(x-(g.a.x+(g.b.x-g.a.x)*v.t)).toFixed(3); v.dy=+(y-(g.a.y+(g.b.y-g.a.y)*v.t)).toFixed(3); }
     } else if(_hd.h==='a'||_hd.h==='b'){ m[_hd.h]={x:+x.toFixed(2),y:+y.toFixed(2)}; }
   } else if(m.t==='volt'){
     if(_hd.h==='ctr'){ m.x=+x.toFixed(2); m.y=+y.toFixed(2); }
@@ -3432,8 +3436,8 @@ function handleMove(e){
 /* ---- sudda ---- */
 function samplePoly(m){
   const pts=[], bez=(g,n)=>{ for(let i=0;i<=n;i++) pts.push(bezAt(g,i/n)); };
-  if(m.t==='line') bez(lineGeom(m),24);
-  else if(m.t==='volt'){ const P=voltPts(m); for(let k=0;k<4;k++) bez(voltBez(P,k),12); }
+  if(m.t==='line') lineGeom(m).segs.forEach(s=>bez(s,10));
+  else if(m.t==='volt') voltSegs(m).forEach(s=>bez(s,8));
   else (m.p||[]).forEach(q=>pts.push({x:q[0],y:q[1]}));
   return pts;
 }
@@ -3482,7 +3486,6 @@ function updateDescBar(){
   else { el.innerHTML=''; el.classList.remove('on'); }
 }
 function printMain(){ document.body.classList.remove('print-slides'); window.print(); }
-
 
 /* =================== PRESENTATION: bildserie av banan =================== */
 function openPresentation(){
@@ -3674,6 +3677,4 @@ window.addEventListener('keydown', e=>{
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA')) return;
   if(S.sel){ deleteSel(); e.preventDefault(); }
 });
-</script>
-</body>
-</html>
+</script></body></html>

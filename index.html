@@ -227,6 +227,8 @@
 
   /* Övningskort: knappen ska aldrig klippas (order 48) */
   #ovnPanel .skgrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));align-items:start}
+  /* korten får aldrig tryckas ihop (rubrik + en rad syntes, knappen låg gömd) — radhöjd = innehållets höjd, listan scrollar */
+  .skgrid{grid-auto-rows:max-content;align-content:start}
   #ovnPanel .skcard{display:flex;flex-direction:column;height:auto}
   #ovnPanel .skcard .m{flex:1}
   #ovnPanel .skcard .skload{margin-top:auto}
@@ -321,6 +323,42 @@
   .setup-quick button:hover{border-color:#f5a623;background:#fffdf6}
   .setup-go{width:100%;padding:13px;border:0;border-radius:10px;background:#20252c;color:#fff;
     font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+  /* ---- guide, nyheter, funktioner ---- */
+  .pulse{outline:3px solid #f5a623!important;outline-offset:2px;animation:pl .9s infinite alternate}
+  @keyframes pl{to{outline-color:rgba(245,166,35,.15)}}
+  @media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+  .coach{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:90;display:none;
+    width:min(540px,94vw);background:#20252c;color:#eef1f5;border:1px solid #454f5c;border-radius:14px;
+    padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,.45)}
+  .coach.open{display:block}
+  .coach .cs{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:#f5a623;font-weight:700}
+  .coach h4{margin:4px 0 4px;font-size:17px}
+  .coach p{margin:0 0 10px;font-size:13.5px;line-height:1.5;color:#cfd6de}
+  .coach .bar{height:5px;background:#3a424d;border-radius:3px;overflow:hidden;margin-bottom:10px}
+  .coach .bar i{display:block;height:100%;background:#f5a623;width:0;transition:width .25s}
+  .coach .prog{font-size:12px;color:#f5c46a;margin-bottom:8px;min-height:15px}
+  .coach .cb{display:flex;gap:8px;flex-wrap:wrap}
+  .coach .cb button{padding:8px 12px;border-radius:8px;border:0;font-weight:700;font-size:13px;background:#3a4450;color:#fff}
+  .coach .cb button.pri{background:#f5a623;color:#141414}
+  .coach.ok{border-color:#2e8b57;box-shadow:0 0 0 3px rgba(46,139,87,.4),0 12px 40px rgba(0,0,0,.45)}
+  @media (max-width:800px){.coach{bottom:auto;top:8px}}
+  .modal2{position:fixed;inset:0;z-index:180;background:rgba(10,12,16,.8);display:none;
+    align-items:center;justify-content:center;padding:16px}
+  .modal2.open{display:flex}
+  .box2{background:#fff;border-radius:16px;width:min(520px,100%);max-height:88vh;overflow:auto;padding:24px;
+    box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  .box2 h3{margin:0 0 4px;font-size:21px}
+  .box2 .sub{margin:0 0 14px;color:#5a6472;font-size:14px;line-height:1.5}
+  .box2 ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px}
+  .box2 li{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.45;color:#2b323a}
+  .box2 li b{display:block;color:#141414}
+  .box2 .ic{flex:0 0 32px;height:32px;border-radius:50%;background:#fff3dc;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .box2 .row{display:flex;gap:8px;flex-wrap:wrap}
+  .box2 .row button{flex:1;padding:12px;border:0;border-radius:10px;font-weight:700;font-size:14px;background:#eef1f5;color:#3a424d}
+  .box2 .row button.pri{background:#20252c;color:#fff}
+  .box2 li button{margin-left:auto;flex:0 0 auto;padding:6px 12px;border:1px solid #cfd6de;background:#fff;border-radius:8px;font-weight:700;font-size:12.5px}
+  .box2 li.done .ic{background:#dff3e6}
+  @media print{ .coach,.modal2{display:none!important} }
 </style>
 
 <div class="app">
@@ -328,6 +366,11 @@
   <!-- ============ TOPPMENY ============ -->
   <div class="toolbar">
     <span class="title">🏇 Banskiss</span>
+    <div class="grp">
+      <button class="tb" onclick="startGuide()" title="Steg-för-steg-guide">❓ Guide</button>
+      <button class="tb" onclick="openAdv()" title="Upptäck alla funktioner">🧭 Funktioner</button>
+      <button class="tb" onclick="openNews(true)" title="Vad är nytt?">✨ Nytt</button>
+    </div>
     <div class="grp">
       <select id="langSelect" onchange="changeLang(this.value)" style="padding:6px 8px;border-radius:5px;border:1px solid #454f5c;background:#2f3742;color:#fff;font-size:12px;cursor:pointer">
         <option value="sv">Svenska</option>
@@ -646,6 +689,18 @@
 
 
 
+<div class="coach" id="coach">
+  <div class="cs" id="coachStep"></div>
+  <h4 id="coachH"></h4>
+  <p id="coachP"></p>
+  <div class="prog" id="coachProg"></div>
+  <div class="bar"><i id="coachBar"></i></div>
+  <div class="cb" id="coachBtns"></div>
+</div>
+
+<div class="modal2" id="newsModal"><div class="box2" id="newsBox"></div></div>
+<div class="modal2" id="advModal"><div class="box2" id="advBox"></div></div>
+
 <!-- MINI-MODAL (bekräfta / dela) -->
 <div class="setup-modal" id="miniModal"><div class="setup-box" style="max-width:380px">
   <h3 id="miniTitle" style="font-size:18px"></h3>
@@ -667,6 +722,7 @@
       <div class="setup-row"><label>Längd (m)</label><input type="number" id="setupW" min="15" max="150" value="70"></div>
       <div class="setup-row"><label>Bredd (m)</label><input type="number" id="setupH" min="10" max="80" value="30"></div>
     </div>
+
     <button class="setup-go" onclick="setupConfirm()">Börja rita →</button>
   </div>
 </div>
@@ -1075,8 +1131,9 @@ function obstacleSVG(o, i){
   }
   const aSel = (typeof alignMode!=='undefined' && alignMode && alignSel.indexOf(o.id)>=0);
   const ring = (sel||aSel) ? `<rect class="selring" x="${-M(o.w/2)-20}" y="${-M(1.4)}" width="${M(o.w)+40}" height="${M(2.8)}" fill="${aSel?'rgba(46,139,87,0.14)':'none'}" stroke="${aSel?'#2e8b57':'#f5a623'}" stroke-width="${aSel?2.2:1.5}" stroke-dasharray="4 3" rx="4"/>`:'';
+  const hitR = isZone(o.type) ? '' : `<rect class="hit" x="${-M(o.w/2)-20}" y="${-M(1.4)}" width="${M(o.w)+40}" height="${M(2.8)}" fill="transparent"/>`;
   return `<g class="obst" data-id="${o.id}" transform="translate(${mx(o.x)} ${my(o.y)}) rotate(${o.rot})" style="cursor:grab">
-            ${ring}${arrow}${body}${label}${deg}${handle}</g>`;
+            ${hitR}${ring}${arrow}${body}${label}${deg}${handle}</g>`;
 }
 
 /* ---------- ÅNGRA / GÖR OM (undo/redo) ---------- */
@@ -1135,6 +1192,7 @@ function render(){
       return;
     }
   }
+  if(_fast){ renderInspector(); if(typeof guideCheck==='function') guideCheck(); return; }   // drag: hoppa över tunga delar
   // toolbar-läge
   document.getElementById('inW').value=S.W; document.getElementById('inH').value=S.H;
   [10,5,2,1,0].forEach(g=> document.getElementById('g'+g).classList.toggle('on', S.gridM===g));
@@ -1144,6 +1202,7 @@ function render(){
   renderPrintHead();
   // mobil: inspektorn visas som bottenlucka bara när ett hinder är markerat
   document.body.classList.toggle('has-sel', !!S.sel);
+  if(typeof guideCheck==='function') guideCheck();
 }
 
 /* ---------- palett ---------- */
@@ -1263,6 +1322,8 @@ function doAlign(){
   const spanX=Math.max(...xs)-Math.min(...xs), spanY=Math.max(...ys)-Math.min(...ys);
   if(spanX>=spanY){ const avg=ys.reduce((a,b)=>a+b,0)/ys.length; parts.forEach(o=>o.y=+avg.toFixed(2)); }
   else            { const avg=xs.reduce((a,b)=>a+b,0)/xs.length; parts.forEach(o=>o.x=+avg.toFixed(2)); }
+  // samma vinkel som det första du markerade — så står alla precis lika
+  const rot0=parts[0].rot; parts.forEach(o=>{ o.rot=rot0; });
 }
 let numMode=false, numNext=1;
 function toggleNumMode(){
@@ -1280,7 +1341,8 @@ function numModeClick(o){
 function clearCourse(){ uiConfirm('Ta bort alla hinder på den här banan?', ()=>{ S.obstacles=[]; S.sel=null; S_bends={}; S_labels={}; _lineHandles={}; render(); commit(); }, 'Ta bort'); }
 /* samla omritningar till max en per bildruta (annars ryck vid slider/drag) */
 let _raf=0;
-function scheduleRender(){ if(_raf) return; _raf=requestAnimationFrame(()=>{ _raf=0; render(); }); }
+let _fast=false;
+function scheduleRender(){ if(_raf) return; _raf=requestAnimationFrame(()=>{ _raf=0; _fast=!!drag; render(); _fast=false; }); }
 function setRot(v){ const o=sel(); if(!o)return; o.rot=((Math.round(+v)%360)+360)%360; scheduleRender(); commitSoon(); }
 function setNum(v){ commitSoon();
   const o=sel(); if(!o)return;
@@ -1348,8 +1410,15 @@ function startNew(e, type){
     return;
   }
 
+  // CAVALETTI / bommar: välj typ, antal och avstånd
+  if(type==='cavaletti' || type==='cavalletti_rad'){
+    _pendingCombo = {type, clientX: e.clientX, clientY: e.clientY};
+    _cav = {typ:'cavaletti', antal:4, gap:1.3};
+    cavStepType(); return;
+  }
+
   // KOMBINATIONER (order 48.C): fråga efter avstånd innan skapande
-  if(type==='kombination' || type==='cavalletti_rad'){
+  if(type==='kombination'){
     _pendingKind = (type==='cavalletti_rad') ? 'cavrad' : 'combo';
     _pendingCombo = {type, clientX: e.clientX, clientY: e.clientY};
     showComboDialog();
@@ -1755,7 +1824,8 @@ function onPointerMove(e){
   } else if(drag.kind==='rotate'){
     const svg=courtEl(), r=svg.getBoundingClientRect();
     const sx=r.width/svgW(), sy=r.height/svgH();
-    const ox=r.left+mx(o.x)*sx, oy=r.top+my(o.y)*sy;
+    let ox=r.left+mx(o.x)*sx, oy=r.top+my(o.y)*sy;
+    if(drag.combo){ ox=r.left+mx(drag.combo.gx)*sx; oy=r.top+my(drag.combo.gy)*sy; }
     let a=Math.atan2(e.clientY-oy, e.clientX-ox)*180/Math.PI + 90;
     const newRot=((Math.round(a)%360)+360)%360;
     if(o._comboId && drag.combo){
@@ -1763,7 +1833,8 @@ function onPointerMove(e){
       // (det nedersta hamnar överst vid 180°) och varje bom följer med i vinkel.
       const c=drag.combo;
       const aNow=Math.atan2((e.clientY-oy), (e.clientX-ox)); // pekarens vinkel (klient≈bana i riktning)
-      const d=aNow - c.a0;
+      if(c.p0==null) c.p0=aNow;                 // startvinkel = där man tog tag (inget hopp)
+      const d=aNow - c.p0;
       const cos=Math.cos(d), sin=Math.sin(d), degD=Math.round(d*180/Math.PI);
       c.base.forEach(b=>{ const part=S.obstacles.find(x=>x.id===b.id); if(!part) return;
         part.x=clamp(c.gx + b.dx*cos - b.dy*sin, 0, S.W);
@@ -1812,7 +1883,7 @@ function hideBadge(){ document.getElementById('distbadge').style.display='none';
 
 /* ---------- TRÄNINGSMODE (order 43) ---------- */
 let _trainingMode = false;
-const OVNINGAR = [{"id":"kf1","namn":"Två markbommar på ett språng","ryttare":"Kent Farrington","niva":"medel","syfte":"Lära ryttaren tålamod och disciplinerade avstånd i galopp.","matt":"16 fot (4.88 m) mellan bommarna — ett galoppsprång.","steg":"Galoppera över första bommen, ta exakt ett språng, landa efter den andra. Rid den från både höger och vänster varv.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"bommark",32.56,15.0,270,0],[2,"bommark",37.44,15.0,270,0]]},{"id":"kf2","namn":"Bom – kryss – bom (dubbel studs)","ryttare":"Kent Farrington","niva":"medel","syfte":"Studsrytm och att hästen använder hela kroppen.","matt":"9 fot (2.74 m) från bom till kryss, och 9 fot (2.74 m) från kryss till nästa bom.","steg":"Galoppera över första bommen, studsa över krysset och studsa ut över sista bommen. Inget språng emellan.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"bommark",32.26,15.0,270,0],[2,"kryss",35.0,15.0,270,0],[3,"bommark",37.74,15.0,270,0]]},{"id":"kf3","namn":"Två oxrar sida vid sida med markbom","ryttare":"Kent Farrington","niva":"avancerad","syfte":"Vändningar och att träffa avståndet efter en rollback.","matt":"Markbom 18 fot (5.49 m) framför varje oxer — ett galoppsprång.","steg":"Galoppera över bommen, ett språng, hoppa oxern. Volt vänster och gör samma sak över den andra oxern. Rollback-vändningar emellan.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"bommark",29.51,10,270,0],[2,"vertikal2",35.0,10,270,0],[3,"bommark",29.51,20,270,0],[4,"vertikal2",35.0,20,270,0]]},{"id":"kf4","namn":"Tre rättar med markbom mitt emellan","ryttare":"Kent Farrington","niva":"avancerad","syfte":"Precision — bommen tvingar fram exakt rätt språng.","matt":"21 fot (6.4 m) mellan hindren, markbom exakt mitt i varje avstånd.","steg":"Hoppa första rätten, studsa över bommen till nästa rätt, studsa över nästa bom till tredje rätten.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"vertikal1",28.6,15.0,270,0],[0,"bommark",31.8,15.0,270,0],[2,"vertikal1",35.0,15.0,270,0],[0,"bommark",38.2,15.0,270,0],[3,"vertikal1",41.4,15.0,270,0]]},{"id":"kf5","namn":"Tre oxrar på linje","ryttare":"Kent Farrington","niva":"avancerad","syfte":"Bygga och hålla galoppsprånget genom en krävande rad.","matt":"21 fot (6.4 m) mellan oxrarna — ett språng emellan.","steg":"Hoppa första oxern, ett språng till den andra, ett språng till den tredje.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"vertikal2",28.6,15.0,270,0],[2,"vertikal2",35.0,15.0,270,0],[3,"vertikal2",41.4,15.0,270,0]]},{"id":"db1","namn":"Triangel-chute för ryggning","ryttare":"Daniel Bluman","niva":"medel","syfte":"Lära hästen att skänkeln kommer före handen — kontrollerad ryggning.","matt":"Två hinder i triangel: 5–6 fot (1,5–1,8 m) isär i öppna änden, sammanförda till en spets i andra änden.","steg":"Rid in i chuten. Markpersonal står vid spetsen. Be om ryggning med skänkeln före handen.","kalla":"https://practicalhorseman.com/training/why-leg-before-rein-is-crucial/","o":[[1,"bommark",31,13.6,300,0],[2,"bommark",31,16.4,240,0],[3,"bommark",37,14.6,300,0],[4,"bommark",37,15.4,240,0]]},{"id":"k1","namn":"Skrittbommar","ryttare":null,"niva":"nybörjare","syfte":"Takt, steglängd och att hästen tittar ner och sträcker sig.","matt":"0,80–0,90 m mellan bommarna (häst). Practical Horseman: ca 3 fot (0,91 m).","steg":"Rid rakt över mitten av bommarna i jämn skritt. Håll blicken upp.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"bommark",33.73,15.0,270,0],[2,"bommark",34.58,15.0,270,0],[3,"bommark",35.43,15.0,270,0],[4,"bommark",36.27,15.0,270,0]]},{"id":"k2","namn":"Travbommar / cavalettirad","ryttare":null,"niva":"nybörjare","syfte":"Rytm, balans och ryggarbete i trav.","matt":"1,20–1,40 m (häst). RDA: min 4 fot (1,2 m), max 5 fot (1,5 m). Höjda bommar: korta ca 10 cm.","steg":"Trava rakt över mitten i jämn takt. Sitt lätt och låt hästen sträcka halsen.","kalla":"https://www.myrda.org.uk/assets/RDA-Showjumping-Distances-Guidance-HORSES-March-2018.pdf","o":[[1,"cavaletti",33.05,15.0,270,0],[2,"cavaletti",34.35,15.0,270,0],[3,"cavaletti",35.65,15.0,270,0],[4,"cavaletti",36.95,15.0,270,0]]},{"id":"k3","namn":"Galoppbommar","ryttare":null,"niva":"medel","syfte":"Känsla för galoppsprånget och jämn takt.","matt":"2,7–3,4 m (9–11 fot) för häst. Practical Horseman: ca 3,05 m.","steg":"Galoppera i jämn takt över bommarna, ett språng mellan varje.","kalla":"https://www.myrda.org.uk/assets/RDA-Showjumping-Distances-Guidance-HORSES-March-2018.pdf","o":[[1,"bommark",30.5,15.0,270,0],[2,"bommark",33.5,15.0,270,0],[3,"bommark",36.5,15.0,270,0],[4,"bommark",39.5,15.0,270,0]]},{"id":"k4","namn":"Studsrad (bounce)","ryttare":null,"niva":"medel","syfte":"Snabbhet i frambenen och att hästen sluter sig i luften.","matt":"3,0–3,7 m (10–12 fot) mellan hindren — inget språng emellan.","steg":"Kom i lugn, samlad galopp. Hästen landar och trycker ifrån direkt, utan mellansprång.","kalla":"https://www.myrda.org.uk/assets/RDA-Showjumping-Distances-Guidance-HORSES-March-2018.pdf","o":[[1,"kryss",31.65,15.0,270,0],[2,"kryss",35.0,15.0,270,0],[3,"kryss",38.35,15.0,270,0]]},{"id":"k5","namn":"Placeringsbom före och efter hinder","ryttare":null,"niva":"nybörjare","syfte":"Hjälper hästen att träffa rätt avsprång och landa balanserat.","matt":"Anridning i trav: bom 2,7–3,0 m före hindret, bom minst 3,0 m efter.","steg":"Trava in över bommen, hoppa, landa och rid rakt över utgångsbommen.","kalla":"https://www.myrda.org.uk/assets/RDA-Showjumping-Distances-Guidance-HORSES-March-2018.pdf","o":[[1,"bommark",32.0,15.0,270,0],[2,"vertikal1",35.0,15.0,270,0],[3,"bommark",38.0,15.0,270,0]]},{"id":"k6","namn":"Klockan — fyra bommar på 20 m volt","ryttare":null,"niva":"medel","syfte":"Böjning, jämn takt och samma steglängd hela vägen runt.","matt":"20 m volt. Bommarna läggs radiellt i kors, korsas ungefär mitt på.","steg":"Rid volten i jämn trav eller galopp och håll samma antal steg mellan varje bom.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"bommark",45,15,0,0],[2,"bommark",35,25,90,0],[3,"bommark",25,15,180,0],[4,"bommark",35,5,270,0]]},{"id":"k7","namn":"Fyrkanten (the box)","ryttare":null,"niva":"nybörjare","syfte":"Precision och kontroll — går att rida rakt igenom, över hörnen eller runt.","matt":"4 bommar à 3 m i kvadrat.","steg":"Rid rakt igenom mitten, sedan diagonalt över två hörn, sedan volt inuti rutan.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"bommark",35,13.5,0,0],[2,"bommark",35,16.5,0,0],[3,"bommark",33.5,15,90,0],[4,"bommark",36.5,15,90,0]]},{"id":"k8","namn":"Bommar i solfjäder på volt","ryttare":null,"niva":"medel","syfte":"Lär ryttaren förkorta och förlänga — inre spåret kortare, yttre längre.","matt":"Mätt mitt på bommarna: ca 1,25–1,50 m i trav. Bommarna vinklade som en solfjäder.","steg":"Trava på volt över bommarnas mitt. Rid sedan längre ut för längre steg, längre in för kortare.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"bommark",41.0,11.0,300,0],[2,"bommark",42.0,12.6,320,0],[3,"bommark",42.5,14.4,340,0]]},{"id":"k9","namn":"Slalom mellan koner","ryttare":null,"niva":"nybörjare","syfte":"Böjning, ombyten och styrsel.","matt":"Ca 8–12 m mellan konerna för häst i trav — justera efter hur liten volt ni klarar.","steg":"Rid slalom i jämn takt, byt böjning mellan varje kon.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"kon",20,15,0,0],[2,"kon",30,15,0,0],[3,"kon",40,15,0,0],[4,"kon",50,15,0,0]]},{"id":"k10","namn":"Relaterat avstånd — ett språng","ryttare":null,"niva":"medel","syfte":"Träna att komma på rätt antal steg mellan två hinder.","matt":"OLIKA KÄLLOR: wehorse 7,50–7,90 m · RDA 6,4–7,5 m · Maya Delorez 6,0–7,0 m. Kortare vid låga hinder.","steg":"Rid in i jämn galopp och håll språnget. Räkna stegen högt.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"vertikal1",31.1,15.0,270,0],[2,"vertikal1",38.9,15.0,270,0]]},{"id":"k11","namn":"Relaterat avstånd — två språng","ryttare":null,"niva":"medel","syfte":"Samma som ovan men med längre sträcka — kräver jämnare takt.","matt":"OLIKA KÄLLOR: wehorse 10,40–10,80 m · RDA 10,0–11,0 m · Maya Delorez 9,50–10,20 m.","steg":"Håll samma galopp hela vägen. Två jämna språng, inte ett långt och ett kort.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"vertikal1",29.65,15.0,270,0],[2,"vertikal2",40.35,15.0,270,0]]},{"id":"mw1","namn":"Wards favoritgymnastik","ryttare":"McLain Ward","niva":"avancerad","syfte":"Får hästen att sluta sig och använda hela kroppen. Hindren aldrig över 1 m.","matt":"Kryss → oxer 11 fot (3,35 m) = studs. Oxer → landningsbom 9 fot (2,74 m). Landningsbom → andra oxern 21 fot (6,40 m) = två steg.","steg":"Kom i lugn galopp. Studsa kryss–oxer, landa över bommen och rid två steg till sista oxern.","kalla":"https://practicalhorseman.com/training/","o":[[0,"kryss",28.75,15.0,270,0],[0,"vertikal2",32.1,15.0,270,0],[0,"bommark",34.84,15.0,270,0],[0,"vertikal2",41.24,15.0,270,0]]},{"id":"mw2","namn":"Galoppbommar runt kryss","ryttare":"McLain Ward","niva":"nybörjare","syfte":"Introducerar hoppning och lär hästen träffa avsprånget själv.","matt":"Markbom 9 fot (2,74 m) före krysset och 9 fot (2,74 m) efter. Krysset ca 14 tum (0,36 m) i början.","steg":"Galoppera lugnt över bommen, hoppa krysset, rid rakt över utgångsbommen.","kalla":"https://www.chronofhorse.com/","o":[[0,"bommark",32.26,15.0,270,0],[0,"kryss",35.0,15.0,270,0],[0,"bommark",37.74,15.0,270,0]]},{"id":"mw3","namn":"Linje för häst som skyndar","ryttare":"McLain Ward","niva":"medel","syfte":"Lugnar en häst som rusar — bommarna tvingar fram takt och balans.","matt":"Bom 9 fot (2,74 m) före krysset, 9 fot efter, 9 fot till liten oxer, bom 9 fot efter oxern, vertikal ca 30 fot (9,14 m) därifrån.","steg":"Håll samma lugna galopp hela vägen. Låt bommarna göra jobbet — rid inte fram.","kalla":"https://www.chronofhorse.com/","o":[[0,"bommark",24.95,15.0,270,0],[0,"kryss",27.69,15.0,270,0],[0,"bommark",30.43,15.0,270,0],[0,"vertikal2",33.17,15.0,270,0],[0,"bommark",35.91,15.0,270,0],[0,"vertikal1",45.05,15.0,270,0]]},{"id":"bm1","namn":"Tre cavaletti på medellinjen","ryttare":"Beezie Madden","niva":"medel","syfte":"Justerbarhet — samma linje ska kunna ridas med olika antal språng.","matt":"60 fot (18,29 m) mellan varje cavaletti.","steg":"Rid först i jämn galopp och räkna stegen. Rid sedan om med ett steg mer, och ett steg mindre.","kalla":"https://www.chronofhorse.com/","o":[[0,"cavaletti",16.71,15.0,270,0],[0,"cavaletti",35.0,15.0,270,0],[0,"cavaletti",53.29,15.0,270,0]]},{"id":"bm2","namn":"Fyrhinderslinje — två steg mellan varje","ryttare":"Beezie Madden","niva":"avancerad","syfte":"Hålla exakt samma språng genom en lång rad.","matt":"34 fot 6 tum (10,52 m) mellan varje hinder — två steg.","steg":"Bestäm galoppen före första hindret och ändra ingenting genom raden.","kalla":"https://www.chronofhorse.com/","o":[[0,"vertikal1",19.22,15.0,270,0],[0,"vertikal1",29.74,15.0,270,0],[0,"vertikal1",40.26,15.0,270,0],[0,"vertikal1",50.78,15.0,270,0]]},{"id":"bm3","namn":"Tre markbommar — tre till sex steg","ryttare":"Beezie Madden","niva":"medel","syfte":"Träna att förkorta och förlänga språnget medvetet.","matt":"45 fot (13,72 m) mellan varje bom — 'a hunter three strides' enligt Madden.","steg":"Rid tre steg, sedan fyra, sedan fem och sex mellan bommarna. Samma bommar hela tiden.","kalla":"https://www.chronofhorse.com/","o":[[0,"bommark",21.28,15.0,270,0],[0,"bommark",35.0,15.0,270,0],[0,"bommark",48.72,15.0,270,0]]},{"id":"ak1","namn":"Tre cavaletti — övergångar","ryttare":"Anne Kursinski","niva":"medel","syfte":"Lydnad och balans genom övergångar mellan redskapen.","matt":"58 fot (17,7 m) mellan varje cavaletti. Källans ord: 'each spaced 58 feet apart'.","steg":"Trava över första, skritta mellan, trava över nästa. Sedan galopp–skritt–galopp.","kalla":"https://practicalhorseman.com/training/exercises-from-anne-kursinski/","o":[[0,"cavaletti",17.3,15.0,270,0],[0,"cavaletti",35.0,15.0,270,0],[0,"cavaletti",52.7,15.0,270,0]]},{"id":"ak2","namn":"Tre cavaletti — fem språng och stegändring","ryttare":"Anne Kursinski","niva":"avancerad","syfte":"Exakt kontroll: samma sträcka ridd på olika antal språng.","matt":"58 fot (17,7 m) mellan varje cavaletti; fem galoppsprång i varje avstånd. Rid sedan 4/4, 5/4 och 4/5.","steg":"Räkna högt. Håll samma galopp — ändra steglängd, inte tempo.","kalla":"https://practicalhorseman.com/training/exercises-from-anne-kursinski/","o":[[0,"cavaletti",17.3,15.0,270,0],[0,"cavaletti",35.0,15.0,270,0],[0,"cavaletti",52.7,15.0,270,0]]},{"id":"pf1","namn":"Bom – hinder – bom på böjt spår","ryttare":"Peder Fredricson","niva":"medel","syfte":"Grundridning i vardagen: rytm och balans på böjt spår, åt båda hållen.","matt":"8 m från bommen till hindret och 8 m från hindret till nästa bom. Källan understryker att avståndet måste anpassas efter hästens storlek.","steg":"Rid på böjt spår i jämn galopp. Ta övningen åt båda hållen.","kalla":"https://www.tidningenridsport.se/sa-tranar-proffsen-grundridning-i-vardagen/","o":[[0,"bommark",27.29,16.85,243,0],[0,"vertikal1",35.0,15.0,270,0],[0,"bommark",42.71,16.85,297,0]]},{"id":"mb1","namn":"Tre låga hinder på 21 meter","ryttare":"Malin Baryard-Johnsson","niva":"medel","syfte":"Rakt spår först — vik sedan av efter andra hindret och rid det tredje på böjt spår.","matt":"21 meter mellan varje hinder.","steg":"Rid raka linjen först. Vik sedan av höger eller vänster efter hinder 2 och rid fram till 3 på böjt spår.","kalla":"https://www.tidningenridsport.se/sa-tranar-proffsen-grundridning-i-vardagen/","o":[[0,"vertikal1",14.0,15.0,270,0],[0,"vertikal1",35.0,15.0,270,0],[0,"vertikal1",56.0,15.0,270,0]]},{"id":"mb2","namn":"Tre cavaletti — öka och minska sprången","ryttare":"Malin Baryard-Johnsson","niva":"medel","syfte":"Träna att förlänga och förkorta galoppsprånget.","matt":"Bommarna på marken eller höjda till ca 40 cm. OBS: källan anger INGET metermått utan säger 'sex normala galoppsprång för den häst du rider'. Här är de placerade på 21,6 m (6 × 3,6 m) — justera efter din häst.","steg":"Rid först sex jämna språng. Rid sedan sju, och sedan fem.","kalla":"https://www.tidningenridsport.se/malins-favorit-utmana-dig-sjalv-med-en-bom-pa-marken/","o":[[0,"cavaletti",13.4,15.0,270,0],[0,"cavaletti",35.0,15.0,270,0],[0,"cavaletti",56.6,15.0,270,0]]},{"id":"rg1","namn":"Två serier travbommar","ryttare":"Rolf-Göran Bengtsson","niva":"nybörjare","syfte":"Uppvärmning och taktarbete i trav med stegrande avstånd.","matt":"Första serien: tre bommar med 1 meter mellan. Andra serien: sex bommar med 1,20 m (20 cm längre).","steg":"Trava lugnt genom första serien, vänd och rid den andra. Låt hästen sträcka sig.","kalla":"https://www.hippson.se/nyheter/rolf-gorans-basta-bom-och-hoppovningar","o":[[0,"bommark",20.0,15.0,270,0],[0,"bommark",21.0,15.0,270,0],[0,"bommark",22.0,15.0,270,0],[0,"bommark",40.0,15.0,270,0],[0,"bommark",41.2,15.0,270,0],[0,"bommark",42.4,15.0,270,0],[0,"bommark",43.6,15.0,270,0],[0,"bommark",44.8,15.0,270,0],[0,"bommark",46.0,15.0,270,0]]},{"id":"hve1","namn":"Travhoppning med cavaletti före och efter","ryttare":"Henrik von Eckermann","niva":"medel","syfte":"Travhoppning som lär hästen ta sats själv och landa balanserat.","matt":"MÅTT EJ ANGIVNA I KÄLLAN. Här placerade på 3 m — ställ in efter din häst.","steg":"Trava in över cavallettin, hoppa räcket, rid rakt över utgångscavallettin.","kalla":"https://www.tidningenridsport.se/henrik-delade-med-sig-av-sina-framgangsrecept/","o":[[0,"cavaletti",32.0,15.0,270,0],[0,"vertikal1",35.0,15.0,270,0],[0,"cavaletti",38.0,15.0,270,0]]}];
+const OVNINGAR = [{"id": "sthlm1", "slug": "stockholm", "namn": "Stockholm Horse Show – övning", "ryttare": "Egen skiss", "niva": "egen", "syfte": "Egen övning efter en handritad skiss: sex hinder (två oxrar, två räcken och två kryss). Ridlinjen i skissen är en åtta som korsar sig vid hindret i mitten.", "matt": "Banan är 78 × 40 m. Avstånden mellan hindren står inte i skissen — mät upp dem på banan.", "steg": "Hindren ligger på samma ställen som i skissen (skissen är vriden så att den ligger längs banans långsida). Numrera dem med 🔢 Numrera så ritas ridvägen och avstånden ut.", "kalla": "", "W": 78, "H": 40, "mode": "inne", "o": [[0, "vertikal1", 61.0, 10.72, 122, 0], [0, "kryss", 63.26, 23.04, 95, 0], [0, "kryss", 41.73, 21.2, 75, 0], [0, "vertikal2", 41.81, 8.76, 88, 0], [0, "vertikal2", 19.89, 12.12, 57, 0], [0, "vertikal1", 15.6, 24.84, 138, 0]]},{"id":"kf1","namn":"Två markbommar på ett språng","ryttare":"Kent Farrington","niva":"medel","syfte":"Lära ryttaren tålamod och disciplinerade avstånd i galopp.","matt":"16 fot (4.88 m) mellan bommarna — ett galoppsprång.","steg":"Galoppera över första bommen, ta exakt ett språng, landa efter den andra. Rid den från både höger och vänster varv.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"bommark",32.56,15.0,270,0],[2,"bommark",37.44,15.0,270,0]]},{"id":"kf2","namn":"Bom – kryss – bom (dubbel studs)","ryttare":"Kent Farrington","niva":"medel","syfte":"Studsrytm och att hästen använder hela kroppen.","matt":"9 fot (2.74 m) från bom till kryss, och 9 fot (2.74 m) från kryss till nästa bom.","steg":"Galoppera över första bommen, studsa över krysset och studsa ut över sista bommen. Inget språng emellan.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"bommark",32.26,15.0,270,0],[2,"kryss",35.0,15.0,270,0],[3,"bommark",37.74,15.0,270,0]]},{"id":"kf3","namn":"Två oxrar sida vid sida med markbom","ryttare":"Kent Farrington","niva":"avancerad","syfte":"Vändningar och att träffa avståndet efter en rollback.","matt":"Markbom 18 fot (5.49 m) framför varje oxer — ett galoppsprång.","steg":"Galoppera över bommen, ett språng, hoppa oxern. Volt vänster och gör samma sak över den andra oxern. Rollback-vändningar emellan.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"bommark",29.51,10,270,0],[2,"vertikal2",35.0,10,270,0],[3,"bommark",29.51,20,270,0],[4,"vertikal2",35.0,20,270,0]]},{"id":"kf4","namn":"Tre rättar med markbom mitt emellan","ryttare":"Kent Farrington","niva":"avancerad","syfte":"Precision — bommen tvingar fram exakt rätt språng.","matt":"21 fot (6.4 m) mellan hindren, markbom exakt mitt i varje avstånd.","steg":"Hoppa första rätten, studsa över bommen till nästa rätt, studsa över nästa bom till tredje rätten.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"vertikal1",28.6,15.0,270,0],[0,"bommark",31.8,15.0,270,0],[2,"vertikal1",35.0,15.0,270,0],[0,"bommark",38.2,15.0,270,0],[3,"vertikal1",41.4,15.0,270,0]]},{"id":"kf5","namn":"Tre oxrar på linje","ryttare":"Kent Farrington","niva":"avancerad","syfte":"Bygga och hålla galoppsprånget genom en krävande rad.","matt":"21 fot (6.4 m) mellan oxrarna — ett språng emellan.","steg":"Hoppa första oxern, ett språng till den andra, ett språng till den tredje.","kalla":"https://practicalhorseman.com/training/kent-farrington-train-whats-difficult/","o":[[1,"vertikal2",28.6,15.0,270,0],[2,"vertikal2",35.0,15.0,270,0],[3,"vertikal2",41.4,15.0,270,0]]},{"id":"db1","namn":"Triangel-chute för ryggning","ryttare":"Daniel Bluman","niva":"medel","syfte":"Lära hästen att skänkeln kommer före handen — kontrollerad ryggning.","matt":"Två hinder i triangel: 5–6 fot (1,5–1,8 m) isär i öppna änden, sammanförda till en spets i andra änden.","steg":"Rid in i chuten. Markpersonal står vid spetsen. Be om ryggning med skänkeln före handen.","kalla":"https://practicalhorseman.com/training/why-leg-before-rein-is-crucial/","o":[[1,"bommark",31,13.6,300,0],[2,"bommark",31,16.4,240,0],[3,"bommark",37,14.6,300,0],[4,"bommark",37,15.4,240,0]]},{"id":"k1","namn":"Skrittbommar","ryttare":null,"niva":"nybörjare","syfte":"Takt, steglängd och att hästen tittar ner och sträcker sig.","matt":"0,80–0,90 m mellan bommarna (häst). Practical Horseman: ca 3 fot (0,91 m).","steg":"Rid rakt över mitten av bommarna i jämn skritt. Håll blicken upp.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"bommark",33.73,15.0,270,0],[2,"bommark",34.58,15.0,270,0],[3,"bommark",35.43,15.0,270,0],[4,"bommark",36.27,15.0,270,0]]},{"id":"k2","namn":"Travbommar / cavalettirad","ryttare":null,"niva":"nybörjare","syfte":"Rytm, balans och ryggarbete i trav.","matt":"1,20–1,40 m (häst). RDA: min 4 fot (1,2 m), max 5 fot (1,5 m). Höjda bommar: korta ca 10 cm.","steg":"Trava rakt över mitten i jämn takt. Sitt lätt och låt hästen sträcka halsen.","kalla":"https://www.myrda.org.uk/assets/RDA-Showjumping-Distances-Guidance-HORSES-March-2018.pdf","o":[[1,"cavaletti",33.05,15.0,270,0],[2,"cavaletti",34.35,15.0,270,0],[3,"cavaletti",35.65,15.0,270,0],[4,"cavaletti",36.95,15.0,270,0]]},{"id":"k3","namn":"Galoppbommar","ryttare":null,"niva":"medel","syfte":"Känsla för galoppsprånget och jämn takt.","matt":"2,7–3,4 m (9–11 fot) för häst. Practical Horseman: ca 3,05 m.","steg":"Galoppera i jämn takt över bommarna, ett språng mellan varje.","kalla":"https://www.myrda.org.uk/assets/RDA-Showjumping-Distances-Guidance-HORSES-March-2018.pdf","o":[[1,"bommark",30.5,15.0,270,0],[2,"bommark",33.5,15.0,270,0],[3,"bommark",36.5,15.0,270,0],[4,"bommark",39.5,15.0,270,0]]},{"id":"k4","namn":"Studsrad (bounce)","ryttare":null,"niva":"medel","syfte":"Snabbhet i frambenen och att hästen sluter sig i luften.","matt":"3,0–3,7 m (10–12 fot) mellan hindren — inget språng emellan.","steg":"Kom i lugn, samlad galopp. Hästen landar och trycker ifrån direkt, utan mellansprång.","kalla":"https://www.myrda.org.uk/assets/RDA-Showjumping-Distances-Guidance-HORSES-March-2018.pdf","o":[[1,"kryss",31.65,15.0,270,0],[2,"kryss",35.0,15.0,270,0],[3,"kryss",38.35,15.0,270,0]]},{"id":"k5","namn":"Placeringsbom före och efter hinder","ryttare":null,"niva":"nybörjare","syfte":"Hjälper hästen att träffa rätt avsprång och landa balanserat.","matt":"Anridning i trav: bom 2,7–3,0 m före hindret, bom minst 3,0 m efter.","steg":"Trava in över bommen, hoppa, landa och rid rakt över utgångsbommen.","kalla":"https://www.myrda.org.uk/assets/RDA-Showjumping-Distances-Guidance-HORSES-March-2018.pdf","o":[[1,"bommark",32.0,15.0,270,0],[2,"vertikal1",35.0,15.0,270,0],[3,"bommark",38.0,15.0,270,0]]},{"id":"k6","namn":"Klockan — fyra bommar på 20 m volt","ryttare":null,"niva":"medel","syfte":"Böjning, jämn takt och samma steglängd hela vägen runt.","matt":"20 m volt. Bommarna läggs radiellt i kors, korsas ungefär mitt på.","steg":"Rid volten i jämn trav eller galopp och håll samma antal steg mellan varje bom.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"bommark",45,15,0,0],[2,"bommark",35,25,90,0],[3,"bommark",25,15,180,0],[4,"bommark",35,5,270,0]]},{"id":"k7","namn":"Fyrkanten (the box)","ryttare":null,"niva":"nybörjare","syfte":"Precision och kontroll — går att rida rakt igenom, över hörnen eller runt.","matt":"4 bommar à 3 m i kvadrat.","steg":"Rid rakt igenom mitten, sedan diagonalt över två hörn, sedan volt inuti rutan.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"bommark",35,13.5,0,0],[2,"bommark",35,16.5,0,0],[3,"bommark",33.5,15,90,0],[4,"bommark",36.5,15,90,0]]},{"id":"k8","namn":"Bommar i solfjäder på volt","ryttare":null,"niva":"medel","syfte":"Lär ryttaren förkorta och förlänga — inre spåret kortare, yttre längre.","matt":"Mätt mitt på bommarna: ca 1,25–1,50 m i trav. Bommarna vinklade som en solfjäder.","steg":"Trava på volt över bommarnas mitt. Rid sedan längre ut för längre steg, längre in för kortare.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"bommark",41.0,11.0,300,0],[2,"bommark",42.0,12.6,320,0],[3,"bommark",42.5,14.4,340,0]]},{"id":"k9","namn":"Slalom mellan koner","ryttare":null,"niva":"nybörjare","syfte":"Böjning, ombyten och styrsel.","matt":"Ca 8–12 m mellan konerna för häst i trav — justera efter hur liten volt ni klarar.","steg":"Rid slalom i jämn takt, byt böjning mellan varje kon.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"kon",20,15,0,0],[2,"kon",30,15,0,0],[3,"kon",40,15,0,0],[4,"kon",50,15,0,0]]},{"id":"k10","namn":"Relaterat avstånd — ett språng","ryttare":null,"niva":"medel","syfte":"Träna att komma på rätt antal steg mellan två hinder.","matt":"OLIKA KÄLLOR: wehorse 7,50–7,90 m · RDA 6,4–7,5 m · Maya Delorez 6,0–7,0 m. Kortare vid låga hinder.","steg":"Rid in i jämn galopp och håll språnget. Räkna stegen högt.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"vertikal1",31.1,15.0,270,0],[2,"vertikal1",38.9,15.0,270,0]]},{"id":"k11","namn":"Relaterat avstånd — två språng","ryttare":null,"niva":"medel","syfte":"Samma som ovan men med längre sträcka — kräver jämnare takt.","matt":"OLIKA KÄLLOR: wehorse 10,40–10,80 m · RDA 10,0–11,0 m · Maya Delorez 9,50–10,20 m.","steg":"Håll samma galopp hela vägen. Två jämna språng, inte ett långt och ett kort.","kalla":"https://www.wehorse.com/en/blog/showjumping-distances/","o":[[1,"vertikal1",29.65,15.0,270,0],[2,"vertikal2",40.35,15.0,270,0]]},{"id":"mw1","namn":"Wards favoritgymnastik","ryttare":"McLain Ward","niva":"avancerad","syfte":"Får hästen att sluta sig och använda hela kroppen. Hindren aldrig över 1 m.","matt":"Kryss → oxer 11 fot (3,35 m) = studs. Oxer → landningsbom 9 fot (2,74 m). Landningsbom → andra oxern 21 fot (6,40 m) = två steg.","steg":"Kom i lugn galopp. Studsa kryss–oxer, landa över bommen och rid två steg till sista oxern.","kalla":"https://practicalhorseman.com/training/","o":[[0,"kryss",28.75,15.0,270,0],[0,"vertikal2",32.1,15.0,270,0],[0,"bommark",34.84,15.0,270,0],[0,"vertikal2",41.24,15.0,270,0]]},{"id":"mw2","namn":"Galoppbommar runt kryss","ryttare":"McLain Ward","niva":"nybörjare","syfte":"Introducerar hoppning och lär hästen träffa avsprånget själv.","matt":"Markbom 9 fot (2,74 m) före krysset och 9 fot (2,74 m) efter. Krysset ca 14 tum (0,36 m) i början.","steg":"Galoppera lugnt över bommen, hoppa krysset, rid rakt över utgångsbommen.","kalla":"https://www.chronofhorse.com/","o":[[0,"bommark",32.26,15.0,270,0],[0,"kryss",35.0,15.0,270,0],[0,"bommark",37.74,15.0,270,0]]},{"id":"mw3","namn":"Linje för häst som skyndar","ryttare":"McLain Ward","niva":"medel","syfte":"Lugnar en häst som rusar — bommarna tvingar fram takt och balans.","matt":"Bom 9 fot (2,74 m) före krysset, 9 fot efter, 9 fot till liten oxer, bom 9 fot efter oxern, vertikal ca 30 fot (9,14 m) därifrån.","steg":"Håll samma lugna galopp hela vägen. Låt bommarna göra jobbet — rid inte fram.","kalla":"https://www.chronofhorse.com/","o":[[0,"bommark",24.95,15.0,270,0],[0,"kryss",27.69,15.0,270,0],[0,"bommark",30.43,15.0,270,0],[0,"vertikal2",33.17,15.0,270,0],[0,"bommark",35.91,15.0,270,0],[0,"vertikal1",45.05,15.0,270,0]]},{"id":"bm1","namn":"Tre cavaletti på medellinjen","ryttare":"Beezie Madden","niva":"medel","syfte":"Justerbarhet — samma linje ska kunna ridas med olika antal språng.","matt":"60 fot (18,29 m) mellan varje cavaletti.","steg":"Rid först i jämn galopp och räkna stegen. Rid sedan om med ett steg mer, och ett steg mindre.","kalla":"https://www.chronofhorse.com/","o":[[0,"cavaletti",16.71,15.0,270,0],[0,"cavaletti",35.0,15.0,270,0],[0,"cavaletti",53.29,15.0,270,0]]},{"id":"bm2","namn":"Fyrhinderslinje — två steg mellan varje","ryttare":"Beezie Madden","niva":"avancerad","syfte":"Hålla exakt samma språng genom en lång rad.","matt":"34 fot 6 tum (10,52 m) mellan varje hinder — två steg.","steg":"Bestäm galoppen före första hindret och ändra ingenting genom raden.","kalla":"https://www.chronofhorse.com/","o":[[0,"vertikal1",19.22,15.0,270,0],[0,"vertikal1",29.74,15.0,270,0],[0,"vertikal1",40.26,15.0,270,0],[0,"vertikal1",50.78,15.0,270,0]]},{"id":"bm3","namn":"Tre markbommar — tre till sex steg","ryttare":"Beezie Madden","niva":"medel","syfte":"Träna att förkorta och förlänga språnget medvetet.","matt":"45 fot (13,72 m) mellan varje bom — 'a hunter three strides' enligt Madden.","steg":"Rid tre steg, sedan fyra, sedan fem och sex mellan bommarna. Samma bommar hela tiden.","kalla":"https://www.chronofhorse.com/","o":[[0,"bommark",21.28,15.0,270,0],[0,"bommark",35.0,15.0,270,0],[0,"bommark",48.72,15.0,270,0]]},{"id":"ak1","namn":"Tre cavaletti — övergångar","ryttare":"Anne Kursinski","niva":"medel","syfte":"Lydnad och balans genom övergångar mellan redskapen.","matt":"58 fot (17,7 m) mellan varje cavaletti. Källans ord: 'each spaced 58 feet apart'.","steg":"Trava över första, skritta mellan, trava över nästa. Sedan galopp–skritt–galopp.","kalla":"https://practicalhorseman.com/training/exercises-from-anne-kursinski/","o":[[0,"cavaletti",17.3,15.0,270,0],[0,"cavaletti",35.0,15.0,270,0],[0,"cavaletti",52.7,15.0,270,0]]},{"id":"ak2","namn":"Tre cavaletti — fem språng och stegändring","ryttare":"Anne Kursinski","niva":"avancerad","syfte":"Exakt kontroll: samma sträcka ridd på olika antal språng.","matt":"58 fot (17,7 m) mellan varje cavaletti; fem galoppsprång i varje avstånd. Rid sedan 4/4, 5/4 och 4/5.","steg":"Räkna högt. Håll samma galopp — ändra steglängd, inte tempo.","kalla":"https://practicalhorseman.com/training/exercises-from-anne-kursinski/","o":[[0,"cavaletti",17.3,15.0,270,0],[0,"cavaletti",35.0,15.0,270,0],[0,"cavaletti",52.7,15.0,270,0]]},{"id":"pf1","namn":"Bom – hinder – bom på böjt spår","ryttare":"Peder Fredricson","niva":"medel","syfte":"Grundridning i vardagen: rytm och balans på böjt spår, åt båda hållen.","matt":"8 m från bommen till hindret och 8 m från hindret till nästa bom. Källan understryker att avståndet måste anpassas efter hästens storlek.","steg":"Rid på böjt spår i jämn galopp. Ta övningen åt båda hållen.","kalla":"https://www.tidningenridsport.se/sa-tranar-proffsen-grundridning-i-vardagen/","o":[[0,"bommark",27.29,16.85,243,0],[0,"vertikal1",35.0,15.0,270,0],[0,"bommark",42.71,16.85,297,0]]},{"id":"mb1","namn":"Tre låga hinder på 21 meter","ryttare":"Malin Baryard-Johnsson","niva":"medel","syfte":"Rakt spår först — vik sedan av efter andra hindret och rid det tredje på böjt spår.","matt":"21 meter mellan varje hinder.","steg":"Rid raka linjen först. Vik sedan av höger eller vänster efter hinder 2 och rid fram till 3 på böjt spår.","kalla":"https://www.tidningenridsport.se/sa-tranar-proffsen-grundridning-i-vardagen/","o":[[0,"vertikal1",14.0,15.0,270,0],[0,"vertikal1",35.0,15.0,270,0],[0,"vertikal1",56.0,15.0,270,0]]},{"id":"mb2","namn":"Tre cavaletti — öka och minska sprången","ryttare":"Malin Baryard-Johnsson","niva":"medel","syfte":"Träna att förlänga och förkorta galoppsprånget.","matt":"Bommarna på marken eller höjda till ca 40 cm. OBS: källan anger INGET metermått utan säger 'sex normala galoppsprång för den häst du rider'. Här är de placerade på 21,6 m (6 × 3,6 m) — justera efter din häst.","steg":"Rid först sex jämna språng. Rid sedan sju, och sedan fem.","kalla":"https://www.tidningenridsport.se/malins-favorit-utmana-dig-sjalv-med-en-bom-pa-marken/","o":[[0,"cavaletti",13.4,15.0,270,0],[0,"cavaletti",35.0,15.0,270,0],[0,"cavaletti",56.6,15.0,270,0]]},{"id":"rg1","namn":"Två serier travbommar","ryttare":"Rolf-Göran Bengtsson","niva":"nybörjare","syfte":"Uppvärmning och taktarbete i trav med stegrande avstånd.","matt":"Första serien: tre bommar med 1 meter mellan. Andra serien: sex bommar med 1,20 m (20 cm längre).","steg":"Trava lugnt genom första serien, vänd och rid den andra. Låt hästen sträcka sig.","kalla":"https://www.hippson.se/nyheter/rolf-gorans-basta-bom-och-hoppovningar","o":[[0,"bommark",20.0,15.0,270,0],[0,"bommark",21.0,15.0,270,0],[0,"bommark",22.0,15.0,270,0],[0,"bommark",40.0,15.0,270,0],[0,"bommark",41.2,15.0,270,0],[0,"bommark",42.4,15.0,270,0],[0,"bommark",43.6,15.0,270,0],[0,"bommark",44.8,15.0,270,0],[0,"bommark",46.0,15.0,270,0]]},{"id":"hve1","namn":"Travhoppning med cavaletti före och efter","ryttare":"Henrik von Eckermann","niva":"medel","syfte":"Travhoppning som lär hästen ta sats själv och landa balanserat.","matt":"MÅTT EJ ANGIVNA I KÄLLAN. Här placerade på 3 m — ställ in efter din häst.","steg":"Trava in över cavallettin, hoppa räcket, rid rakt över utgångscavallettin.","kalla":"https://www.tidningenridsport.se/henrik-delade-med-sig-av-sina-framgangsrecept/","o":[[0,"cavaletti",32.0,15.0,270,0],[0,"vertikal1",35.0,15.0,270,0],[0,"cavaletti",38.0,15.0,270,0]]}];
 
 /* Övningsbibliotek (Director levererade innehållet; varje övning har källa) */
 function openOvningar(){ renderOvningar(); document.getElementById('ovnPanel').classList.add('open'); }
@@ -1826,8 +1897,8 @@ function renderOvningar(){
         <span>${o.syfte}</span>
         <span style="display:block;margin-top:6px"><b>Mått:</b> ${o.matt}</span>
         <span style="display:block;margin-top:4px">${o.steg}</span>
-        <a href="${o.kalla}" target="_blank" rel="noopener"
-           style="display:block;margin-top:6px;font-size:11px;color:#3d6cc0">Källa ↗</a>
+        ${o.kalla?`<a href="${o.kalla}" target="_blank" rel="noopener"
+           style="display:block;margin-top:6px;font-size:11px;color:#3d6cc0">Källa ↗</a>`:'<span style="display:block;margin-top:6px;font-size:11px;color:#8a95a1">Källa: egen skiss</span>'}
       </div>
       <button class="skload" onclick="laddaOvning('${o.id}')">⤓ Lägg in övningen</button>
     </div>`).join('');
@@ -1835,14 +1906,8 @@ function renderOvningar(){
 function laddaOvning(id){
   if(!premiumOk(()=>laddaOvning(id))) return;
   const ex = OVNINGAR.find(x=>x.id===id); if(!ex) return;
-  if(S.obstacles.length && !confirm('Ersätta nuvarande hinder med "'+ex.namn+'"?')) return;
-  S.obstacles = ex.o.map(([num,type,x,y,rot,flip])=>({id:uid(), type,
-    num:num||null, x, y, rot, w:(OBSTACLES[type]&&OBSTACLES[type].w)||3,
-    sugar:false, flip:!!flip}));
-  S.sel=null;
-  const nm=document.getElementById('courseName'); if(nm) nm.value=ex.namn;
-  const d=document.getElementById('trainingDesc'); if(d) d.value=ex.steg;
-  closeOvningar(); render();
+  const go=()=>{ applyExercise(ex); closeOvningar(); };
+  if(S.obstacles.length) uiConfirm('Ersätta nuvarande hinder med "'+ex.namn+'"?', go, 'Ersätt'); else go();
 }
 function toggleTrainingMode(){
   // Träningsläget byter PALETT på den riktiga banan — inte en stillbild i en
@@ -2722,7 +2787,7 @@ function closeTut(){
   if(window.__demoStart) window.__demoStart();     // demon börjar först nu
   if(_pendingSetup){ _pendingSetup=false; enterBuilder(); }
 }
-function maybeShowTut(){ if(localStorage.getItem('banskiss_tut_hide')!=='1') openTut(); else if(window.__demoStart) window.__demoStart(); }
+function maybeShowTut(){ if(window.__demoStart) window.__demoStart(); }   // gamla bildspelet ersatt av interaktiv guide
 
 
 /* ---------- LANDNINGSDEMO v3: ser ut som appen (högerpanel + snurrknapp) ----------
@@ -2838,7 +2903,7 @@ function _delBoardConfirmed(i){
 function renderTabs(){
   const el=document.getElementById('boardTabs'); if(!el) return;
   el.innerHTML=BOARDS.map((b,i)=>`<span class="btab ${i===activeBoard?'on':''}" onclick="switchBoard(${i})">${(b.name||'Bana '+(i+1))}<span class="bx" onclick="delBoard(${i},event)">✕</span></span>`).join('')
-    +`<button class="btab-add" title="Ny bana" onclick="openNewCourse(false)">+</button>`;
+    +`<button class="btab-add" title="Ny bana" onclick="openNewCourse(true)">+</button>`;
 }
 /* Setup-ruta */
 function openNewCourse(addNew){
@@ -2864,6 +2929,8 @@ function setupConfirm(){
   document.getElementById('courseName').value=name;
   document.getElementById('setupModal').classList.remove('open');
   renderTabs(); render(); if(typeof updateFilter==='function') updateFilter();
+  commit();
+  if(typeof afterEntry==='function') afterEntry();
 }
 /* visar setup när man kommit in i verktyget (efter tutorial + startsida) */
 function enterBuilder(){
@@ -2954,11 +3021,202 @@ function paywallCheckout(plan){
 }
 (function initLanding(){
   // ?app hoppar över landningen (delade länkar går rakt in i verktyget)
-  if(location.search.indexOf('app')>-1){ localStorage.setItem(LS_LANDING,'1'); return; }
+  if(location.search.indexOf('app')>-1 || /[?&]bana=/.test(location.search)){ localStorage.setItem(LS_LANDING,'1'); return; }
+  try{ localStorage.setItem('banskiss_visits', String((+localStorage.getItem('banskiss_visits')||0)+1)); }catch(e){}
   if(!localStorage.getItem(LS_LANDING)){
     document.getElementById('landing').classList.add('open');
+    localStorage.setItem(LS_LANDING,'1');          // startsidan visas aldrig mer efter första gången
   }
 })();
+
+
+/* =================== CAVALETTI / BOMMAR: typ → antal → avstånd =================== */
+let _cav=null;
+const CAV_TYPES=[['cavaletti','Cavaletti'],['bommark','Bom på marken'],['kryss','Kryss'],['vertikal1','Räcke'],['vertikal2','Oxer']];
+function cavOpen(title,html){
+  document.getElementById('comboTitle').textContent=title;
+  document.getElementById('comboOpts').innerHTML=html;
+  document.getElementById('comboDialog').classList.add('open');
+}
+function cavStepType(){
+  cavOpen('Steg 1 av 3 — vilken sorts hinder?', CAV_TYPES.map(t=>'<button class="combo-btn" onclick="cavPickType(\''+t[0]+'\')">'+t[1]+'</button>').join(''));
+}
+function cavPickType(t){ _cav.typ=t; cavStepCount(); }
+function cavStepCount(){
+  const ns=[1,2,3,4,5,6,7,8,10,12];
+  cavOpen('Steg 2 av 3 — hur många?',
+    '<div style="display:flex;flex-wrap:wrap;gap:6px">'+ns.map(n=>'<button class="combo-btn" style="flex:1 0 28%" onclick="cavPickCount('+n+')">'+n+' st</button>').join('')+'</div>'+
+    '<button class="combo-btn cancel" onclick="cavStepType()">← Tillbaka</button>');
+}
+function cavPickCount(n){ _cav.antal=n; if(n===1){ cavCreate(); } else cavStepGap(); }
+function cavStepGap(){
+  const g=[['Skritt',0.9],['Trav',1.3],['Trav, långt',1.5],['Galopp',3.0],['Studs',3.3],['Studs, långt',3.7],['Ett språng',7.8],['Två språng',10.7]];
+  cavOpen('Steg 3 av 3 — avstånd mellan',
+    g.map(x=>'<button class="combo-btn" onclick="cavPickGap('+x[1]+')">'+x[0]+' — '+String(x[1]).replace('.',',')+' m</button>').join('')+
+    '<div style="display:flex;gap:6px"><input id="cavGapIn" type="number" min="0.5" max="30" step="0.1" placeholder="Eget (m)" style="flex:1;padding:9px;border:1px solid #cfd6de;border-radius:6px">'+
+    '<button class="combo-btn" onclick="cavPickGap(parseFloat(document.getElementById(\'cavGapIn\').value.replace(\',\',\'.\')))">OK</button></div>'+
+    '<button class="combo-btn cancel" onclick="cavStepCount()">← Tillbaka</button>');
+}
+function cavPickGap(g){ if(!isFinite(g)||g<=0.3) return; _cav.gap=g; cavCreate(); }
+function cavCreate(){
+  const p=_pendingCombo; if(!p||!_cav) return;
+  const {antal,gap,typ}=_cav; closeComboDialog();
+  const def=OBSTACLES[typ], gid='cav_'+uid(), n=antal;
+  const c=clientToMeter(p.clientX,p.clientY);
+  const cx=(c.x>0&&c.x<S.W)?c.x:S.W/2, cy=(c.y>0&&c.y<S.H)?c.y:S.H/2;     // mitt på raden (annars mitt på banan)
+  for(let i=0;i<n;i++){
+    const o={id:uid(), type:typ, num:null, x:cx, y:clamp(cy+(i-(n-1)/2)*gap,0,S.H), rot:0, w:def.w, d:def.d,
+      sugar:false, flip:false, color:def.color, _new:true};
+    if(n>1){ o._cavRad=gid; o._cavIndex=i; o._cavGap=gap; }
+    S.obstacles.push(o);
+    if(i===0) S.sel=o.id;
+  }
+  render(); commit();
+}
+
+/* =================== STEG-FÖR-STEG-GUIDE (som en spelhandledning) =================== */
+let _g=null;
+const selObs=()=>S.obstacles.find(x=>x.id===S.sel);
+const cnt=()=>S.obstacles.length;
+const GUIDE=[
+  {t:'Dra in ett räcke', p:'Håll ner musen på <b>Räcke (1 bom)</b> i listan till vänster och dra ut det på banan.', hl:'#palette .pitem[data-type="vertikal1"]',
+    init:()=>S.obstacles.filter(o=>o.type==='vertikal1').length, done:b=>S.obstacles.filter(o=>o.type==='vertikal1').length>b},
+  {t:'Vrid det ett helt varv', p:'Klicka på räcket. Dra i den gula <b>↻</b>-knappen ovanför det, eller i reglaget <b>Rotation</b> till höger, tills du snurrat 360°.',
+    init:()=>{_g.sec=new Set(); return 0;}, done:()=>{const o=selObs(); if(o) _g.sec.add(Math.floor(o.rot/45)%8); return _g.sec.size>=8;},
+    prog:()=>'Vridet: '+(_g.sec?_g.sec.size:0)+' av 8 sektorer', frac:()=>(_g.sec?_g.sec.size:0)/8},
+  {t:'Byt färg', p:'Med räcket markerat: tryck på färgrutan <b>Färg</b> i rutan till höger och välj en ny färg.',
+    init:()=>{const m={}; S.obstacles.forEach(o=>m[o.id]=o.color||''); return m;},
+    done:b=>S.obstacles.some(o=>Object.prototype.hasOwnProperty.call(b,o.id)&&(o.color||'')!==b[o.id])},
+  {t:'Dra in två hinder till', p:'Ta två hinder från listan — valfria — och dra ut dem på banan.',
+    init:cnt, done:b=>cnt()>=b+2, prog:()=>cnt()+' hinder på banan'},
+  {t:'Ta bort det du inte behöver', p:'Klicka på ett hinder och tryck <b>Ta bort hinder</b> i rutan till höger (eller tangenten Delete). <b>Behåll minst två.</b>',
+    init:cnt, done:b=>cnt()<b},
+  {t:'Numrera hindren', p:'Tryck <b>🔢 Numrera</b> i menyn och klicka hindren i den ordning de ska hoppas. Tryck Esc när du är klar.', hl:'#numBtn',
+    done:()=>S.obstacles.filter(o=>o.num!=null&&o.num!=='').length>=2, prog:()=>S.obstacles.filter(o=>o.num!=null&&o.num!=='').length+' numrerade'},
+  {t:'Se avstånden', p:'Mellan hindren ritas en streckad linje med <b>metertal</b> — det är avståndet. (Står det "Avstånd av" i menyn? Tryck på den.) Tryck Nästa när du har tittat.',
+    manual:true, hl:'#linesBtn'},
+  {t:'Flytta ett hinder', p:'Dra ett av hindren till en ny plats och se hur metertalet ändras direkt.',
+    init:()=>{const m={}; S.obstacles.forEach(o=>m[o.id]=[o.x,o.y]); return m;},
+    done:b=>S.obstacles.some(o=>b[o.id]&&Math.hypot(o.x-b[o.id][0],o.y-b[o.id][1])>1)},
+  {t:'Du kan det här! 🎉', p:'Grundkursen är klar. Vill du lära dig resten — linjering, böjda linjer, kombinationer, vattenhinder och mer?', end:true}
+];
+function startGuide(){ _g={i:0}; guideInit(); renderCoach(); }
+function guideInit(){ const s=GUIDE[_g.i]; _g.hit=false; _g.base=s.init?s.init():null; }
+function guideHl(sel){ document.querySelectorAll('.pulse').forEach(e=>e.classList.remove('pulse'));
+  if(sel){ const e=document.querySelector(sel); if(e) e.classList.add('pulse'); } }
+function renderCoach(){
+  const c=document.getElementById('coach'); if(!_g){ c.classList.remove('open','ok'); guideHl(null); return; }
+  const s=GUIDE[_g.i];
+  c.classList.add('open'); c.classList.remove('ok');
+  document.getElementById('coachStep').textContent='Steg '+(_g.i+1)+' av '+GUIDE.length;
+  document.getElementById('coachH').textContent=s.t;
+  document.getElementById('coachP').innerHTML=s.p;
+  document.getElementById('coachProg').textContent='';
+  document.getElementById('coachBar').style.width=Math.round(_g.i/(GUIDE.length-1)*100)+'%';
+  const b=document.getElementById('coachBtns');
+  if(s.end) b.innerHTML='<button class="pri" onclick="endGuide();openAdv()">Avancerad guide →</button><button onclick="endGuide()">Klar</button>';
+  else b.innerHTML=(s.manual?'<button class="pri" onclick="guideNext()">Nästa →</button>':'<button onclick="guideNext()">Hoppa över steg</button>')+'<button onclick="endGuide()">Avsluta guiden</button>';
+  guideHl(s.hl);
+}
+function guideCheck(){
+  if(!_g||_g.hit) return;
+  const s=GUIDE[_g.i]; if(!s.done) return;
+  const ok=s.done(_g.base);
+  const pr=document.getElementById('coachProg'); if(pr&&s.prog) pr.textContent=s.prog();
+  if(s.frac){ document.getElementById('coachBar').style.width=Math.round(((_g.i+s.frac())/(GUIDE.length-1))*100)+'%'; }
+  if(ok){ _g.hit=true; const c=document.getElementById('coach'); c.classList.add('ok');
+    document.getElementById('coachProg').textContent='✓ Bra jobbat!'; setTimeout(guideNext,900); }
+}
+function guideNext(){ if(!_g) return; if(_g.i<GUIDE.length-1){ _g.i++; guideInit(); renderCoach(); } else endGuide(); }
+function endGuide(){ _g=null; renderCoach(); try{localStorage.setItem('banskiss_guide_done','1');}catch(e){} }
+
+/* =================== ALLA FUNKTIONER (avancerad guide) =================== */
+const ADV=[
+  ['📐','Linjera','Markera flera hinder och tryck Klar — de hamnar på en rak linje och får exakt samma vinkel.','#alignBtn'],
+  ['↔️','Böj ridvägen','Mellan numrerade hinder finns gula prickar. Dra i dem för att böja linjen precis som du rider den. (De syns inte på utskriften.)','#linesBtn'],
+  ['🧱','Kombinationer','Dra in en Kombination: välj ett eller två språng, sedan t.ex. Räcke–Räcke eller Räcke–Oxer. Hela kombinationen flyttas och vrids som en enhet.','#palette .pitem[data-type="kombination"]'],
+  ['🐴','Cavaletti & bommar','Dra in Cavaletti: välj typ (cavaletti, bom, kryss, räcke, oxer), antal och avstånd. Raden kan böjas med reglaget till höger.','#palette .pitem[data-type="cavaletti"]'],
+  ['💧','Vattenmatta','Välj öppen matta, eller under ett räcke eller en oxer.','#palette .pitem[data-type="vatten"]'],
+  ['🚧','Design-läge','Blockera ytor där det inte går att bygga — träd, läktare, udda hörn.','#designBtn'],
+  ['📋','Äkta banskisser','Riktiga tävlingsbanor att lägga in och ändra.','.tb.go'],
+  ['💾','Spara & skriv ut','Spara i biblioteket, ladda ner som bild eller skriv ut en ren banskiss.','.tb.print'],
+  ['↶','Ångra','Ångrade du fel? Cmd/Ctrl+Z tar tillbaka det.','#undoBtn']
+];
+function advDone(){ try{return JSON.parse(localStorage.getItem('banskiss_adv'))||[];}catch(e){return [];} }
+function openAdv(){
+  const d=advDone();
+  document.getElementById('advBox').innerHTML='<h3>🧭 Upptäck alla funktioner</h3><p class="sub">Många vågar inte testa — men allt går att ångra. Tryck <b>Visa mig</b> så pekar jag ut var funktionen finns.</p><ul>'+
+    ADV.map((a,i)=>'<li class="'+(d.includes(i)?'done':'')+'"><span class="ic">'+(d.includes(i)?'✓':a[0])+'</span><div><b>'+a[1]+'</b>'+a[2]+'</div><button onclick="advTry('+i+')">Visa mig</button></li>').join('')+
+    '</ul><div class="row"><button class="pri" onclick="closeAdv()">Stäng</button></div>';
+  document.getElementById('advModal').classList.add('open');
+}
+function closeAdv(){ document.getElementById('advModal').classList.remove('open'); }
+function advTry(i){ const d=advDone(); if(!d.includes(i)){ d.push(i); try{localStorage.setItem('banskiss_adv',JSON.stringify(d));}catch(e){} }
+  closeAdv(); const e=document.querySelector(ADV[i][3]); guideHl(ADV[i][3]);
+  if(e&&e.scrollIntoView) e.scrollIntoView({block:'nearest',inline:'nearest'});
+  setTimeout(()=>{ if(!_g) guideHl(null); },6000); }
+
+/* =================== NYHETER efter varje uppdatering =================== */
+const APP_VERSION='2026-10-30';
+const NEWS=[
+  ['📍','Stockholm-övning','Ny övning först i listan Övningar (🎓 Träningsmode, sedan 📚 Övningar): sex hinder ritade efter en skiss, på en bana som är 78 × 40 m. Tryck Lägg in övningen.','2026-10-30'],
+  ['➕','Ny bana utan att tappa din gamla','Plus-knappen vid flikarna skapar nu en ny bana i stället för att rensa den du jobbar på.','2026-10-30'],
+  ['🎓','Ny steg-för-steg-guide','Dra in ett räcke, vrid det, byt färg, numrera och mät — som en spelhandledning. Starta den med ❓ Guide.','2026-10-01'],
+  ['🧭','Upptäck alla funktioner','Tryck 🧭 Funktioner så visar vi var allt finns, bland annat linjering och böjda linjer.','2026-10-01'],
+  ['📐','Linjera räknar nu med vinkeln','Hindren hamnar inte bara på en rak linje — de får också exakt samma vinkel.','2026-10-01'],
+  ['🎯','Lättare att klicka','Varje hinder har fått en större klickyta, så du behöver inte träffa exakt.','2026-10-01'],
+  ['🔄','Mjukare vridning av kombinationer','Kombinationer vrids nu runt sin egen mitt, utan hack och hopp.','2026-10-01'],
+  ['🐴','Cavaletti med val','Välj typ (cavaletti, bom, kryss, räcke, oxer), antal och avstånd.','2026-10-01'],
+  ['💧','Vattenmatta under räcke eller oxer','Nu syns hindret tydligt ovanpå vattnet.','2026-10-01'],
+  ['🧱','Räcke–Räcke i kombinationer','Både två och tre räcken efter varandra.','2026-10-01'],
+  ['🖨️','Renare utskrift','De gula prickarna syns inte längre på papperet.','2026-10-01']
+];
+function openNews(manual){
+  let seen=''; try{ seen=localStorage.getItem('banskiss_seen_version')||''; }catch(e){}
+  let list = manual ? NEWS : NEWS.filter(n=>n[3]>seen); if(!list.length) list=NEWS;
+  document.getElementById('newsBox').innerHTML='<h3>✨ Nytt i Banskiss</h3><p class="sub">Så här har vi gjort verktyget bättre sedan sist:</p><ul>'+
+    list.map(n=>'<li><span class="ic">'+n[0]+'</span><div><b>'+n[1]+'</b>'+n[2]+'</div></li>').join('')+
+    '</ul><div class="row"><button onclick="closeNews()">Stäng</button><button class="pri" onclick="closeNews();startGuide()">Visa mig guiden</button></div>';
+  document.getElementById('newsModal').classList.add('open');
+  try{localStorage.setItem('banskiss_seen_version',APP_VERSION);}catch(e){}
+}
+function closeNews(){ document.getElementById('newsModal').classList.remove('open'); }
+
+/* Vad ska hända när man kommit in i verktyget? Första gången: guiden. Efter uppdatering: nyheter. */
+let _entered=false;
+function afterEntry(){
+  if(_entered) return;
+  if(document.getElementById('landing').classList.contains('open')) return;
+  if(document.getElementById('setupModal').classList.contains('open')) return;
+  _entered=true;
+  let seen=null, guideDone=null;
+  try{ seen=localStorage.getItem('banskiss_seen_version'); guideDone=localStorage.getItem('banskiss_guide_done'); }catch(e){}
+  if(!guideDone){                                            // guiden: alla, en gång
+    try{ localStorage.setItem('banskiss_guide_done','1'); localStorage.setItem('banskiss_seen_version',APP_VERSION); }catch(e){}
+    setTimeout(startGuide,400);
+  } else if(seen!==APP_VERSION){ setTimeout(()=>openNews(false),500); }
+}
+
+
+/* =================== ÖVNINGAR: gemensam inladdning + direktlänk =================== */
+/* En övning i listan OVNINGAR kan ha egna mått (W, H) och räknas då in på banan.
+   Direktlänk till en övning: …/?bana=stockholm (slug i listan). */
+function applyExercise(ex){
+  if(ex.W&&ex.H){ S.W=ex.W; S.H=ex.H; if(ex.mode) S.mode=ex.mode; S_bends={}; S_labels={}; _lineHandles={}; }
+  S.obstacles = ex.o.map(([num,type,x,y,rot,flip])=>({id:uid(), type,
+    num:num||null, x, y, rot, w:(OBSTACLES[type]&&OBSTACLES[type].w)||3,
+    sugar:false, flip:!!flip}));
+  S.sel=null; S.name=ex.namn;
+  const nm=document.getElementById('courseName'); if(nm) nm.value=ex.namn;
+  const d=document.getElementById('trainingDesc'); if(d) d.value=ex.steg;
+  if(typeof renderTabs==='function') renderTabs();
+  render(); commit();
+}
+function urlExercise(){
+  const m=location.search.match(/[?&]bana=([\w-]+)/); if(!m) return false;
+  const ex=OVNINGAR.find(x=>x.slug===m[1]); if(!ex) return false;
+  applyExercise(ex); _setupDone=true; return true;
+}
 
 /* DELA (order 49.E): länken är hela säljstrategin — ryttare till ryttare */
 function shareApp(){
@@ -2968,7 +3226,9 @@ function shareApp(){
 }
 
 load(); buildPalette(); render(); renderGallery(); renderPresets(); renderTabs(); maybeShowTut(); commit();
+urlExercise();
 if(!document.getElementById('landing').classList.contains('open')) enterBuilder();
+afterEntry();
 document.getElementById('printfoot').textContent='Ritad med Banskiss · '+location.host;
 updateProStatus();
 // Visa träningsmode-knappen endast på dator (>820px)

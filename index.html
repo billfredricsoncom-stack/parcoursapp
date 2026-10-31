@@ -77,7 +77,7 @@
   /* ---- utskrift: dölj allt UI, visa bara banan ---- */
   @media print{
     html,body,.app,.main,.stagewrap,.stage{background:#fff!important}
-    .toolbar,.palette,.inspector,.gallery,.distbadge,.setphone{display:none!important}
+    .toolbar,.palette,.inspector,.gallery,.distbadge{display:none!important}
     .rothandle,.delbtn,.selring,.bend-handle,.lab-rot,.lab-del,.mhandle,.mpend{display:none!important}
     .app,.main,.stagewrap,.stage{display:block;height:auto;min-height:0;overflow:visible;padding:0;margin:0}
     svg.court{box-shadow:none;max-width:100%}
@@ -302,21 +302,29 @@
   .pulse{outline:3px solid #f5a623!important;outline-offset:2px;animation:pl .9s infinite alternate}
   @keyframes pl{to{outline-color:rgba(245,166,35,.15)}}
   @media (prefers-reduced-motion:reduce){.pulse{animation:none}}
-  .coach{position:fixed;left:50%;bottom:38px;transform:translateX(-50%);z-index:90;display:none;
-    width:min(540px,94vw);background:#20252c;color:#eef1f5;border:1px solid #454f5c;border-radius:14px;
-    padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,.45)}
-  .coach.open{display:block}
-  .coach .cs{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:#f5a623;font-weight:700}
-  .coach h4{margin:4px 0 4px;font-size:17px}
-  .coach p{margin:0 0 10px;font-size:13.5px;line-height:1.5;color:#cfd6de}
-  .coach .bar{height:5px;background:#3a424d;border-radius:3px;overflow:hidden;margin-bottom:10px}
+  .coach{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:90;display:none;gap:24px;align-items:center;
+    width:min(880px,96vw);background:#20252c;color:#eef1f5;border:3px solid #f5a623;border-radius:20px;
+    padding:20px 26px;box-shadow:0 14px 48px rgba(0,0,0,.55)}
+  .coach.open{display:flex}
+  .coach .cl{flex:1;min-width:0}
+  .coach .cr{flex:0 0 auto;display:flex;flex-direction:column;gap:12px;min-width:220px}
+  .coach .cs{font-size:15px;letter-spacing:.5px;text-transform:uppercase;color:#f5a623;font-weight:800}
+  .coach h4{margin:4px 0 6px;font-size:28px;line-height:1.15}
+  .coach p{margin:0 0 8px;font-size:19px;line-height:1.45;color:#e8ecf1}
+  .coach .bar{height:10px;background:#3a424d;border-radius:5px;overflow:hidden;margin-top:8px}
   .coach .bar i{display:block;height:100%;background:#f5a623;width:0;transition:width .25s}
-  .coach .prog{font-size:12px;color:#f5c46a;margin-bottom:8px;min-height:15px}
-  .coach .cb{display:flex;gap:8px;flex-wrap:wrap}
-  .coach .cb button{padding:8px 12px;border-radius:8px;border:0;font-weight:700;font-size:13px;background:#3a4450;color:#fff}
+  .coach .prog{font-size:18px;font-weight:800;color:#f5c46a;min-height:24px}
+  .coach .cb{display:flex;flex-direction:column;gap:10px}
+  .coach .cb button{padding:14px 18px;border-radius:12px;border:0;font-weight:800;font-size:18px;background:#3a4450;color:#fff;cursor:pointer}
   .coach .cb button.pri{background:#f5a623;color:#141414}
-  .coach.ok{border-color:#2e8b57;box-shadow:0 0 0 3px rgba(46,139,87,.4),0 12px 40px rgba(0,0,0,.45)}
-  @media (max-width:800px){.coach{bottom:auto;top:8px}}
+  .coach .chide{display:flex;align-items:center;gap:10px;font-size:16px;color:#d5dbe2;cursor:pointer}
+  .coach .chide input{width:22px;height:22px;accent-color:#f5a623}
+  .coach.ok{border-color:#2e8b57;box-shadow:0 0 0 4px rgba(46,139,87,.45),0 14px 48px rgba(0,0,0,.55)}
+  @media (max-width:800px){
+    .coach{bottom:auto;top:8px;flex-direction:column;align-items:stretch;gap:10px;padding:14px 16px;border-radius:16px}
+    .coach h4{font-size:22px} .coach p{font-size:16px}
+    .coach .cr{min-width:0} .coach .cb{flex-direction:row;flex-wrap:wrap} .coach .cb button{font-size:16px;padding:12px 14px;flex:1 1 auto}
+  }
   .modal2{position:fixed;inset:0;z-index:180;background:rgba(10,12,16,.8);display:none;
     align-items:center;justify-content:center;padding:16px}
   .modal2.open{display:flex}
@@ -336,24 +344,16 @@
   @media print{ .coach,.modal2{display:none!important} }
   .markhint{flex-basis:100%;font-size:12.5px;color:#f5c46a;min-height:1.1em}
   .markhint:empty{display:none}
-  /* banans inställningar: alltid synliga i panelen till höger (ingen meny) */
-  .cset{margin-top:14px;border-top:2px solid #ccd3db;padding-top:4px}
-  .cset .msec{padding:9px 0;border-bottom:1px solid #d9dee5}
-  .cset .msec:last-child{border-bottom:0}
-  .cset h5{margin:0 0 7px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:#69747f}
-  .cset .mrow{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
-  .cset .mrow:last-child{margin-bottom:0}
-  .cset .mrow label{font-size:12px;color:#3a424d}
-  .cset input[type=number]{width:54px;padding:5px 6px;border:1px solid #cfd6de;border-radius:5px}
-  .cset .tb{padding:6px 8px;font-size:12px}
-  .setphone{display:none}
-  @media (max-width:800px){
-    .setphone{display:block;background:#f3f5f8;border-bottom:1px solid #ccd3db;padding:2px 10px}
-    .setphone summary{padding:8px 2px;font-size:13px;font-weight:600;color:#3a424d;cursor:pointer}
-    .setphone[open]{max-height:50vh;overflow:auto}
-    #setDeskHost{display:none}
-    .cset{margin-top:0;border-top:0}
-  }
+  /* Avancerat: allt utom de tre huvudknapparna ligger här, högst upp */
+  .advbtn{margin-left:auto}
+  .advpanel{display:none;position:fixed;z-index:70;right:8px;top:56px;width:min(640px,calc(100vw - 16px));max-height:calc(100vh - 80px);overflow:auto;
+    background:#20252c;color:#fff;border:1px solid #454f5c;border-radius:12px;box-shadow:0 16px 44px rgba(0,0,0,.5);padding:8px 14px}
+  .advpanel.open{display:block}
+  .advpanel .msec{padding:9px 0;border-bottom:1px solid #39424e}
+  .advpanel .msec:last-child{border-bottom:0}
+  .advpanel h5{margin:0 0 7px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:#9aa7b5}
+  .advpanel .mrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+  .advpanel .mrow:last-child{margin-bottom:0}
   @media (prefers-reduced-motion:reduce){ .gallery{transition:none} }
   /* ---- ritade linjer, hoppriktning, presentation ---- */
   .marks{pointer-events:none}
@@ -385,7 +385,7 @@
   .sbmore.open .sbmorepanel{display:flex}
   .sbmorepanel .sb{text-align:left}
   /* medan man redigerar presentationen: bara det som hör till (bildlistan har egna ritverktyg) */
-  body.pres-edit #presBtn, body.pres-edit #ovnOpenBtn, body.pres-edit #courseSettings, body.pres-edit .setphone{display:none!important}
+  body.pres-edit #presBtn, body.pres-edit #ovnOpenBtn{display:none!important}
   .pres{display:none;position:fixed;inset:0;z-index:140;background:#12161b;color:#fff;flex-direction:column}
   .pres.open{display:flex}
   .pres-top{display:flex;align-items:center;gap:10px;padding:10px 14px}
@@ -427,7 +427,7 @@
 
   <!-- ============ TOPPMENY ============ -->
   <div class="toolbar">
-    <span class="title">🏇 Banskiss</span>
+    <span class="title">Banskiss</span>
     <span id="boardTabs" class="board-tabs"></span>
     <input type="hidden" id="courseName" value="Bana 1">
     <div class="grp">
@@ -435,56 +435,30 @@
       <button class="tb" id="redoBtn" onclick="redo()" title="Gör om (Cmd/Ctrl+Shift+Z)" aria-label="Gör om" disabled>↷</button>
     </div>
     <div class="grp">
-      <button class="tb" id="numBtn" onclick="toggleNumMode()">🔢 Numrera</button>
-      <button class="tb" id="alignBtn" onclick="toggleAlign()">📐 Linjera</button>
+      <button class="tb" id="numBtn" onclick="toggleNumMode()">Numrera</button>
     </div>
     <div class="grp">
-      <button class="tb go" id="presBtn" onclick="openPresentation()" title="Bildserie av banan för genomgång eller klinik">🎞 Presentation</button>
-      <button class="tb go" id="ovnOpenBtn" onclick="openOvningar()">📚 Övningar</button>
+      <button class="tb go" id="ovnOpenBtn" onclick="openOvningar()">Övningar</button>
+      <button class="tb go" id="presBtn" onclick="openPresentation()" title="Bildserie av banan för genomgång eller klinik">Presentation</button>
     </div>
-    <div class="grp">
-      <button class="tb" id="saveBtn" onclick="saveToLibrary()" title="Spara till bibliotek">💾 Spara</button>
-      <button class="tb print" id="printBtn" onclick="printMain()">🖨 Skriv ut</button>
-    </div>
+    <button class="tb advbtn" id="advBtn" onclick="toggleAdv()" aria-expanded="false" aria-controls="advPanel">Avancerat</button>
 
-  </div>
-
-  <!-- ============ HUVUDYTA ============ -->
-  <div class="main">
-    <!-- palett -->
-    <div class="palette" id="palette">
-      <h4>Dra in ett hinder</h4>
-      <!-- fylls av JS från hinderbiblioteket -->
-      <p class="phint">Dra ett hinder till banan. Klicka på ett hinder för att rotera, ändra bredd eller lägga till sockerbitar.</p>
-    </div>
-
-    <!-- inställningar på telefon: hopfällbar remsa (på dator ligger de alltid synliga i panelen till höger) -->
-    <details class="setphone" id="setPhone"><summary>⚙ Bana, mått och hjälp</summary><div id="setPhoneBody"></div></details>
-
-    <!-- ritYta -->
-    <div class="stagewrap" id="stagewrap">
-      <div class="stage" id="stage">
-        <div class="printhead" id="printhead"></div>
-        <!-- svg injiceras här -->
-        <div class="printfoot" id="printfoot">Ritad med Banskiss</div>
-        <div class="descbar" id="descBar"></div>
-        <div class="distbadge" id="distbadge"></div>
+    <div class="advpanel" id="advPanel">
+      <div class="msec">
+        <h5>Verktyg</h5>
+        <div class="mrow">
+          <button class="tb" id="alignBtn" onclick="toggleAlign()">Linjera</button>
+          <button class="tb" id="saveBtn" onclick="saveToLibrary()" title="Spara till bibliotek">Spara</button>
+          <button class="tb print" id="printBtn" onclick="printMain()">Skriv ut</button>
+        </div>
       </div>
-    </div>
-
-    <!-- inspektor -->
-    <div class="inspector" id="inspector">
-      <h4>Valt hinder</h4>
-      <div id="inspBody"><p class="empty">Inget hinder valt. Klicka på ett hinder i banan.</p></div>
-      <div id="setDeskHost">
-    <div class="cset" id="courseSettings">
       <div class="msec" data-keep="1">
         <h5>Banans mått</h5>
         <div class="mrow">
           <label>Längd</label><input type="number" id="inW" min="20" max="150" step="1" onchange="setDim();updateFilter()">
           <label>Bredd</label><input type="number" id="inH" min="10" max="150" step="1" onchange="setDim();updateFilter()">
           <span style="color:#aeb8c4;font-size:12px">m</span>
-          <button class="tb" onclick="saveDim()">📐 Spara mått</button>
+          <button class="tb" onclick="saveDim()">Spara mått</button>
         </div>
         <div class="mrow" id="presets"></div>
       </div>
@@ -506,18 +480,18 @@
       <div class="msec">
         <h5>Bana</h5>
         <div class="mrow">
-          <button class="tb" id="designBtn" onclick="toggleDesign()">🚧 Design</button>
-          <button class="tb go" id="skisserBtn" onclick="toggleSkisser()">📋 Äkta banskisser</button>
-          <button class="tb go" onclick="shareApp()">🔗 Dela</button>
+          <button class="tb" id="designBtn" onclick="toggleDesign()">Design</button>
+          <button class="tb go" id="skisserBtn" onclick="toggleSkisser()">Äkta banskisser</button>
+          <button class="tb go" onclick="shareApp()">Dela</button>
           <button class="tb" onclick="clearCourse()">Rensa hinder</button>
         </div>
       </div>
       <div class="msec">
         <h5>Hjälp</h5>
         <div class="mrow">
-          <button class="tb" onclick="startGuide()" title="Steg-för-steg-guide">❓ Guide</button>
-          <button class="tb" onclick="openAdv()" title="Upptäck alla funktioner">🧭 Funktioner</button>
-          <button class="tb" onclick="openNews(true)" title="Vad är nytt?">✨ Nytt</button>
+          <button class="tb" onclick="startGuide()" title="Steg-för-steg-guide">Guide</button>
+          <button class="tb" onclick="openAdv()" title="Upptäck alla funktioner">Funktioner</button>
+          <button class="tb" onclick="openNews(true)" title="Vad är nytt?">Nytt</button>
           <select id="langSelect" onchange="changeLang(this.value)" style="padding:6px 8px;border-radius:5px;border:1px solid #454f5c;background:#2f3742;color:#fff;font-size:12px;cursor:pointer">
             <option value="sv">Svenska</option>
             <option value="en">English</option>
@@ -526,28 +500,53 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- ============ HUVUDYTA ============ -->
+  <div class="main">
+    <!-- palett -->
+    <div class="palette" id="palette">
+      <h4>Dra in ett hinder</h4>
+      <!-- fylls av JS från hinderbiblioteket -->
+      <p class="phint">Dra ett hinder till banan. Klicka på ett hinder för att rotera, ändra bredd eller lägga till sockerbitar.</p>
+    </div>
+
+    <!-- ritYta -->
+    <div class="stagewrap" id="stagewrap">
+      <div class="stage" id="stage">
+        <div class="printhead" id="printhead"></div>
+        <!-- svg injiceras här -->
+        <div class="printfoot" id="printfoot">Ritad med Banskiss</div>
+        <div class="descbar" id="descBar"></div>
+        <div class="distbadge" id="distbadge"></div>
       </div>
+    </div>
+
+    <!-- inspektor -->
+    <div class="inspector" id="inspector">
+      <h4>Valt hinder</h4>
+      <div id="inspBody"><p class="empty">Inget hinder valt. Klicka på ett hinder i banan.</p></div>
     </div>
   </div>
 
   <!-- ============ PRESENTATION: bildlista (redigeringsläge) ============ -->
   <div class="slidebar" id="slideBar">
     <div class="row">
-      <b>🎞 Presentation</b>
+      <b>Presentation</b>
       <span id="sbCount" style="color:#f5c46a;font-weight:700;font-size:13px"></span>
       <button class="sb" onclick="presGo(-1)" title="Föregående bild (←)">◀</button>
       <span class="sdots" id="sbDots"></span>
       <button class="sb" onclick="presGo(1)" title="Nästa bild (→)">▶</button>
-      <button class="sb" onclick="presAdd()">➕ Ny bild</button>
+      <button class="sb" onclick="presAdd()">Ny bild</button>
       <input type="text" id="sbCap" placeholder="Bildtext, t.ex. Hoppa helt rakt" oninput="presSetCap(this.value)" aria-label="Bildtext">
       <button class="sb pri" onclick="presViewMode()">✓ Klar</button>
     </div>
     <div class="row">
-      <button class="sb mtool" data-tool="move" onclick="setTool('move')">✋ Flytta hinder</button>
-      <button class="sb mtool" data-tool="line" onclick="setTool('line')">⤳ Linje</button>
-      <button class="sb mtool" data-tool="voltR" onclick="setTool('voltR')">⭕ Volt ↻</button>
-      <button class="sb mtool" data-tool="voltL" onclick="setTool('voltL')">⭕ Volt ↺</button>
-      <button class="sb mtool" data-tool="erase" onclick="setTool('erase')">⌫ Sudda</button>
+      <button class="sb mtool" data-tool="move" onclick="setTool('move')">Flytta hinder</button>
+      <button class="sb mtool" data-tool="line" onclick="setTool('line')">Linje</button>
+      <button class="sb mtool" data-tool="voltR" onclick="setTool('voltR')">Volt ↻</button>
+      <button class="sb mtool" data-tool="voltL" onclick="setTool('voltL')">Volt ↺</button>
+      <button class="sb mtool" data-tool="erase" onclick="setTool('erase')">Sudda</button>
       <span class="mcols"><button class="mcol" data-col="#5a6472" style="background:#5a6472" title="Grå" aria-label="Grå" onclick="setMarkColor('#5a6472')"></button><button class="mcol" data-col="#c92a2a" style="background:#c92a2a" title="Röd" aria-label="Röd" onclick="setMarkColor('#c92a2a')"></button><button class="mcol" data-col="#2f9e44" style="background:#2f9e44" title="Grön" aria-label="Grön" onclick="setMarkColor('#2f9e44')"></button><button class="mcol" data-col="#e8590c" style="background:#e8590c" title="Orange" aria-label="Orange" onclick="setMarkColor('#e8590c')"></button></span>
       <button class="sb" onclick="markUndo()">↶ Ta bort senaste</button>
       <span class="sbspace"></span>
@@ -555,10 +554,10 @@
         <button class="sb" id="sbMoreBtn" onclick="toggleSbMore()">⋯ Mer</button>
         <div class="sbmorepanel" id="sbMore">
           <label class="sbchk"><input type="checkbox" id="sbRoute" onchange="presSetRoute(this.checked)"> Visa avstånd och ridväg</label>
-          <button class="sb" onclick="toggleSbMore(false);presDup()">⧉ Kopiera bilden</button>
-          <button class="sb" onclick="toggleSbMore(false);markClear()">🗑 Rensa bilden</button>
-          <button class="sb" onclick="toggleSbMore(false);presDel()">✕ Ta bort bilden</button>
-          <button class="sb" onclick="toggleSbMore(false);presPrintAll()">🖨 Skriv ut alla</button>
+          <button class="sb" onclick="toggleSbMore(false);presDup()">Kopiera bilden</button>
+          <button class="sb" onclick="toggleSbMore(false);markClear()">Rensa bilden</button>
+          <button class="sb" onclick="toggleSbMore(false);presDel()">Ta bort bilden</button>
+          <button class="sb" onclick="toggleSbMore(false);presPrintAll()">Skriv ut alla</button>
         </div>
       </span>
       <span class="markhint"></span>
@@ -575,9 +574,9 @@
 <!-- ÖVNINGSBIBLIOTEK -->
 <div class="skisser" id="ovnPanel">
   <div class="skhead">
-    <h2>📚 Övningar</h2>
+    <h2>Övningar</h2>
     <span class="src">Varje övning har en riktig källa. OBS: gymnastikavstånd är medvetet KORTARE än tävlingsavstånd.</span>
-    <button class="tb" style="margin-left:auto" onclick="closeOvningar()">✕ Stäng</button>
+    <button class="tb" style="margin-left:auto" onclick="closeOvningar()">Stäng</button>
   </div>
   <div class="skgrid" id="ovnGrid"></div>
 </div>
@@ -585,10 +584,10 @@
 <!-- ============ ÄKTA BANSKISSER (CHIO Aachen 2026, officiella) ============ -->
 <div class="skisser" id="skisser">
   <div class="skhead">
-    <h2>📋 Äkta banskisser</h2>
+    <h2>Äkta banskisser</h2>
     <span class="src">Officiella banskisser i format nära dina banor · fler små tävlingar läggs till löpande</span>
     <input type="text" id="skSearch" placeholder="Sök klass…" oninput="renderSkisser()">
-    <button class="tb" onclick="toggleSkisser()">✕ Stäng</button>
+    <button class="tb" onclick="toggleSkisser()">Stäng</button>
   </div>
   <div class="skchips" id="skChips"></div>
   <div class="skgrid" id="skGrid"></div>
@@ -654,7 +653,7 @@
     </div>
 
     <div style="text-align:center;margin-top:16px;font-size:12px;color:#999">
-      <p style="margin:0">🔒 Krypterad och säker. Vi lagrar aldrig kort- eller kortuppgifter.</p>
+      <p style="margin:0">Krypterad och säker. Vi lagrar aldrig kort- eller kortuppgifter.</p>
     </div>
   </div>
 </div>
@@ -683,9 +682,9 @@
     </div>
 
     <div class="land-who">
-      <span class="land-chip">🏗 Banbyggare</span>
-      <span class="land-chip">🎓 Tränare</span>
-      <span class="land-chip">🏇 Ryttare</span>
+      <span class="land-chip">Banbyggare</span>
+      <span class="land-chip">Tränare</span>
+      <span class="land-chip">Ryttare</span>
     </div>
     <div class="land-steps">
       <div class="land-step"><span class="n">1</span>
@@ -699,13 +698,13 @@
         <p>Spara banan, ladda ner som bild eller skriv ut till tävling och träning.</p></div>
     </div>
     <div class="land-steps">
-      <div class="land-step"><span class="n">✦</span>
+      <div class="land-step"><span class="n">1</span>
         <h3>Äkta banskisser</h3>
         <p>Referensbanor från riktiga tävlingar — Fontainebleau, Spruce Meadows, Aachen.</p></div>
-      <div class="land-step"><span class="n">✦</span>
+      <div class="land-step"><span class="n">2</span>
         <h3>Proffsövningar</h3>
         <p>30 dokumenterade övningar från bl.a. Kent Farrington, McLain Ward och Beezie Madden — med källor.</p></div>
-      <div class="land-step"><span class="n">✦</span>
+      <div class="land-step"><span class="n">3</span>
         <h3>Design-läge</h3>
         <p>Blockera ytor som inte går att bygga på — träd, läktare, uddaformade paddockar. Banan blir som din verklighet.</p></div>
     </div>
@@ -722,9 +721,9 @@
     <h2>Banskiss Pro</h2>
     <p>Det här ingår i Pro:</p>
     <p style="margin-bottom:14px">
-      🏆 <b>46 äkta tävlingsbanor</b> — Fontainebleau, Spruce Meadows, Aachen<br>
-      🎓 <b>30 övningar från nio toppryttare</b> — von Eckermann, Farrington, Ward, Madden m.fl.<br>
-      📱 <b>Mobilversionen</b>
+      <b>46 äkta tävlingsbanor</b> — Fontainebleau, Spruce Meadows, Aachen<br>
+      <b>30 övningar från nio toppryttare</b> — von Eckermann, Farrington, Ward, Madden m.fl.<br>
+      <b>Mobilversionen</b>
     </p>
     <div id="pwLive" style="display:none">
       <button onclick="paywallCheckout('plus')">Plus</button>
@@ -758,7 +757,7 @@
 <!-- TUTORIAL -->
 <div class="tut" id="tut">
   <div class="tut-box">
-    <div class="tut-emoji" id="tutEmoji">🏇</div>
+    <div class="tut-emoji" id="tutEmoji"></div>
     <h3 id="tutH"></h3>
     <p id="tutP"></p>
     <div class="tut-dots" id="tutDots"></div>
@@ -777,7 +776,7 @@
 <div class="pres" id="pres">
   <div class="pres-top">
     <span id="presCount"></span><span class="sp"></span>
-    <button class="pb" onclick="presEditMode()">✏️ Redigera</button>
+    <button class="pb" onclick="presEditMode()">Redigera</button>
     <button class="pb pri" onclick="presClose()">Klar</button>
   </div>
   <div class="pres-stage" id="presStage"></div>
@@ -789,7 +788,7 @@
 </div>
 
 <div class="modal2" id="presAskModal"><div class="box2">
-  <h3>🎞 Ny presentation</h3>
+  <h3>Ny presentation</h3>
   <p class="sub">Hur många bilder ska banan vara med på? Bild 1 blir banan precis som den är. På de andra bilderna ritar du ridvägar och voltar, till exempel en övning per bild.</p>
   <div class="pnum"><button onclick="presStep(-1)" aria-label="Färre">−</button><input id="presN" type="number" min="1" max="30" value="5"><button onclick="presStep(1)" aria-label="Fler">+</button></div>
   <div class="pchips"><button onclick="presSetN(3)">3</button><button onclick="presSetN(5)">5</button><button onclick="presSetN(7)">7</button><button onclick="presSetN(10)">10</button></div>
@@ -799,12 +798,17 @@
 <div id="printSlides"></div>
 
 <div class="coach" id="coach">
-  <div class="cs" id="coachStep"></div>
-  <h4 id="coachH"></h4>
-  <p id="coachP"></p>
-  <div class="prog" id="coachProg"></div>
-  <div class="bar"><i id="coachBar"></i></div>
-  <div class="cb" id="coachBtns"></div>
+  <div class="cl">
+    <div class="cs" id="coachStep"></div>
+    <h4 id="coachH"></h4>
+    <p id="coachP"></p>
+    <div class="prog" id="coachProg"></div>
+    <div class="bar"><i id="coachBar"></i></div>
+  </div>
+  <div class="cr">
+    <div class="cb" id="coachBtns"></div>
+    <label class="chide"><input type="checkbox" id="coachHide" onchange="guideSetHide(this.checked)"> Visa inte guiden igen</label>
+  </div>
 </div>
 
 <div class="modal2" id="newsModal"><div class="box2" id="newsBox"></div></div>
@@ -1154,7 +1158,7 @@ function chainSVG(sl){
     const bx=mx(mid.x), by=my(mid.y);
     const lab = S_labels[key];
     // metertal-plattan är ett eget objekt: flyttbar, roterbar, borttagbar, sparas med banan.
-    if(!(lab && lab.hidden)){
+    if(labelsOn() && !(lab && lab.hidden)){
       const tx=mx(B.x)-mx(A.x), ty=my(B.y)-my(A.y), tl=Math.hypot(tx,ty)||1;
       let lx = bx + (-ty/tl)*26, ly = by + (tx/tl)*26, lrot = 0;
       if(lab){ if(lab.x!=null){ lx=mx(lab.x); ly=my(lab.y); } lrot=lab.rot||0; }
@@ -1190,12 +1194,12 @@ function chainSVG(sl){
 function dirArrowSVG(o){
   if(!OBSTACLES[o.type] || isMarker(o.type)) return '';
   const dm=o.dirMode||'one'; if(dm==='none') return '';     // 'one' = en riktning, 'both' = båda, 'none' = ingen pil
-  const dir=o.flip?-1:1, ay=M(2)*dir, hl=16*dir, hw=8, C='#20252c';
-  const head=(y,k)=>`<polygon points="0,${y} ${-hw},${y-hl*k} ${hw},${y-hl*k}" fill="${C}" stroke="#fff" stroke-width="2" stroke-linejoin="round" paint-order="stroke"/>`;
+  const dir=o.flip?-1:1, ay=M(1.7)*dir, hl=12*dir, hw=6.5, C='#20252c';
+  const head=(y,k)=>`<polygon points="0,${y} ${-hw},${y-hl*k} ${hw},${y-hl*k}" fill="${C}" stroke="#fff" stroke-width="1.8" stroke-linejoin="round" paint-order="stroke"/>`;
   const y1=dm==='both' ? ay : ay*0.72;
   return `<g class="dirarrow" data-id="${o.id}" transform="translate(${mx(o.x)} ${my(o.y)}) rotate(${o.rot})">`+
-    `<line x1="0" y1="${-ay}" x2="0" y2="${y1}" stroke="#fff" stroke-width="6.5" stroke-linecap="round" opacity=".8"/>`+
-    `<line x1="0" y1="${-ay}" x2="0" y2="${y1}" stroke="${C}" stroke-width="3" stroke-linecap="round"/>`+
+    `<line x1="0" y1="${-ay}" x2="0" y2="${y1}" stroke="#fff" stroke-width="5.5" stroke-linecap="round" opacity=".8"/>`+
+    `<line x1="0" y1="${-ay}" x2="0" y2="${y1}" stroke="${C}" stroke-width="2.4" stroke-linecap="round"/>`+
     head(ay,1)+(dm==='both' ? head(-ay,-1) : '')+`</g>`;
 }
 function obstacleSVG(o, i){
@@ -1322,7 +1326,7 @@ let _designMode=false;
 function toggleDesign(){
   _designMode=!_designMode;
   const b=document.getElementById('designBtn');
-  if(b){ b.classList.toggle('on', _designMode); b.textContent=_designMode?'✕ Stäng design':'🚧 Design'; }
+  if(b){ b.classList.toggle('on', _designMode); b.textContent=_designMode?'Stäng design':'Design'; }
   buildPalette();
 }
 function buildPalette(){
@@ -1419,7 +1423,7 @@ let alignMode=false, alignSel=[];
 function toggleAlign(){ if(alignMode){ setTimeout(commit,0); }
   const b=document.getElementById('alignBtn');
   if(!alignMode){ alignMode=true; alignSel=[]; b.classList.add('on'); b.textContent='✓ Klar ('+alignSel.length+')'; render(); }
-  else { doAlign(); alignMode=false; alignSel=[]; b.classList.remove('on'); b.textContent='📐 Linjera'; render(); }
+  else { doAlign(); alignMode=false; alignSel=[]; b.classList.remove('on'); b.textContent='Linjera'; render(); }
 }
 function alignClick(o){
   const i=alignSel.indexOf(o.id);
@@ -1442,12 +1446,12 @@ function toggleNumMode(){
   numMode=!numMode; numNext=1;
   const b=document.getElementById('numBtn');
   b.classList.toggle('on', numMode);
-  b.textContent = numMode ? ('🔢 Klicka hinder → nr '+numNext+' (Esc avslutar)') : '🔢 Numrera';
+  b.textContent = numMode ? ('Klicka hinder → nr '+numNext+' (Esc avslutar)') : 'Numrera';
 }
 function numModeClick(o){
   o.num = numNext++; S.sel = o.id;
   const b=document.getElementById('numBtn');
-  b.textContent = '🔢 Klicka hinder → nr '+numNext+' (Esc avslutar)';
+  b.textContent = 'Klicka hinder → nr '+numNext+' (Esc avslutar)';
   render();
 }
 function clearCourse(){ uiConfirm('Ta bort alla hinder på den här banan?', ()=>{ S.obstacles=[]; S.desc=''; S.sel=null; S_bends={}; S_labels={}; _lineHandles={}; render(); commit(); }, 'Ta bort'); }
@@ -2813,12 +2817,12 @@ function updateProStatus(){
 
 /* ---------- TUTORIAL ---------- */
 const TUT_STEPS=[
-  {e:'🏇', h:'Välkommen till Banskiss', p:'Rita hoppbanor på minuter. Här kommer en snabb genomgång — det tar 20 sekunder.'},
-  {e:'🚧', h:'Dra in hindren', p:'Ta ett hinder från vänsterkanten och dra ut det på banan. Klicka på det för att vrida, ändra bredd eller färg.'},
-  {e:'🔢', h:'Numrera & avstånd', p:'Tryck "Numrera" och klicka hindren i hoppordning. Ridvägen och alla meter mellan hindren ritas automatiskt.'},
-  {e:'📋', h:'46 äkta tävlingsbanor', p:'Tryck "Äkta banskisser" och tryck "Lägg in" — då får du en riktig tävlingsbana färdig att ändra i.'},
-  {e:'📚', h:'Övningar', p:'Tryck på Övningar för färdiga övningar från världens bästa ryttare. Koner, bommar och cavaletti finns bland vanliga hinder.'},
-  {e:'🖨️', h:'Skriv ut & bygg', p:'Tryck "Skriv ut" så får du en ren banskiss att ta med till ridhuset. Allt är gratis. Kör igång!'}
+  {e:'', h:'Välkommen till Banskiss', p:'Rita hoppbanor på minuter. Här kommer en snabb genomgång — det tar 20 sekunder.'},
+  {e:'', h:'Dra in hindren', p:'Ta ett hinder från vänsterkanten och dra ut det på banan. Klicka på det för att vrida, ändra bredd eller färg.'},
+  {e:'', h:'Numrera & avstånd', p:'Tryck "Numrera" och klicka hindren i hoppordning. Ridvägen och alla meter mellan hindren ritas automatiskt.'},
+  {e:'', h:'46 äkta tävlingsbanor', p:'Tryck "Äkta banskisser" och tryck "Lägg in" — då får du en riktig tävlingsbana färdig att ändra i.'},
+  {e:'', h:'Övningar', p:'Tryck på Övningar för färdiga övningar från världens bästa ryttare. Koner, bommar och cavaletti finns bland vanliga hinder.'},
+  {e:'', h:'Skriv ut & bygg', p:'Tryck "Skriv ut" så får du en ren banskiss att ta med till ridhuset. Allt är gratis. Kör igång!'}
 ];
 let _tutStep=0;
 function openTut(){ _tutStep=0; renderTut(); document.getElementById('tut').classList.add('open'); }
@@ -3131,43 +3135,45 @@ let _g=null;
 const selObs=()=>S.obstacles.find(x=>x.id===S.sel);
 const cnt=()=>S.obstacles.length;
 const GUIDE=[
-  {t:'Dra in ett räcke', p:'Håll ner musen på <b>Räcke (1 bom)</b> i listan till vänster och dra ut det på banan.', hl:'#palette .pitem[data-type="vertikal1"]',
+  {t:'Dra in ett räcke', p:'Dra ett räcke från listan till vänster och släpp det på banan.', hl:'#palette .pitem[data-type="vertikal1"]',
     init:()=>S.obstacles.filter(o=>o.type==='vertikal1').length, done:b=>S.obstacles.filter(o=>o.type==='vertikal1').length>b},
-  {t:'Vrid det ett helt varv', p:'Klicka på räcket. Dra i den gula <b>↻</b>-knappen ovanför det, eller i reglaget <b>Rotation</b> till höger, tills du snurrat 360°.',
+  {t:'Vrid det ett varv', p:'Klicka på räcket. Dra i den gula <b>↻</b>-knappen och snurra ett helt varv.',
     init:()=>{_g.sec=new Set(); return 0;}, done:()=>{const o=selObs(); if(o) _g.sec.add(Math.floor(o.rot/45)%8); return _g.sec.size>=8;},
-    prog:()=>'Vridet: '+(_g.sec?_g.sec.size:0)+' av 8 sektorer', frac:()=>(_g.sec?_g.sec.size:0)/8},
-  {t:'Byt färg', p:'Med räcket markerat: tryck på färgrutan <b>Färg</b> i rutan till höger och välj en ny färg.',
+    prog:()=>'Vridet: '+(_g.sec?_g.sec.size:0)+' av 8', frac:()=>(_g.sec?_g.sec.size:0)/8},
+  {t:'Byt färg', p:'Klicka på räcket. Tryck på rutan <b>Färg</b> till höger och välj en ny färg.',
     init:()=>{const m={}; S.obstacles.forEach(o=>m[o.id]=o.color||''); return m;},
     done:b=>S.obstacles.some(o=>Object.prototype.hasOwnProperty.call(b,o.id)&&(o.color||'')!==b[o.id])},
-  {t:'Dra in två hinder till', p:'Ta två hinder från listan — valfria — och dra ut dem på banan.',
+  {t:'Dra in två hinder till', p:'Välj två hinder som du vill ha och dra ut dem på banan.',
     init:cnt, done:b=>cnt()>=b+2, prog:()=>cnt()+' hinder på banan'},
-  {t:'Ta bort det du inte behöver', p:'Klicka på ett hinder och tryck <b>Ta bort hinder</b> i rutan till höger (eller tangenten Delete). <b>Behåll minst två.</b>',
+  {t:'Ta bort ett hinder', p:'Klicka på ett hinder och tryck <b>Ta bort hinder</b> till höger. Behåll minst två.',
     init:cnt, done:b=>cnt()<b},
-  {t:'Numrera hindren', p:'Tryck <b>🔢 Numrera</b> i raden högst upp och klicka hindren i den ordning de ska hoppas. Tryck Esc när du är klar.', hl:'#numBtn',
+  {t:'Numrera hindren', p:'Tryck <b>Numrera</b> högst upp. Klicka på hindren i den ordning de ska hoppas. Tryck Esc när du är klar.', hl:'#numBtn',
     done:()=>S.obstacles.filter(o=>o.num!=null&&o.num!=='').length>=2, prog:()=>S.obstacles.filter(o=>o.num!=null&&o.num!=='').length+' numrerade'},
-  {t:'Se avstånden', p:'Mellan hindren ritas en streckad linje med <b>metertal</b> — det är avståndet. (Står det "Avstånd av" i rutan till höger? Tryck på den.) Tryck Nästa när du har tittat.',
-    manual:true, hl:'#linesBtn'},
-  {t:'Flytta ett hinder', p:'Dra ett av hindren till en ny plats och se hur metertalet ändras direkt.',
+  {t:'Se avstånden', p:'Mellan hindren syns nu en streckad linje med <b>meter</b>. Syns inga meter? Tryck <b>Avancerat</b> och sedan <b>Avstånd på</b>. Tryck Nästa när du har tittat.',
+    manual:true},
+  {t:'Flytta ett hinder', p:'Dra ett hinder till en ny plats. Se hur metertalet ändras.',
     init:()=>{const m={}; S.obstacles.forEach(o=>m[o.id]=[o.x,o.y]); return m;},
     done:b=>S.obstacles.some(o=>b[o.id]&&Math.hypot(o.x-b[o.id][0],o.y-b[o.id][1])>1)},
-  {t:'Du kan det här! 🎉', p:'Grundkursen är klar. Vill du lära dig resten — linjering, böjda linjer, kombinationer, vattenhinder och mer?', end:true}
+  {t:'Du kan det här!', p:'Nu kan du grunderna. Vill du se fler tips?', end:true}
 ];
-function startGuide(forced){ _g={i:0, forced:forced===true}; guideInit(); renderCoach(); }
+function startGuide(){ _g={i:0}; guideInit(); renderCoach(); }
+function guideSetHide(on){ try{ if(on) localStorage.setItem('banskiss_guide_hide','1'); else localStorage.removeItem('banskiss_guide_hide'); }catch(e){} }
 function guideInit(){ const s=GUIDE[_g.i]; _g.hit=false; _g.base=s.init?s.init():null; }
 function guideHl(sel){ document.querySelectorAll('.pulse').forEach(e=>e.classList.remove('pulse'));
-  if(sel){ const e=document.querySelector(sel); if(e){ const sp=e.closest('#setPhoneBody'); if(sp){ const d=document.getElementById('setPhone'); if(d) d.open=true; } e.classList.add('pulse'); } } }
+  if(sel){ const e=document.querySelector(sel); if(e){ if(e.closest('#advPanel')) toggleAdv(true); e.classList.add('pulse'); } } }
 function renderCoach(){
   const c=document.getElementById('coach'); if(!_g){ c.classList.remove('open','ok'); guideHl(null); return; }
   const s=GUIDE[_g.i];
   c.classList.add('open'); c.classList.remove('ok');
   document.getElementById('coachStep').textContent='Steg '+(_g.i+1)+' av '+GUIDE.length;
   document.getElementById('coachH').textContent=s.t;
-  document.getElementById('coachP').innerHTML=s.p+((_g.forced&&_g.i===0)?'<br><small style="opacity:.85">Första gången gör du guiden — den tar ungefär två minuter och visar grunderna.</small>':'');
+  document.getElementById('coachP').innerHTML=s.p;
+  try{ document.getElementById('coachHide').checked=localStorage.getItem('banskiss_guide_hide')==='1'; }catch(e){}
   document.getElementById('coachProg').textContent='';
   document.getElementById('coachBar').style.width=Math.round(_g.i/(GUIDE.length-1)*100)+'%';
   const b=document.getElementById('coachBtns');
-  if(s.end) b.innerHTML='<button class="pri" onclick="endGuide();openAdv()">Avancerad guide →</button><button onclick="endGuide()">Klar</button>';
-  else b.innerHTML=(s.manual?'<button class="pri" onclick="guideNext()">Nästa →</button>':'<button onclick="guideNext()">Hoppa över steg</button>')+(_g.forced?'':'<button onclick="endGuide()">Avsluta guiden</button>');
+  if(s.end) b.innerHTML='<button class="pri" onclick="endGuide();openAdv()">Fler tips →</button><button onclick="endGuide()">Klar</button>';
+  else b.innerHTML=(s.manual?'<button class="pri" onclick="guideNext()">Nästa →</button>':'<button onclick="guideNext()">Hoppa över steget</button>')+'<button onclick="endGuide()">Stäng guiden</button>';
   guideHl(s.hl);
 }
 function guideCheck(){
@@ -3184,24 +3190,24 @@ function endGuide(){ _g=null; renderCoach(); try{localStorage.setItem('banskiss_
 
 /* =================== ALLA FUNKTIONER (avancerad guide) =================== */
 const ADV=[
-  ['🎞','Presentation','Gör en bildserie av banan: välj hur många bilder, skriv en bildtext och bläddra med piltangenterna. Rita ridvägar på varje bild: tryck Linje, klicka på ett hinder och sedan på nästa (utan nummer). Välj Volt och klicka på hindret för en volt. Forma med de gula prickarna. Tryck Redigera för att ändra.','#presBtn'],
+  ['','Presentation','Gör en bildserie av banan: välj hur många bilder, skriv en bildtext och bläddra med piltangenterna. Rita ridvägar på varje bild: tryck Linje, klicka på ett hinder och sedan på nästa (utan nummer). Välj Volt och klicka på hindret för en volt. Forma med de gula prickarna. Tryck Redigera för att ändra.','#presBtn'],
   ['⇄','Hoppriktning','Markera ett hinder och välj En riktning, Båda riktningarna eller Ingen i rutan till höger.','#inspector'],
-  ['📚','Övningar','Färdiga övningar från kända ryttare att lägga in på banan.','#ovnOpenBtn'],
-  ['📐','Linjera','Markera flera hinder och tryck Klar — de hamnar på en rak linje och får exakt samma vinkel.','#alignBtn'],
-  ['↔️','Böj ridvägen','Mellan numrerade hinder finns gula prickar. Dra i dem för att böja linjen precis som du rider den. (De syns inte på utskriften.)','#linesBtn'],
-  ['🧱','Kombinationer','Dra in en Kombination: välj ett eller två språng, sedan t.ex. Räcke–Räcke eller Räcke–Oxer. Hela kombinationen flyttas och vrids som en enhet.','#palette .pitem[data-type="kombination"]'],
-  ['🐴','Cavaletti & bommar','Dra in Cavaletti: välj typ (cavaletti, bom, kryss, räcke, oxer), antal och avstånd. Raden kan böjas med reglaget till höger.','#palette .pitem[data-type="cavaletti"]'],
-  ['💧','Vattenmatta','Välj öppen matta, eller under ett räcke eller en oxer.','#palette .pitem[data-type="vatten"]'],
-  ['🚧','Design-läge','Blockera ytor där det inte går att bygga — träd, läktare, udda hörn.','#designBtn'],
-  ['📋','Äkta banskisser','Riktiga tävlingsbanor att lägga in och ändra.','#skisserBtn'],
-  ['💾','Spara & skriv ut','Spara i biblioteket, ladda ner som bild eller skriv ut en ren banskiss.','.tb.print'],
+  ['','Övningar','Färdiga övningar från kända ryttare att lägga in på banan.','#ovnOpenBtn'],
+  ['','Linjera','Markera flera hinder och tryck Klar — de hamnar på en rak linje och får exakt samma vinkel.','#alignBtn'],
+  ['↔','Böj ridvägen','Mellan numrerade hinder finns gula prickar. Dra i dem för att böja linjen precis som du rider den. (De syns inte på utskriften.)','#linesBtn'],
+  ['','Kombinationer','Dra in en Kombination: välj ett eller två språng, sedan t.ex. Räcke–Räcke eller Räcke–Oxer. Hela kombinationen flyttas och vrids som en enhet.','#palette .pitem[data-type="kombination"]'],
+  ['','Cavaletti & bommar','Dra in Cavaletti: välj typ (cavaletti, bom, kryss, räcke, oxer), antal och avstånd. Raden kan böjas med reglaget till höger.','#palette .pitem[data-type="cavaletti"]'],
+  ['','Vattenmatta','Välj öppen matta, eller under ett räcke eller en oxer.','#palette .pitem[data-type="vatten"]'],
+  ['','Design-läge','Blockera ytor där det inte går att bygga — träd, läktare, udda hörn.','#designBtn'],
+  ['','Äkta banskisser','Riktiga tävlingsbanor att lägga in och ändra.','#skisserBtn'],
+  ['','Spara & skriv ut','Spara i biblioteket, ladda ner som bild eller skriv ut en ren banskiss.','.tb.print'],
   ['↶','Ångra','Ångrade du fel? Cmd/Ctrl+Z tar tillbaka det.','#undoBtn']
 ];
 function advDone(){ try{return JSON.parse(localStorage.getItem('banskiss_adv'))||[];}catch(e){return [];} }
 function openAdv(){
   const d=advDone();
-  document.getElementById('advBox').innerHTML='<h3>🧭 Upptäck alla funktioner</h3><p class="sub">Många vågar inte testa — men allt går att ångra. Tryck <b>Visa mig</b> så pekar jag ut var funktionen finns.</p><ul>'+
-    ADV.map((a,i)=>'<li class="'+(d.includes(i)?'done':'')+'"><span class="ic">'+(d.includes(i)?'✓':a[0])+'</span><div><b>'+a[1]+'</b>'+a[2]+'</div><button onclick="advTry('+i+')">Visa mig</button></li>').join('')+
+  document.getElementById('advBox').innerHTML='<h3>Upptäck alla funktioner</h3><p class="sub">Många vågar inte testa — men allt går att ångra. Tryck <b>Visa mig</b> så pekar jag ut var funktionen finns.</p><ul>'+
+    ADV.map((a,i)=>'<li class="'+(d.includes(i)?'done':'')+'"><span class="ic">'+(d.includes(i)?'✓':(i+1))+'</span><div><b>'+a[1]+'</b>'+a[2]+'</div><button onclick="advTry('+i+')">Visa mig</button></li>').join('')+
     '</ul><div class="row"><button class="pri" onclick="closeAdv()">Stäng</button></div>';
   document.getElementById('advModal').classList.add('open');
 }
@@ -3214,45 +3220,45 @@ function advTry(i){ const d=advDone(); if(!d.includes(i)){ d.push(i); try{localS
 /* =================== NYHETER efter varje uppdatering =================== */
 const APP_VERSION='2026-11-01';
 const NEWS=[
-  ['🎞','Presentation','Gör en bildserie av banan för en klinik eller genomgång: välj hur många bilder, rita ridvägar och voltar på varje bild, skriv en bildtext och bläddra med piltangenterna. Visningen är låst — tryck Redigera för att ändra.','2026-10-31'],
-  ['✏️','Rita ridväg i presentationen','Öppna 🎞 Presentation: tryck Linje, klicka på ett hinder och sedan på nästa så dras en tunn grå linje som börjar och slutar mitt på hindret — utan nummer. Volt: välj Volt och klicka på hindret. Forma med de gula prickarna. Sudda tar bort en linje.','2026-11-01'],
-  ['🧰','Inga menyer att leta i','Banans mått, rutnät, zoom, avstånd, Design, Dela och hjälp ligger nu alltid synliga i rutan till höger (på telefon under hinderlistan). Övre raden är tunn. Sparade banor längst ner visas när du för markören dit eller trycker på pilen.','2026-11-01'],
+  ['','Presentation','Gör en bildserie av banan för en klinik eller genomgång: välj hur många bilder, rita ridvägar och voltar på varje bild, skriv en bildtext och bläddra med piltangenterna. Visningen är låst — tryck Redigera för att ändra.','2026-10-31'],
+  ['','Rita ridväg i presentationen','Öppna Presentation: tryck Linje, klicka på ett hinder och sedan på nästa så dras en tunn grå linje som börjar och slutar mitt på hindret — utan nummer. Volt: välj Volt och klicka på hindret. Forma med de gula prickarna. Sudda tar bort en linje.','2026-11-01'],
+  ['','Enklare överrad','Högst upp finns nu bara Numrera, Övningar och Presentation. Allt annat — Linjera, Spara, Skriv ut, mått, rutnät, zoom och hjälp — ligger under Avancerat. Avstånd av döljer bara metertalen, inte linjen. Sparade banor längst ner visas när du för markören dit eller trycker på pilen.','2026-11-01'],
     ['⇄','Hoppriktning: en, båda eller ingen','Markera ett hinder och välj hoppriktning i rutan till höger.','2026-10-31'],
-  ['📚','Övningar på egen knapp','Träningsmode är borttaget. Koner, bommar och sockerbitar ligger nu bland vanliga hinder, och Övningar har en egen knapp i raden högst upp.','2026-10-31'],
-    ['➕','Ny bana utan att tappa din gamla','Plus-knappen vid flikarna skapar nu en ny bana i stället för att rensa den du jobbar på.','2026-10-30'],
-  ['🎓','Ny steg-för-steg-guide','Dra in ett räcke, vrid det, byt färg, numrera och mät — som en spelhandledning. Starta den med ❓ Guide.','2026-10-01'],
-  ['🧭','Upptäck alla funktioner','Tryck 🧭 Funktioner så visar vi var allt finns, bland annat linjering och böjda linjer.','2026-10-01'],
-  ['📐','Linjera räknar nu med vinkeln','Hindren hamnar inte bara på en rak linje — de får också exakt samma vinkel.','2026-10-01'],
-  ['🎯','Lättare att klicka','Varje hinder har fått en större klickyta, så du behöver inte träffa exakt.','2026-10-01'],
-  ['🔄','Mjukare vridning av kombinationer','Kombinationer vrids nu runt sin egen mitt, utan hack och hopp.','2026-10-01'],
-  ['🐴','Cavaletti med val','Välj typ (cavaletti, bom, kryss, räcke, oxer), antal och avstånd.','2026-10-01'],
-  ['💧','Vattenmatta under räcke eller oxer','Nu syns hindret tydligt ovanpå vattnet.','2026-10-01'],
-  ['🧱','Räcke–Räcke i kombinationer','Både två och tre räcken efter varandra.','2026-10-01'],
-  ['🖨️','Renare utskrift','De gula prickarna syns inte längre på papperet.','2026-10-01']
+  ['','Övningar på egen knapp','Träningsmode är borttaget. Koner, bommar och sockerbitar ligger nu bland vanliga hinder, och Övningar har en egen knapp i raden högst upp.','2026-10-31'],
+    ['','Ny bana utan att tappa din gamla','Plus-knappen vid flikarna skapar nu en ny bana i stället för att rensa den du jobbar på.','2026-10-30'],
+  ['','Ny steg-för-steg-guide','Dra in ett räcke, vrid det, byt färg, numrera och mät — som en spelhandledning. Starta den med Guide.','2026-10-01'],
+  ['','Upptäck alla funktioner','Tryck Funktioner så visar vi var allt finns, bland annat linjering och böjda linjer.','2026-10-01'],
+  ['','Linjera räknar nu med vinkeln','Hindren hamnar inte bara på en rak linje — de får också exakt samma vinkel.','2026-10-01'],
+  ['','Lättare att klicka','Varje hinder har fått en större klickyta, så du behöver inte träffa exakt.','2026-10-01'],
+  ['','Mjukare vridning av kombinationer','Kombinationer vrids nu runt sin egen mitt, utan hack och hopp.','2026-10-01'],
+  ['','Cavaletti med val','Välj typ (cavaletti, bom, kryss, räcke, oxer), antal och avstånd.','2026-10-01'],
+  ['','Vattenmatta under räcke eller oxer','Nu syns hindret tydligt ovanpå vattnet.','2026-10-01'],
+  ['','Räcke–Räcke i kombinationer','Både två och tre räcken efter varandra.','2026-10-01'],
+  ['','Renare utskrift','De gula prickarna syns inte längre på papperet.','2026-10-01']
 ];
 function openNews(manual){
   let seen=''; try{ seen=localStorage.getItem('banskiss_seen_version')||''; }catch(e){}
   let list = manual ? NEWS : NEWS.filter(n=>n[3]>seen); if(!list.length) list=NEWS;
-  document.getElementById('newsBox').innerHTML='<h3>✨ Nytt i Banskiss</h3><p class="sub">Så här har vi gjort verktyget bättre sedan sist:</p><ul>'+
-    list.map(n=>'<li><span class="ic">'+n[0]+'</span><div><b>'+n[1]+'</b>'+n[2]+'</div></li>').join('')+
+  document.getElementById('newsBox').innerHTML='<h3>Nytt i Banskiss</h3><p class="sub">Så här har vi gjort verktyget bättre sedan sist:</p><ul>'+
+    list.map(n=>'<li><div><b>'+n[1]+'</b>'+n[2]+'</div></li>').join('')+
     '</ul><div class="row"><button onclick="closeNews()">Stäng</button><button class="pri" onclick="closeNews();startGuide()">Visa mig guiden</button></div>';
   document.getElementById('newsModal').classList.add('open');
   try{localStorage.setItem('banskiss_seen_version',APP_VERSION);}catch(e){}
 }
 function closeNews(){ document.getElementById('newsModal').classList.remove('open'); }
 
-/* Vad ska hända när man kommit in i verktyget? Första gången: guiden. Efter uppdatering: nyheter. */
+/* Vad ska hända när man kommit in i verktyget? Guiden (tills man valt Visa inte igen). Annars: nyheter efter en uppdatering. */
 let _entered=false;
 function afterEntry(){
   if(_entered) return;
   if(document.getElementById('landing').classList.contains('open')) return;
   if(document.getElementById('setupModal').classList.contains('open')) return;
   _entered=true;
-  let seen=null, guideDone=null;
-  try{ seen=localStorage.getItem('banskiss_seen_version'); guideDone=localStorage.getItem('banskiss_guide_done'); }catch(e){}
-  if(!guideDone){                                            // guiden: alla, en gång
-    try{ localStorage.setItem('banskiss_seen_version',APP_VERSION); }catch(e){}      // guiden räknas som klar först när man gjort den
-    setTimeout(()=>startGuide(true),400);
+  let seen=null, hide=null;
+  try{ seen=localStorage.getItem('banskiss_seen_version'); hide=localStorage.getItem('banskiss_guide_hide'); }catch(e){}
+  if(!hide){                                                 // guiden visas varje gång man kommer in, tills man valt "Visa inte igen"
+    try{ localStorage.setItem('banskiss_seen_version',APP_VERSION); }catch(e){}
+    setTimeout(startGuide,400);
   } else if(seen!==APP_VERSION){ setTimeout(()=>openNews(false),500); }
 }
 
@@ -3294,7 +3300,12 @@ function arrowHead(x,y,ang,c){
 }
 const obsById=id=>S.obstacles.find(o=>o.id===id);
 const curSlide=()=>(S.slides && _pres) ? S.slides[_pres.i] : null;
-function routeOn(){
+function routeOn(){                    // ridvägens LINJE: alltid på på banan, per bild i presentationen
+  if(_routeOverride!==null) return _routeOverride;
+  const s=(_pres&&_pres.mode==='edit')?curSlide():null;
+  return s ? !!s.route : true;
+}
+function labelsOn(){                   // metertalen: knappen Avstånd på/av (bara siffrorna — linjen står kvar)
   if(_routeOverride!==null) return _routeOverride;
   const s=(_pres&&_pres.mode==='edit')?curSlide():null;
   return s ? !!s.route : S.showLines;
@@ -3323,7 +3334,7 @@ function bezTan(g,t){ const u=1-t;
 function endpoint(e){ const o=e.id?obsById(e.id):null; return o?{x:o.x,y:o.y,o}:{x:e.x,y:e.y,o:null}; }
 /* ---- linjer: mitt på hindret, flera gula prickar längs vägen ---- */
 function defaultVia(A,B){
-  const len=Math.hypot(B.x-A.x,B.y-A.y), k=Math.max(3,Math.min(7,Math.round(len/7)));   // längre linje = fler prickar
+  const len=Math.hypot(B.x-A.x,B.y-A.y), k=len<4 ? 0 : Math.max(1,Math.min(7,Math.round(len/9)));   // kort linje = få prickar (annars syns inte linjen)
   return Array.from({length:k},(_,i)=>({t:(i+1)/(k+1),dx:0,dy:0}));
 }
 function lineGeom(m){
@@ -3445,7 +3456,7 @@ function eraseAt(x,y){
 function cancelModes(){
   if(typeof numMode!=='undefined' && numMode) toggleNumMode();
   if(typeof alignMode!=='undefined' && alignMode){ alignMode=false; alignSel=[];
-    const b=document.getElementById('alignBtn'); if(b){ b.classList.remove('on'); b.textContent='📐 Linjera'; } }
+    const b=document.getElementById('alignBtn'); if(b){ b.classList.remove('on'); b.textContent='Linjera'; } }
 }
 function markHintText(){
   if(_markTool==='line') return _pend ? 'Klicka på nästa hinder. Esc, eller klick på samma ställe, avslutar linjen.' : 'Klicka på första hindret (eller en plats på marken).';
@@ -3493,14 +3504,14 @@ function presStep(d){ const el=document.getElementById('presN'); el.value=clamp(
 function presCreate(){
   const n=clamp(Math.round(+document.getElementById('presN').value)||1,1,30);
   S.slides=[];
-  for(let i=0;i<n;i++) S.slides.push({cap: i===0 ? (S.name||'') : '', marks:[], route: i===0 ? !!S.showLines : false});
+  for(let i=0;i<n;i++) S.slides.push({cap: i===0 ? (S.name||'') : '', marks:[], route: i===0});
   presAskClose(); _pres={mode:'edit',i:0}; presEditMode(0);
 }
 function presEditMode(i){
   if(!S.slides) return;
   _pres={mode:'edit', i:clamp(i==null?(_pres?_pres.i:0):i,0,S.slides.length-1)};
   document.getElementById('pres').classList.remove('open');
-  document.body.classList.add('pres-edit');
+  document.body.classList.add('pres-edit'); toggleAdv(false);
   S.sel=null; S.selLabel=null; setTool('move'); renderSlideBar(); render();
 }
 function presViewMode(){
@@ -3603,14 +3614,21 @@ window.addEventListener('keydown', e=>{
 }, true);
 syncTools();
 
-/* =================== INSTÄLLNINGAR (alltid synliga, ingen meny) OCH SPARADE BANOR (visas vid hovring) =================== */
-function toggleMenu(){ }            // finns inte längre: mått, rutnät, zoom, avstånd och hjälp ligger alltid synliga
-function placeSettings(){           // dator: i panelen till höger. Telefon: i en hopfällbar remsa under hinderlistan.
-  const box=document.getElementById('courseSettings'); if(!box) return;
-  const host=document.getElementById(window.innerWidth<=800 ? 'setPhoneBody' : 'setDeskHost');
-  if(host && box.parentNode!==host) host.appendChild(box);
+/* =================== AVANCERAT (allt utom Numrera, Övningar, Presentation) OCH SPARADE BANOR (visas vid hovring) =================== */
+function toggleAdv(force){
+  const p=document.getElementById('advPanel'), b=document.getElementById('advBtn'); if(!p) return;
+  const open = force===undefined ? !p.classList.contains('open') : !!force;
+  if(open){ const r=document.querySelector('.toolbar').getBoundingClientRect(); p.style.top=Math.max(0,r.bottom+6)+'px'; }
+  p.classList.toggle('open',open); if(b){ b.classList.toggle('on',open); b.setAttribute('aria-expanded',open?'true':'false'); }
 }
-window.addEventListener('resize',placeSettings); placeSettings();
+function toggleMenu(f){ toggleAdv(f); }            // gammalt namn
+document.addEventListener('pointerdown',e=>{
+  const p=document.getElementById('advPanel');
+  if(p && p.classList.contains('open') && !e.target.closest('#advPanel') && !e.target.closest('#advBtn')) toggleAdv(false);
+},true);
+document.getElementById('advPanel').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(b && !b.closest('[data-keep]')) setTimeout(()=>toggleAdv(false),0);
+});
 (function(){
   const g=document.querySelector('.gallery'); let t=0, tOpen=0;
   window.galJustOpened=()=>Date.now()-tOpen<600;
@@ -3620,6 +3638,7 @@ window.addEventListener('resize',placeSettings); placeSettings();
   g.addEventListener('mouseleave',()=>{ clearTimeout(t); t=setTimeout(()=>galOpen(false),350); });
   document.addEventListener('pointerdown',e=>{ if(g.classList.contains('open') && !e.target.closest('.gallery')) galOpen(false); },true);
 })();
+window.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const p=document.getElementById('advPanel'); if(p&&p.classList.contains('open')){ toggleAdv(false); e.stopImmediatePropagation(); } } },true);
 function toggleGal(){        // tryck: öppna. Tryck igen: stäng. (Ignorerar klicket som hör ihop med att pekaren precis öppnade lådan.)
   const open=document.querySelector('.gallery').classList.contains('open');
   if(!open) galOpen(true); else if(!galJustOpened()) galOpen(false);

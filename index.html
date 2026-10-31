@@ -77,7 +77,7 @@
   /* ---- utskrift: dölj allt UI, visa bara banan ---- */
   @media print{
     html,body,.app,.main,.stagewrap,.stage{background:#fff!important}
-    .toolbar,.palette,.inspector,.gallery,.distbadge{display:none!important}
+    .toolbar,.palette,.inspector,.gallery,.distbadge,.setphone{display:none!important}
     .rothandle,.delbtn,.selring,.bend-handle,.lab-rot,.lab-del,.mhandle,.mpend{display:none!important}
     .app,.main,.stagewrap,.stage{display:block;height:auto;min-height:0;overflow:visible;padding:0;margin:0}
     svg.court{box-shadow:none;max-width:100%}
@@ -336,15 +336,24 @@
   @media print{ .coach,.modal2{display:none!important} }
   .markhint{flex-basis:100%;font-size:12.5px;color:#f5c46a;min-height:1.1em}
   .markhint:empty{display:none}
-  .menubtn{margin-left:auto}
-  .menupanel{display:none;position:fixed;z-index:70;right:8px;top:56px;width:min(640px,calc(100vw - 16px));max-height:calc(100vh - 80px);overflow:auto;
-    background:#20252c;color:#fff;border:1px solid #454f5c;border-radius:12px;box-shadow:0 16px 44px rgba(0,0,0,.5);padding:8px 14px}
-  .menupanel.open{display:block}
-  .menupanel .msec{padding:9px 0;border-bottom:1px solid #39424e}
-  .menupanel .msec:last-child{border-bottom:0}
-  .menupanel h5{margin:0 0 7px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:#9aa7b5}
-  .menupanel .mrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
-  .menupanel .mrow:last-child{margin-bottom:0}
+  /* banans inställningar: alltid synliga i panelen till höger (ingen meny) */
+  .cset{margin-top:14px;border-top:2px solid #ccd3db;padding-top:4px}
+  .cset .msec{padding:9px 0;border-bottom:1px solid #d9dee5}
+  .cset .msec:last-child{border-bottom:0}
+  .cset h5{margin:0 0 7px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:#69747f}
+  .cset .mrow{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+  .cset .mrow:last-child{margin-bottom:0}
+  .cset .mrow label{font-size:12px;color:#3a424d}
+  .cset input[type=number]{width:54px;padding:5px 6px;border:1px solid #cfd6de;border-radius:5px}
+  .cset .tb{padding:6px 8px;font-size:12px}
+  .setphone{display:none}
+  @media (max-width:800px){
+    .setphone{display:block;background:#f3f5f8;border-bottom:1px solid #ccd3db;padding:2px 10px}
+    .setphone summary{padding:8px 2px;font-size:13px;font-weight:600;color:#3a424d;cursor:pointer}
+    .setphone[open]{max-height:50vh;overflow:auto}
+    #setDeskHost{display:none}
+    .cset{margin-top:0;border-top:0}
+  }
   @media (prefers-reduced-motion:reduce){ .gallery{transition:none} }
   /* ---- ritade linjer, hoppriktning, presentation ---- */
   .marks{pointer-events:none}
@@ -376,7 +385,7 @@
   .sbmore.open .sbmorepanel{display:flex}
   .sbmorepanel .sb{text-align:left}
   /* medan man redigerar presentationen: bara det som hör till (bildlistan har egna ritverktyg) */
-  body.pres-edit #presBtn, body.pres-edit #ovnOpenBtn{display:none}
+  body.pres-edit #presBtn, body.pres-edit #ovnOpenBtn, body.pres-edit #courseSettings, body.pres-edit .setphone{display:none!important}
   .pres{display:none;position:fixed;inset:0;z-index:140;background:#12161b;color:#fff;flex-direction:column}
   .pres.open{display:flex}
   .pres-top{display:flex;align-items:center;gap:10px;padding:10px 14px}
@@ -437,9 +446,38 @@
       <button class="tb" id="saveBtn" onclick="saveToLibrary()" title="Spara till bibliotek">💾 Spara</button>
       <button class="tb print" id="printBtn" onclick="printMain()">🖨 Skriv ut</button>
     </div>
-    <button class="tb menubtn" id="menuBtn" onclick="toggleMenu()" aria-expanded="false" aria-controls="menuPanel">☰ Meny</button>
 
-    <div class="menupanel" id="menuPanel">
+  </div>
+
+  <!-- ============ HUVUDYTA ============ -->
+  <div class="main">
+    <!-- palett -->
+    <div class="palette" id="palette">
+      <h4>Dra in ett hinder</h4>
+      <!-- fylls av JS från hinderbiblioteket -->
+      <p class="phint">Dra ett hinder till banan. Klicka på ett hinder för att rotera, ändra bredd eller lägga till sockerbitar.</p>
+    </div>
+
+    <!-- inställningar på telefon: hopfällbar remsa (på dator ligger de alltid synliga i panelen till höger) -->
+    <details class="setphone" id="setPhone"><summary>⚙ Bana, mått och hjälp</summary><div id="setPhoneBody"></div></details>
+
+    <!-- ritYta -->
+    <div class="stagewrap" id="stagewrap">
+      <div class="stage" id="stage">
+        <div class="printhead" id="printhead"></div>
+        <!-- svg injiceras här -->
+        <div class="printfoot" id="printfoot">Ritad med Banskiss</div>
+        <div class="descbar" id="descBar"></div>
+        <div class="distbadge" id="distbadge"></div>
+      </div>
+    </div>
+
+    <!-- inspektor -->
+    <div class="inspector" id="inspector">
+      <h4>Valt hinder</h4>
+      <div id="inspBody"><p class="empty">Inget hinder valt. Klicka på ett hinder i banan.</p></div>
+      <div id="setDeskHost">
+    <div class="cset" id="courseSettings">
       <div class="msec" data-keep="1">
         <h5>Banans mått</h5>
         <div class="mrow">
@@ -488,32 +526,7 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- ============ HUVUDYTA ============ -->
-  <div class="main">
-    <!-- palett -->
-    <div class="palette" id="palette">
-      <h4>Dra in ett hinder</h4>
-      <!-- fylls av JS från hinderbiblioteket -->
-      <p class="phint">Dra ett hinder till banan. Klicka på ett hinder för att rotera, ändra bredd eller lägga till sockerbitar.</p>
-    </div>
-
-    <!-- ritYta -->
-    <div class="stagewrap" id="stagewrap">
-      <div class="stage" id="stage">
-        <div class="printhead" id="printhead"></div>
-        <!-- svg injiceras här -->
-        <div class="printfoot" id="printfoot">Ritad med Banskiss</div>
-        <div class="descbar" id="descBar"></div>
-        <div class="distbadge" id="distbadge"></div>
       </div>
-    </div>
-
-    <!-- inspektor -->
-    <div class="inspector" id="inspector">
-      <h4>Valt hinder</h4>
-      <div id="inspBody"><p class="empty">Inget hinder valt. Klicka på ett hinder i banan.</p></div>
     </div>
   </div>
 
@@ -3130,9 +3143,9 @@ const GUIDE=[
     init:cnt, done:b=>cnt()>=b+2, prog:()=>cnt()+' hinder på banan'},
   {t:'Ta bort det du inte behöver', p:'Klicka på ett hinder och tryck <b>Ta bort hinder</b> i rutan till höger (eller tangenten Delete). <b>Behåll minst två.</b>',
     init:cnt, done:b=>cnt()<b},
-  {t:'Numrera hindren', p:'Tryck <b>🔢 Numrera</b> i menyn och klicka hindren i den ordning de ska hoppas. Tryck Esc när du är klar.', hl:'#numBtn',
+  {t:'Numrera hindren', p:'Tryck <b>🔢 Numrera</b> i raden högst upp och klicka hindren i den ordning de ska hoppas. Tryck Esc när du är klar.', hl:'#numBtn',
     done:()=>S.obstacles.filter(o=>o.num!=null&&o.num!=='').length>=2, prog:()=>S.obstacles.filter(o=>o.num!=null&&o.num!=='').length+' numrerade'},
-  {t:'Se avstånden', p:'Mellan hindren ritas en streckad linje med <b>metertal</b> — det är avståndet. (Står det "Avstånd av" i menyn? Tryck på den.) Tryck Nästa när du har tittat.',
+  {t:'Se avstånden', p:'Mellan hindren ritas en streckad linje med <b>metertal</b> — det är avståndet. (Står det "Avstånd av" i rutan till höger? Tryck på den.) Tryck Nästa när du har tittat.',
     manual:true, hl:'#linesBtn'},
   {t:'Flytta ett hinder', p:'Dra ett av hindren till en ny plats och se hur metertalet ändras direkt.',
     init:()=>{const m={}; S.obstacles.forEach(o=>m[o.id]=[o.x,o.y]); return m;},
@@ -3142,7 +3155,7 @@ const GUIDE=[
 function startGuide(forced){ _g={i:0, forced:forced===true}; guideInit(); renderCoach(); }
 function guideInit(){ const s=GUIDE[_g.i]; _g.hit=false; _g.base=s.init?s.init():null; }
 function guideHl(sel){ document.querySelectorAll('.pulse').forEach(e=>e.classList.remove('pulse'));
-  if(sel){ const e=document.querySelector(sel); if(e){ if(e.closest('#menuPanel')) toggleMenu(true); e.classList.add('pulse'); } } }
+  if(sel){ const e=document.querySelector(sel); if(e){ const sp=e.closest('#setPhoneBody'); if(sp){ const d=document.getElementById('setPhone'); if(d) d.open=true; } e.classList.add('pulse'); } } }
 function renderCoach(){
   const c=document.getElementById('coach'); if(!_g){ c.classList.remove('open','ok'); guideHl(null); return; }
   const s=GUIDE[_g.i];
@@ -3203,9 +3216,9 @@ const APP_VERSION='2026-11-01';
 const NEWS=[
   ['🎞','Presentation','Gör en bildserie av banan för en klinik eller genomgång: välj hur många bilder, rita ridvägar och voltar på varje bild, skriv en bildtext och bläddra med piltangenterna. Visningen är låst — tryck Redigera för att ändra.','2026-10-31'],
   ['✏️','Rita ridväg i presentationen','Öppna 🎞 Presentation: tryck Linje, klicka på ett hinder och sedan på nästa så dras en tunn grå linje som börjar och slutar mitt på hindret — utan nummer. Volt: välj Volt och klicka på hindret. Forma med de gula prickarna. Sudda tar bort en linje.','2026-11-01'],
-  ['🧰','Renare meny','Övre menyn är nu en tunn rad. Resten finns bakom ☰ Meny. Sparade banor längst ner visas när du för markören dit eller trycker på pilen.','2026-11-01'],
+  ['🧰','Inga menyer att leta i','Banans mått, rutnät, zoom, avstånd, Design, Dela och hjälp ligger nu alltid synliga i rutan till höger (på telefon under hinderlistan). Övre raden är tunn. Sparade banor längst ner visas när du för markören dit eller trycker på pilen.','2026-11-01'],
     ['⇄','Hoppriktning: en, båda eller ingen','Markera ett hinder och välj hoppriktning i rutan till höger.','2026-10-31'],
-  ['📚','Övningar på egen knapp','Träningsmode är borttaget. Koner, bommar och sockerbitar ligger nu bland vanliga hinder, och Övningar har en egen knapp i menyn.','2026-10-31'],
+  ['📚','Övningar på egen knapp','Träningsmode är borttaget. Koner, bommar och sockerbitar ligger nu bland vanliga hinder, och Övningar har en egen knapp i raden högst upp.','2026-10-31'],
     ['➕','Ny bana utan att tappa din gamla','Plus-knappen vid flikarna skapar nu en ny bana i stället för att rensa den du jobbar på.','2026-10-30'],
   ['🎓','Ny steg-för-steg-guide','Dra in ett räcke, vrid det, byt färg, numrera och mät — som en spelhandledning. Starta den med ❓ Guide.','2026-10-01'],
   ['🧭','Upptäck alla funktioner','Tryck 🧭 Funktioner så visar vi var allt finns, bland annat linjering och böjda linjer.','2026-10-01'],
@@ -3590,20 +3603,14 @@ window.addEventListener('keydown', e=>{
 }, true);
 syncTools();
 
-/* =================== MENY (tunn överrad) OCH SPARADE BANOR (visas vid hovring) =================== */
-function toggleMenu(force){
-  const p=document.getElementById('menuPanel'), b=document.getElementById('menuBtn');
-  const open = force===undefined ? !p.classList.contains('open') : !!force;
-  if(open){ const r=document.querySelector('.toolbar').getBoundingClientRect(); p.style.top=Math.max(0,r.bottom+6)+'px'; }
-  p.classList.toggle('open',open); if(b){ b.classList.toggle('on',open); b.setAttribute('aria-expanded',open?'true':'false'); }
+/* =================== INSTÄLLNINGAR (alltid synliga, ingen meny) OCH SPARADE BANOR (visas vid hovring) =================== */
+function toggleMenu(){ }            // finns inte längre: mått, rutnät, zoom, avstånd och hjälp ligger alltid synliga
+function placeSettings(){           // dator: i panelen till höger. Telefon: i en hopfällbar remsa under hinderlistan.
+  const box=document.getElementById('courseSettings'); if(!box) return;
+  const host=document.getElementById(window.innerWidth<=800 ? 'setPhoneBody' : 'setDeskHost');
+  if(host && box.parentNode!==host) host.appendChild(box);
 }
-document.addEventListener('pointerdown',e=>{
-  const p=document.getElementById('menuPanel');
-  if(p && p.classList.contains('open') && !e.target.closest('#menuPanel') && !e.target.closest('#menuBtn')) toggleMenu(false);
-},true);
-document.getElementById('menuPanel').addEventListener('click',e=>{
-  const b=e.target.closest('button'); if(b && !b.closest('[data-keep]')) setTimeout(()=>toggleMenu(false),0);
-});
+window.addEventListener('resize',placeSettings); placeSettings();
 (function(){
   const g=document.querySelector('.gallery'); let t=0, tOpen=0;
   window.galJustOpened=()=>Date.now()-tOpen<600;
@@ -3617,7 +3624,6 @@ function toggleGal(){        // tryck: öppna. Tryck igen: stäng. (Ignorerar kl
   const open=document.querySelector('.gallery').classList.contains('open');
   if(!open) galOpen(true); else if(!galJustOpened()) galOpen(false);
 }
-window.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const p=document.getElementById('menuPanel'); if(p&&p.classList.contains('open')){ toggleMenu(false); e.stopImmediatePropagation(); } } },true);
 
 
 /* DELA (order 49.E): länken är hela säljstrategin — ryttare till ryttare */

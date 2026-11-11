@@ -1,5 +1,20 @@
-<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><title>Banskiss — rita hoppbanor gratis</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2320252c'/%3E%3Crect x='15' y='20' width='6' height='30' rx='2' fill='%239aa6b3'/%3E%3Crect x='43' y='20' width='6' height='30' rx='2' fill='%239aa6b3'/%3E%3Crect x='15' y='26' width='34' height='5' rx='2.5' fill='%23f5a623'/%3E%3Crect x='15' y='37' width='34' height='5' rx='2.5' fill='%23f5a623'/%3E%3C/svg%3E"><link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2320252c'/%3E%3Crect x='15' y='20' width='6' height='30' rx='2' fill='%239aa6b3'/%3E%3Crect x='43' y='20' width='6' height='30' rx='2' fill='%239aa6b3'/%3E%3Crect x='15' y='26' width='34' height='5' rx='2.5' fill='%23f5a623'/%3E%3Crect x='15' y='37' width='34' height='5' rx='2.5' fill='%23f5a623'/%3E%3C/svg%3E">
+<!doctype html><html lang="sv"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#20252c">
+<meta name="color-scheme" content="light">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Banskiss">
+<meta name="application-name" content="Banskiss">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }</script>
+</head><body><title>Banskiss — rita hoppbanor gratis</title>
+
 <style>
   /* Enkelt, snabbt, ingen onödig polish. Funktion före finish. */
   *{box-sizing:border-box}
@@ -124,7 +139,7 @@
   @media print{ .skisser,.sklight{display:none!important} }
 
   /* ---- MOBIL (≤800px): ritytan får nästan hela skärmen ---- */
-  @media (max-width:800px){
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
     .toolbar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
       gap:6px;padding:6px 8px}
     .toolbar .title{font-size:13px;white-space:nowrap}
@@ -212,7 +227,7 @@
     background:radial-gradient(1200px 500px at 50% 78%, rgba(245,166,35,0.22), rgba(245,166,35,0) 70%), #fffdf9}
   .landing.open{display:block}
   .land-nav{display:flex;align-items:center;justify-content:space-between;
-    padding:18px 34px;max-width:1200px;margin:0 auto}
+    padding:calc(18px + var(--sat)) 34px 18px;max-width:1200px;margin:0 auto}
   .land-navlogo{font-size:22px;font-weight:800;letter-spacing:3px}
   .land-navlogo em{color:#f5a623;font-style:normal}
   .land-navgo{background:#f5a623;color:#141414;font-weight:700;font-size:14px;border:0;
@@ -320,7 +335,7 @@
   .coach .chide{display:flex;align-items:center;gap:10px;font-size:16px;color:#d5dbe2;cursor:pointer}
   .coach .chide input{width:22px;height:22px;accent-color:#f5a623}
   .coach.ok{border-color:#2e8b57;box-shadow:0 0 0 4px rgba(46,139,87,.45),0 14px 48px rgba(0,0,0,.55)}
-  @media (max-width:800px){
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
     .coach{bottom:auto;top:8px;flex-direction:column;align-items:stretch;gap:10px;padding:14px 16px;border-radius:16px}
     .coach h4{font-size:22px} .coach p{font-size:16px}
     .coach .cr{min-width:0} .coach .cb{flex-direction:row;flex-wrap:wrap} .coach .cb button{font-size:16px;padding:12px 14px;flex:1 1 auto}
@@ -421,6 +436,287 @@
     #printSlides .pcourt{display:block;width:100%;height:auto}
     #printSlides p{font:600 17px system-ui,sans-serif;margin:10px 0 0}
   }
+
+  /* =================== TELEFON: enkel vy med bottenfält, hinderlåda och kort markering =================== */
+  :root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);--pbh:58px;
+    --sheetmax:calc(100vh - var(--court-bottom,0px) - var(--pbh) - var(--sab) - 10px)}
+  @supports (height:100dvh){ :root{--sheetmax:calc(100dvh - var(--court-bottom,0px) - var(--pbh) - var(--sab) - 10px)} }
+  html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+  button,.pitem,.tb,.sb,summary{touch-action:manipulation}
+  .phonebar,.phone-only,.ins-moreBtn,.emptyhint{display:none}
+  @media (max-height:500px) and (pointer:coarse){ :root{--pbh:48px} }
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    .desk-only{display:none!important}
+    .phone-only{display:inline-block}
+    html,body{height:100%;background:#20252c}
+    .app{height:100vh;height:100dvh;padding:0 var(--sar) calc(var(--pbh) + var(--sab)) var(--sal);-webkit-user-select:none;user-select:none}
+    .app input,.app select,.app textarea{-webkit-user-select:text;user-select:text;font-size:16px}
+    .toolbar{flex-wrap:nowrap;overflow:visible;padding:calc(8px + var(--sat)) 12px 8px;gap:10px}
+    .toolbar .title{font-size:17px;margin-right:auto;white-space:nowrap}
+    .toolbar .grp{border:0;padding:0;gap:8px}
+    .toolbar .grp .tb{min-width:46px;min-height:42px;font-size:18px}
+    .board-tabs{display:none}
+    .phonebar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:80;background:#20252c;border-top:1px solid #39424e;padding:0 calc(4px + var(--sar)) var(--sab) calc(4px + var(--sal))}
+    .phonebar .tb{flex:1 1 auto;min-width:0;height:var(--pbh);margin:0;padding:0 4px;background:transparent;border:0;border-radius:0;color:#cfd6de;
+      font-size:13px;font-weight:700;letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .phonebar .tb.on{color:#f5a623;background:rgba(245,166,35,.14)}
+    .phonebar .tb.go,.phonebar .advbtn{background:transparent;margin-left:0}
+    body.pres-edit .phonebar,body:has(.skisser.open) .phonebar,body:has(.pres.open) .phonebar{display:none}
+    body.pres-edit .app{padding-bottom:0}
+    /* ritytan: nästan hela skärmen */
+    .stagewrap{padding:8px 6px;align-items:flex-start;justify-content:center}
+    /* hinderlådan (öppnas med Hinder) */
+    .palette{display:none;position:fixed;left:var(--sal);right:var(--sar);bottom:calc(var(--pbh) + var(--sab));z-index:45;max-height:min(56vh,max(236px,var(--sheetmax)));overflow-y:auto;overflow-x:hidden;
+      flex-direction:row;flex-wrap:wrap;align-content:flex-start;gap:8px;padding:12px;background:#f3f5f8;border-top:2px solid #f5a623;border-radius:16px 16px 0 0;
+      box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+    body.tray-open .palette{display:flex}
+    .palette h4{display:block;flex:1 0 100%;margin:0 0 2px;font-size:13px}
+    .palette .phint{display:block;flex:1 0 100%;margin:2px 0 0}
+    .pitem{flex:1 1 calc(33.333% - 8px);max-width:calc(33.333% - 6px);min-width:0;flex-direction:column;justify-content:center;gap:4px;text-align:center;padding:10px 4px;margin:0}
+    .pitem svg{flex:0 0 auto;width:60px;height:44px}
+    .pitem span{font-size:12.5px;line-height:1.15}
+    /* markerat hinder: kort ruta nere */
+    .inspector{left:var(--sal);right:var(--sar);width:auto;bottom:calc(var(--pbh) + var(--sab));max-height:min(44vh,max(210px,var(--sheetmax)));border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.25);padding:12px 14px}
+    .inspector h4{display:none}
+    #inspBody{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+    #inspBody>p{flex:1 0 100%;margin:0!important;order:0}
+    #inspBody .i-core{flex:1 0 100%;margin:0!important;order:1}
+    #inspBody input.i-core{height:38px}
+    #inspBody .i-act{flex:1 1 auto;width:auto;margin:0;padding:13px 8px;font-size:13.5px;white-space:nowrap;order:2}
+    #inspBody .ins-moreBtn{display:block;flex:1 0 100%;margin:0;order:3;background:#e9edf1}
+    #inspBody .i-more{display:none;flex:1 0 100%;margin:0;order:4}
+    #inspBody.show-more .i-more{display:flex}
+    #inspBody .irow input[type=number]{width:84px;font-size:16px}
+    body.tray-open .inspector,body.gal-sheet .inspector,body:has(.advpanel.open) .inspector{display:none!important}
+    /* tom bana: kort tips */
+    body.no-obs .emptyhint{display:block;position:absolute;left:24px;right:24px;bottom:28px;text-align:center;color:#69747f;font-size:15px;line-height:1.5}
+    /* sparade banor som ruta ovanför bottenfältet */
+    body.gal-sheet .gallery{display:block;left:var(--sal);right:var(--sar);bottom:calc(var(--pbh) + var(--sab));transform:none;z-index:46;border-radius:16px 16px 0 0}
+    body.gal-sheet .gtab{height:36px;font-size:12px}
+    /* Avancerat som ruta nere */
+    .advpanel{left:calc(8px + var(--sal));right:calc(8px + var(--sar));width:auto;top:auto!important;bottom:calc(var(--pbh) + var(--sab) + 8px);max-height:min(68vh,max(250px,var(--sheetmax)))}
+    .advpanel .tb{min-height:42px}
+    /* övningar och banskisser: rubrikraden med Stäng uppe till höger, och fri från skärmens överkant */
+    .skhead{padding:calc(14px + var(--sat)) 16px 10px}
+    .skhead h2{order:1}
+    .skhead>.tb{order:2;margin-left:auto!important}
+    .skhead .src{order:3;flex:1 0 100%}
+    .skhead input{order:4;flex:1 0 100%;margin-left:0;width:auto}
+    .skgrid{padding-bottom:calc(16px + var(--sab))}
+    /* presentation */
+    .slidebar{padding:8px 10px calc(8px + var(--sab));gap:6px}
+    .slidebar .row{gap:6px}
+    .slidebar .sb{padding:10px 12px}
+    .pres-top{padding:calc(10px + var(--sat)) 14px 10px}
+    .pres-foot{padding:10px 16px calc(16px + var(--sab))}
+    .coach{top:calc(8px + var(--sat))}
+  }
+  /* =================== TELEFON 2: guiden ovanför banan, banan lika bred hela tiden, Avancerat uppe =================== */
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    .toolbar>.advbtn{margin:0;min-height:42px;padding:0 14px;font-size:14px;font-weight:700;white-space:nowrap;border-radius:10px;flex:0 0 auto}
+    /* guiden: ett kort ovanför banan (ligger i flödet, täcker inget) */
+    .coach{position:relative;left:auto;top:auto;bottom:auto;transform:none;width:auto;margin:6px calc(8px + var(--sar)) 0 calc(8px + var(--sal));flex:0 0 auto;z-index:50;
+      padding:10px 14px 12px;gap:8px;border-width:2px;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+    .coach .cl{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:baseline}
+    .coach .cs{font-size:12px;white-space:nowrap}
+    .coach h4{font-size:19px;margin:0}
+    .coach p{grid-column:1/-1;font-size:15px;line-height:1.4;margin:4px 0 0}
+    .coach .prog{grid-column:1/-1;font-size:14px;min-height:0;margin-top:4px}
+    .coach .prog:empty{display:none}
+    .coach .bar{grid-column:1/-1;height:6px;margin-top:8px}
+    .coach .cr{gap:8px}
+    .coach .cb{flex-direction:row;gap:8px}
+    .coach .cb button{padding:10px 12px;font-size:15px;border-radius:10px;min-height:44px}
+    .coach .chide{font-size:14px;gap:8px}
+    .coach .chide input{width:22px;height:22px}
+  }
+
+  /* korta tips */
+  .tipbar{display:none;position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:95;width:max-content;max-width:min(600px,92vw);background:#20252c;color:#eef1f5;
+    border:2px solid #f5a623;border-radius:14px;padding:12px 14px;gap:14px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+  .tipbar.open{display:flex}
+  .tipbar p{margin:0;font-size:16px;line-height:1.4;flex:1 1 auto;min-width:0}
+  .tipbar button{flex:0 0 auto;border:0;border-radius:10px;background:#f5a623;color:#141414;font-weight:800;font-size:15px;padding:10px 18px;min-height:44px;cursor:pointer}
+  @media print{ .tipbar{display:none!important} }
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    /* tipset läggs över toppraden (flyttar ingenting) */
+    .tipbar{left:calc(8px + var(--sal));right:calc(8px + var(--sar));top:calc(4px + var(--sat));bottom:auto;transform:none;width:auto;max-width:none;padding:7px 8px 7px 12px;gap:10px}
+    .tipbar p{font-size:15px;line-height:1.35}
+    /* startskärmen: bara rubrik, en rad och en knapp */
+    .landing .land-shot,.landing .land-who,.landing .land-steps,.landing .land-end,.landing .land-navgo{display:none}
+    .landing.open{display:flex;flex-direction:column}
+    .land-wrap{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;width:100%;padding:8px 24px calc(48px + var(--sab))}
+    .land-h1{font-size:clamp(34px,10vw,46px);margin:0 0 16px}
+    .land-tag{font-size:17px;margin:0 auto 28px}
+    .land-go{width:100%;max-width:340px;margin:0 auto;min-height:56px}
+  }
+  /* stående telefon: banan är alltid lika bred som skärmen. Den kan bara bli högre eller lägre. */
+  @media (max-width:800px) and (orientation:portrait){
+    .stagewrap{align-items:flex-start;justify-content:stretch}
+    .stage{width:100%}
+    svg.court{width:100%;max-width:none;height:auto}
+  }
+  /* =================== TELEFON 3: zoom, förlåtande touch, liten ruta för markerat hinder =================== */
+  .zoomctl,.rstep,.plbl{display:none}
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    .stagewrap{touch-action:none;overscroll-behavior:contain;align-items:flex-start;justify-content:flex-start;scrollbar-width:none}
+    .stagewrap::-webkit-scrollbar{display:none}
+    .stage{margin:0 auto;flex:0 0 auto}
+    svg.court{width:100%;max-width:none;height:auto}
+    svg.court .rothandle,svg.court .delbtn,svg.court .rotstem{display:none}
+    body:not(.zoomdots) svg.court .bend-handle{display:none}
+    body.dragging .inspector,body.dragging .zoomctl{display:none!important}
+    .zoomctl{display:flex;position:fixed;z-index:39;right:calc(8px + var(--sar));gap:6px;
+      top:min(calc(var(--court-bottom,300px) + 8px), calc(var(--sheet-top,300vh) - 52px), calc(100vh - var(--pbh) - var(--sab) - 54px))}
+    .zoomctl button{min-width:44px;height:44px;border-radius:22px;border:1px solid #c3cbd5;background:rgba(255,255,255,.95);color:#20252c;font-size:24px;font-weight:700;line-height:1;padding:0 12px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+    .zoomctl #zoomFit{display:none;font-size:14px}
+    body.zoomed .zoomctl #zoomFit{display:block}
+    body:not(.zoomed) .zoomctl #zoomOut{opacity:.45}
+    body.tray-open .zoomctl,body.gal-sheet .zoomctl,body:has(.advpanel.open) .zoomctl,body.pres-edit .zoomctl,body:has(.pres.open) .zoomctl,body:has(.skisser.open) .zoomctl,body:has(.landing.open) .zoomctl,body:has(.modal2.open) .zoomctl{display:none}
+    .app{-webkit-touch-callout:none}
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    /* markerat hinder: liten ruta med vridning och fyra knappar */
+    .inspector{padding:10px 12px 12px}
+    .dlbl{display:none} .plbl{display:inline}
+    #inspBody{gap:8px}
+    #inspBody>#inspHead{font-size:13px;color:#4a5562;order:0}
+    #inspBody .rstep{display:block;flex:0 0 auto;width:auto;min-width:58px;height:44px;margin:0;padding:0 8px;font-weight:700;font-size:15px}
+    #inspBody .rstep.rminus{order:1}
+    #inspBody #iRotR{order:2;flex:1 1 100px;width:auto!important;min-width:0;height:44px;margin:0!important}
+    #inspBody .rstep.rplus{order:3}
+    #inspBody .irow.i-core{order:4;flex:0 0 auto;margin:0!important}
+    #inspBody .irow.i-core label{display:none}
+    #inspBody .irow.i-core input{width:60px;height:44px;text-align:center}
+    #inspBody .i-act{order:5;height:44px;padding:0 8px}
+    #inspBody .ins-moreBtn{order:5;flex:1 1 auto;width:auto;height:44px;padding:0 8px}
+    #inspBody .i-more{order:6}
+    #inspBody .irow.i-num{display:flex;order:1;flex:0 0 auto;margin:0;gap:6px;align-items:center}
+    #inspBody .irow.i-num label{font-size:14px;font-weight:600;color:#4a5562}
+    #inspBody .irow.i-num input{width:56px;height:44px;text-align:center}
+  }
+  /* liggande telefon: rutan för markerat hinder ligger till höger, så att banan syns */
+  @media (pointer:coarse) and (max-height:500px) and (orientation:landscape){
+    .inspector{left:auto;right:calc(8px + var(--sar));width:min(380px,48vw);max-height:min(60vh,220px);border-radius:16px 16px 0 0}
+  }
+  @supports (height:100dvh){ @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    .zoomctl{top:min(calc(var(--court-bottom,300px) + 8px), calc(var(--sheet-top,300vh) - 52px), calc(100dvh - var(--pbh) - var(--sab) - 54px))} } }
+  /* =================== TELEFON 4: bottenfältet som ett riktigt flikfält med ikoner =================== */
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    :root{--pbh:62px}
+    .phonebar{background:#14181d;border-top:1px solid #2b323b;padding-left:calc(6px + var(--sal));padding-right:calc(6px + var(--sar));gap:4px;box-shadow:0 -6px 18px rgba(0,0,0,.28)}
+    .phonebar .tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;flex:1 1 0;height:calc(var(--pbh) - 12px);margin:6px 0;border-radius:14px;
+      color:#9aa5b2;font-size:11.5px;font-weight:600;letter-spacing:0;transition:background .15s,color .15s}
+    .phonebar .tb::before{content:"";flex:0 0 auto;width:24px;height:24px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+    .phonebar .tb:active{background:rgba(255,255,255,.07)}
+    .phonebar .tb.on{color:#141414;background:#f5a623}
+    .phonebar #trayBtn{--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 21V4M19 21V4M5 8h14M5 13h14'/></svg>")}
+    .phonebar #numBtn{--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M10.3 9.6l2.2-1.6v8'/></svg>")}
+    .phonebar #ovnOpenBtn{--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3.5' y='4' width='17' height='16' rx='2.5'/><path d='M8 9h8M8 13h8M8 17h5'/></svg>")}
+    .phonebar #presBtn{--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4.5' width='18' height='13' rx='2.5'/><path d='M10.2 8.4l4.8 2.6-4.8 2.6zM8 21h8'/></svg>")}
+  }
+  @media (pointer:coarse) and (max-height:500px){
+    :root{--pbh:48px}
+    .phonebar .tb{flex-direction:row;gap:8px;height:calc(var(--pbh) - 10px);margin:5px 0;font-size:12.5px}
+    .phonebar .tb::before{width:20px;height:20px}
+  }
+  /* TELEFON 5: Alternativ nere (i stället för Numrera), öppnas som en låda */
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    .phonebar #advBtn{--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1'/><circle cx='15' cy='7' r='2'/><circle cx='9' cy='12' r='2'/><circle cx='17' cy='17' r='2'/></svg>");order:0;min-height:0;padding:0 4px;border:0}
+    .phonebar #trayBtn{order:-1}
+    .phonebar #ovnOpenBtn,.phonebar #presBtn{order:1}
+    .advpanel{left:var(--sal);right:var(--sar);bottom:calc(var(--pbh) + var(--sab));border-radius:16px 16px 0 0;border:0;border-top:2px solid #f5a623;box-shadow:0 -10px 30px rgba(0,0,0,.3);padding:10px 14px 14px}
+    .advpanel #numBtn{background:#f5a623;color:#141414;border-color:#f5a623;font-weight:700}
+  }
+  /* TELEFON 6: hindren ligger framme under banan (tryck eller dra upp), och samma textstorlek i Alternativ */
+  @media (max-width:800px){
+    .pitem{flex:1 1 calc(25% - 8px);max-width:calc(25% - 6px);padding:8px 2px;touch-action:none}
+    .pitem svg{width:52px;height:38px}
+    .pitem span{font-size:11.5px}
+    .palette h4{font-size:13px;text-transform:none;letter-spacing:0;color:#4a5562;font-weight:600}
+    .palette .phint{display:none}
+    .advpanel .tb,.advpanel input,.advpanel label,.advpanel .mrow,.advpanel .mrow span{font-size:16px}
+    .advpanel .tb{padding:0 14px;min-height:44px}
+    .advpanel input[type=number]{width:64px;height:44px}
+    .advpanel h5{font-size:12px}
+  }
+  @media (max-width:800px) and (orientation:portrait){
+    body.phone:not(.tray-open):not(.zoomed):not(.pres-edit) .palette{display:flex;z-index:38;top:calc(var(--court-bottom,300px) + 62px);max-height:none;border-top:0;border-radius:16px 16px 0 0;box-shadow:0 -2px 10px rgba(0,0,0,.08);background:#eef1f5}
+    body.phone:not(.zoomed) .emptyhint{display:none!important}
+    body.dragging .palette{opacity:.35;pointer-events:none}
+  }
+  /* =================== TELEFON 7: appen används liggande. Knapparna i en smal rad till vänster, banan får resten. =================== */
+  .rotateask{display:none}
+  @media (pointer:coarse) and (max-width:800px) and (orientation:portrait){
+    html:not(.norotate) .rotateask{display:flex;position:fixed;inset:0;z-index:500;background:#14181d;color:#eef1f5;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;gap:6px}
+    .rotateask h2{margin:18px 0 0;font-size:26px}
+    .rotateask p{margin:6px 0 0;font-size:17px;line-height:1.45;color:#aeb8c4;max-width:300px}
+    .rotateask button{margin-top:26px;min-height:52px;padding:0 26px;border:0;border-radius:999px;background:#f5a623;color:#141414;font-size:17px;font-weight:800}
+    .rotateask small{margin-top:14px;font-size:13.5px;line-height:1.4;color:#7f8a97;max-width:280px}
+    .rphone{width:64px;height:112px;border:4px solid #f5a623;border-radius:14px;animation:rturn 2.6s ease-in-out infinite}
+    @keyframes rturn{0%,25%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+  }
+  @media (prefers-reduced-motion:reduce){ .rphone{animation:none;transform:rotate(-90deg)} }
+  @media (pointer:coarse) and (max-height:500px) and (orientation:landscape){
+    :root{--pbh:0px;--rail:74px}
+    .app{padding:0 var(--sar) 0 calc(var(--rail) + var(--sal))}
+    body.pres-edit .app,body:has(.skisser.open) .app,body:has(.pres.open) .app{padding-left:var(--sal)}
+    .phonebar{top:0;bottom:0;right:auto;width:calc(var(--rail) + var(--sal));flex-direction:column;gap:2px;padding:4px 4px calc(58px + var(--sab)) calc(4px + var(--sal));border-top:0;border-right:1px solid #2b323b;box-shadow:none}
+    .phonebar .tb{flex:1 1 0;flex-direction:column;gap:3px;width:100%;height:auto;margin:0;font-size:10px;letter-spacing:-.2px;border-radius:12px}
+    .phonebar .tb::before{width:22px;height:22px}
+    .toolbar{position:fixed;left:var(--sal);bottom:var(--sab);width:var(--rail);z-index:81;background:transparent;padding:4px;gap:0;justify-content:center;border:0;min-height:0}
+    .toolbar .title{display:none}
+    body.pres-edit .toolbar,body:has(.pres.open) .toolbar{bottom:auto;top:4px}
+    .toolbar .grp{gap:4px}
+    .toolbar .grp .tb{min-width:30px;width:30px;min-height:40px;padding:0;font-size:16px}
+    .stagewrap{padding:4px 6px calc(4px + var(--sab) * .6)}
+    .palette{left:auto;right:var(--sar);top:0;bottom:0;width:min(330px,44vw);max-height:none;border-top:0;border-left:2px solid #f5a623;border-radius:16px 0 0 16px}
+    .pitem{flex:1 1 calc(33.333% - 8px);max-width:calc(33.333% - 6px);padding:8px 2px}
+    .inspector{left:auto;right:calc(8px + var(--sar));bottom:calc(6px + var(--sab));width:min(380px,48vw);max-height:60vh;border-radius:16px}
+    .advpanel{left:auto;right:var(--sar);top:0!important;bottom:0;width:min(400px,52vw);max-height:none;border-radius:16px 0 0 16px;border-top:0;border-left:2px solid #f5a623}
+    body.gal-sheet .gallery{left:calc(var(--rail) + var(--sal));bottom:0}
+    .zoomctl{top:auto;bottom:calc(8px + var(--sab));right:calc(8px + var(--sar))}
+    body.has-sel .zoomctl{display:none}
+    .coach{position:fixed;right:auto;left:calc(var(--rail) + var(--sal) + 8px);top:8px;width:min(290px,36vw);margin:0;z-index:44;padding:8px 12px 10px;gap:6px}
+    .coach p{font-size:14px;line-height:1.35}
+    .coach .cb button{padding:6px 8px;font-size:14px}
+    .coach .chide{font-size:13px}
+    .tipbar{left:calc(var(--rail) + var(--sal) + 8px)}
+  }
+  /* TELEFON 8: fel från genomgången */
+  @media (pointer:coarse) and (max-height:500px) and (orientation:landscape){
+    body:has(.skisser.open) .toolbar,body:has(.landing.open) .toolbar,body:has(.modal2.open) .toolbar{display:none}
+    .emptyhint{display:none!important}
+    body.insp-left .inspector{right:auto;left:calc(var(--rail) + var(--sal) + 8px)}
+  }
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    .skhead>.tb,.skisser .tb,.skisser button,.slidebar .sb,.box2 button,.combo-dialog button{min-height:44px}
+    .slidebar .sb{min-width:44px}
+    .slidebar button{min-width:40px;min-height:40px}
+    .slidebar .mcol{min-width:34px;width:34px;min-height:34px;height:34px}
+  }
+  /* dator: i presentationsläget ska bildlisten inte täcka de sista hindren i listan */
+  @media (min-width:801px){ body.pres-edit .palette{padding-bottom:120px} }
+  /* TELEFON 9: markerat hinder = en rad tydliga knappar med ikoner. Nummer, reglage och resten ligger under Mer. */
+  .ptool{display:none}
+  @media (max-width:800px), (pointer:coarse) and (max-height:500px){
+    #inspBody{gap:6px}
+    #inspBody .i-act,#inspBody .ins-moreBtn,#inspBody .ptool{flex:1 1 0;min-width:0;width:auto;height:60px;margin:0;padding:0 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+      font-size:11.5px;font-weight:600;white-space:nowrap;border:1px solid #dde2e8;background:#fff;border-radius:14px;color:#20252c}
+    #inspBody .i-act::before,#inspBody .ins-moreBtn::before,#inspBody .ptool::before{content:"";flex:0 0 auto;width:22px;height:22px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+    #inspBody .i-act:active,#inspBody .ins-moreBtn:active,#inspBody .ptool:active{background:#eef1f5}
+    #inspBody .i-act[onclick="flipSel()"]{order:5;--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 20V4M8 4L5 7M8 4l3 3M16 4v16M16 20l-3-3M16 20l3-3'/></svg>")}
+    #inspBody .i-act[onclick="duplicateSel()"]{order:6;--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='9' y='9' width='11' height='11' rx='2'/><path d='M5 15V6a2 2 0 0 1 2-2h9'/></svg>")}
+    #inspBody .ptool{order:7;--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5'/></svg>")}
+    #inspBody .i-act.del{order:8;--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6'/></svg>");color:#b3261e;border-color:#f0c9c6}
+    #inspBody .ins-moreBtn{order:9;--ic:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='5' cy='12' r='1.2'/><circle cx='12' cy='12' r='1.2'/><circle cx='19' cy='12' r='1.2'/></svg>");background:#fff}
+    #inspBody.show-more .ins-moreBtn{background:#f5a623;border-color:#f5a623}
+    #inspBody #iRotR,#inspBody .irow.i-core,#inspBody .irow.i-num{display:none}
+    #inspBody.show-more #iRotR{display:block;order:11;flex:1 0 100%}
+    #inspBody.show-more .irow.i-core,#inspBody.show-more .irow.i-num{display:flex;order:10;flex:1 0 100%;justify-content:space-between;align-items:center}
+    #inspBody.show-more .irow.i-core label{display:block}
+    #inspBody .irow.i-num label{font-size:inherit;font-weight:inherit;color:inherit}
+    #inspBody .i-more{order:12}
+  }
 </style>
 
 <div class="app">
@@ -441,13 +737,13 @@
       <button class="tb go" id="ovnOpenBtn" onclick="openOvningar()">Övningar</button>
       <button class="tb go" id="presBtn" onclick="openPresentation()" title="Bildserie av banan för genomgång eller klinik">Presentation</button>
     </div>
-    <button class="tb advbtn" id="advBtn" onclick="toggleAdv()" aria-expanded="false" aria-controls="advPanel">Avancerat</button>
+    <button class="tb advbtn" id="advBtn" onclick="advClick()" aria-expanded="false" aria-controls="advPanel">Avancerat</button>
 
     <div class="advpanel" id="advPanel">
       <div class="msec">
         <h5>Verktyg</h5>
         <div class="mrow">
-          <button class="tb" id="alignBtn" onclick="toggleAlign()">Linjera</button>
+          <button class="tb desk-only" id="alignBtn" onclick="toggleAlign()">Linjera</button>
           <button class="tb" id="saveBtn" onclick="saveToLibrary()" title="Spara till bibliotek">Spara</button>
           <button class="tb print" id="printBtn" onclick="printMain()">Skriv ut</button>
         </div>
@@ -466,22 +762,23 @@
         <h5>Rutnät och visning</h5>
         <div class="mrow">
           <label>Rutnät</label>
-          <button class="tb" id="g10" onclick="setGrid(10)">10 m</button>
+          <button class="tb desk-only" id="g10" onclick="setGrid(10)">10 m</button>
           <button class="tb on" id="g5" onclick="setGrid(5)">5 m</button>
-          <button class="tb" id="g2" onclick="setGrid(2)">2 m</button>
-          <button class="tb" id="g1" onclick="setGrid(1)">1 m</button>
+          <button class="tb desk-only" id="g2" onclick="setGrid(2)">2 m</button>
+          <button class="tb desk-only" id="g1" onclick="setGrid(1)">1 m</button>
           <button class="tb" id="g0" onclick="setGrid(0)">Av</button>
-          <label style="margin-left:8px">Zoom</label>
-          <button class="tb" onclick="setZoom(-2)" aria-label="Zooma ut">−</button>
-          <button class="tb" onclick="setZoom(2)" aria-label="Zooma in">+</button>
+          <label class="desk-only" style="margin-left:8px">Zoom</label>
+          <button class="tb desk-only" onclick="setZoom(-2)" aria-label="Zooma ut">−</button>
+          <button class="tb desk-only" onclick="setZoom(2)" aria-label="Zooma in">+</button>
           <button class="tb on" id="linesBtn" onclick="toggleLines()" style="margin-left:8px">Avstånd på</button>
         </div>
       </div>
       <div class="msec">
         <h5>Bana</h5>
         <div class="mrow">
-          <button class="tb" id="designBtn" onclick="toggleDesign()">Design</button>
+          <button class="tb desk-only" id="designBtn" onclick="toggleDesign()">Design</button>
           <button class="tb go" id="skisserBtn" onclick="toggleSkisser()">Äkta banskisser</button>
+          <button class="tb phone-only" onclick="openSavedSheet()">Sparade banor</button>
           <button class="tb go" onclick="shareApp()">Dela</button>
           <button class="tb" onclick="clearCourse()">Rensa hinder</button>
         </div>
@@ -490,15 +787,29 @@
         <h5>Hjälp</h5>
         <div class="mrow">
           <button class="tb" onclick="startGuide()" title="Steg-för-steg-guide">Guide</button>
-          <button class="tb" onclick="openAdv()" title="Upptäck alla funktioner">Funktioner</button>
+          <button class="tb desk-only" onclick="openAdv()" title="Upptäck alla funktioner">Funktioner</button>
           <button class="tb" onclick="openNews(true)" title="Vad är nytt?">Nytt</button>
-          <select id="langSelect" onchange="changeLang(this.value)" style="padding:6px 8px;border-radius:5px;border:1px solid #454f5c;background:#2f3742;color:#fff;font-size:12px;cursor:pointer">
+          <select id="langSelect" class="desk-only" onchange="changeLang(this.value)" style="padding:6px 8px;border-radius:5px;border:1px solid #454f5c;background:#2f3742;color:#fff;font-size:12px;cursor:pointer">
             <option value="sv">Svenska</option>
             <option value="en">English</option>
           </select>
           <button class="tb" id="proBtn" onclick="openAuthModal()" title="Aktivera Pro" style="display:none">Pro aktivera</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="coach" id="coach">
+    <div class="cl">
+      <div class="cs" id="coachStep"></div>
+      <h4 id="coachH"></h4>
+      <p id="coachP"></p>
+      <div class="prog" id="coachProg"></div>
+      <div class="bar"><i id="coachBar"></i></div>
+    </div>
+    <div class="cr">
+      <div class="cb" id="coachBtns"></div>
+      <label class="chide"><input type="checkbox" id="coachHide" onchange="guideSetHide(this.checked)"> Visa inte guiden igen</label>
     </div>
   </div>
 
@@ -520,7 +831,9 @@
         <div class="descbar" id="descBar"></div>
         <div class="distbadge" id="distbadge"></div>
       </div>
+      <div class="emptyhint">Tryck <b>Hinder</b> för att lägga till ett hinder på banan.</div>
     </div>
+    <div class="zoomctl" id="zoomCtl"><button id="zoomFit" onclick="setCourtZoom(1)">Hela banan</button><button id="zoomOut" onclick="zoomStep(-1)" aria-label="Zooma ut">−</button><button id="zoomIn" onclick="zoomStep(1)" aria-label="Zooma in">+</button></div>
 
     <!-- inspektor -->
     <div class="inspector" id="inspector">
@@ -570,6 +883,9 @@
     <div class="gitems" id="gitems"><span class="gempty">Inga sparade banor än.</span></div>
   </div>
 </div>
+
+<!-- TELEFON: bottenfält (knapparna flyttas hit av JS på smal skärm) -->
+<nav class="phonebar" id="phoneBar" aria-label="Huvudval"><button class="tb" id="trayBtn" onclick="toggleTray()">Hinder</button></nav>
 
 <!-- ÖVNINGSBIBLIOTEK -->
 <div class="skisser" id="ovnPanel">
@@ -668,7 +984,6 @@
     <h1 class="land-h1">Det nya sättet att<br>bygga hoppbanor</h1>
     <p class="land-tag">Från idé till färdig banskiss på minuter. Dra in hindren, numrera — ridvägen och alla avstånd ritas automatiskt. Skriv ut och bygg.</p>
     <button class="land-go" onclick="closeLanding()">Kom igång gratis</button>
-    <div style="margin-top:14px"><a href="#" onclick="dismissLanding();return false" style="font-size:13px;color:#8a95a1;text-decoration:underline">Visa inte den här sidan igen</a></div>
     <p class="land-note">Rita obegränsat gratis — inga kortuppgifter, ingen inloggning.</p>
 
     <!-- Produktbild: riktig banskiss-mockup -->
@@ -708,7 +1023,7 @@
         <h3>Design-läge</h3>
         <p>Blockera ytor som inte går att bygga på — träd, läktare, uddaformade paddockar. Banan blir som din verklighet.</p></div>
     </div>
-    <div style="margin-top:52px">
+    <div class="land-end" style="margin-top:52px">
       <button class="land-go" onclick="closeLanding()">Kom igång gratis</button>
       <p class="land-note">Rita obegränsat gratis — inga kortuppgifter, ingen inloggning.</p>
     </div>
@@ -797,19 +1112,8 @@
 
 <div id="printSlides"></div>
 
-<div class="coach" id="coach">
-  <div class="cl">
-    <div class="cs" id="coachStep"></div>
-    <h4 id="coachH"></h4>
-    <p id="coachP"></p>
-    <div class="prog" id="coachProg"></div>
-    <div class="bar"><i id="coachBar"></i></div>
-  </div>
-  <div class="cr">
-    <div class="cb" id="coachBtns"></div>
-    <label class="chide"><input type="checkbox" id="coachHide" onchange="guideSetHide(this.checked)"> Visa inte guiden igen</label>
-  </div>
-</div>
+<div class="rotateask" id="rotateAsk" role="status"><div class="rphone" aria-hidden="true"></div><h2>Vänd telefonen</h2><p>Lägg telefonen på sidan, så får banan nästan hela skärmen.</p><button onclick="stayPortrait()">Fortsätt stående</button><small>Går det inte att vända? Stäng av rotationslåset, eller fortsätt stående.</small></div>
+<div class="tipbar" id="tipbar" role="status"><p id="tipText"></p><button onclick="tipClose()">OK</button></div>
 
 <div class="modal2" id="newsModal"><div class="box2" id="newsBox"></div></div>
 <div class="modal2" id="advModal"><div class="box2" id="advBox"></div></div>
@@ -829,7 +1133,7 @@
 <div class="setup-modal" id="setupModal">
   <div class="setup-box">
     <h3 id="setupTitle">Skapa din bana</h3>
-    <p>Ge banan ett namn och ställ in måtten. Du kan lägga till fler banor sedan med <strong>+</strong>.</p>
+    <p>Ge banan ett namn och ställ in måtten.<span class="desk-only"> Du kan lägga till fler banor sedan med <strong>+</strong>.</span></p>
     <div class="setup-row"><label>Banans namn</label><input type="text" id="setupName" placeholder="t.ex. Ridhuset hemma"></div>
     <div class="setup-dims">
       <div class="setup-row"><label>Längd (m)</label><input type="number" id="setupW" min="15" max="150" value="70"></div>
@@ -1055,7 +1359,8 @@ function setArena(m){
   if(m==='ute'){ S.W=90; S.H=40; } else { S.W=70; S.H=30; }
   render(); updateFilter();
 }
-function load(){ S = fresh(); S.name='Bana 1'; S.bends={}; S.labels={}; S.lineH={}; BOARDS=[S]; activeBoard=0; }
+function load(){ if(restoreSession()){ _setupDone=true; return; }      // har man varit inne förut kommer man rakt in i sin bana
+  S = fresh(); S.name='Bana 1'; S.bends={}; S.labels={}; S.lineH={}; BOARDS=[S]; activeBoard=0; }
 
 /* ---------- koordinat-hjälpare ---------- */
 const svgW = () => (S.W + 2*PAD) * SCALE;
@@ -1227,7 +1532,7 @@ function obstacleSVG(o, i){
   let handle='';
   if(sel){
     // STORT rotationshandtag med ↻-ikon + × ta bort-knapp (order 35)
-    handle = `<line x1="0" y1="0" x2="0" y2="${-M(2.3)+11}" stroke="#f5a623" stroke-width="2"/>
+    handle = `<line class="rotstem" x1="0" y1="0" x2="0" y2="${-M(2.3)+11}" stroke="#f5a623" stroke-width="2"/>
       <g class="rothandle" data-rot="${o.id}" style="cursor:grab">
         <circle cx="0" cy="${-M(2.3)}" r="11" fill="#f5a623" stroke="#141414" stroke-width="1.5"/>
         <text x="0" y="${-M(2.3)+4.5}" text-anchor="middle" font-size="13" font-weight="700" fill="#141414" style="pointer-events:none">↻</text>
@@ -1250,6 +1555,7 @@ function boardSnap(){ return JSON.stringify({
   o:S.obstacles, m:S.marks||[], b:S_bends, l:S_labels, hh:_lineHandles,
   W:S.W, H:S.H, name:S.name, mode:S.mode, grid:S.gridM }); }
 function commit(){
+  saveSessionSoon();
   if(_histLock) return;
   const snap=boardSnap();
   if(_undo.length && _undo[_undo.length-1]===snap) return;
@@ -1294,13 +1600,14 @@ function render(){
   const old = stage.querySelector('svg.court'); if(old) old.remove();
   stage.insertAdjacentHTML('afterbegin', svg);
   // auto-skala på mobil: hela banan ska synas vid laddning
-  if(window.innerWidth<=800 && !old){
+  if(isPhone() && !old){
     const wrap = document.getElementById('stagewrap');
     const s = courtEl();
     if(s && wrap){
       const maxW = wrap.clientWidth-16, maxH = wrap.clientHeight-16;
-      const scale = Math.min(maxW/svgW(), maxH/svgH());
-      SCALE = Math.max(8, Math.min(26, Math.round(SCALE*scale)));
+      const portrait = window.innerHeight >= window.innerWidth;      // stående: banan är alltid lika bred som skärmen (bara höjden varierar)
+      const scale = portrait ? maxW/svgW() : Math.min(maxW/svgW(), maxH/svgH());
+      SCALE = Math.max(portrait?7:8, Math.min(26, Math.round(SCALE*scale)));
       render();
       return;
     }
@@ -1315,7 +1622,8 @@ function render(){
   renderPrintHead();
   updateDescBar();
   // mobil: inspektorn visas som bottenlucka bara när ett hinder är markerat
-  document.body.classList.toggle('has-sel', !!S.sel);
+  document.body.classList.toggle('has-sel', !!S.sel); document.body.classList.toggle('no-obs', S.obstacles.length===0);
+  fitCourt(); syncCourtBottom(); saveSessionSoon(); tipCheck();
   if(typeof guideCheck==='function') guideCheck();
 }
 
@@ -1333,7 +1641,7 @@ function buildPalette(){
   const pal = document.getElementById('palette');
   const hint = pal.querySelector('.phint'), h = pal.querySelector('h4');
   pal.innerHTML=''; pal.appendChild(h);
-  h.textContent = _designMode ? 'Blockera en yta' : 'Dra in ett hinder';
+  h.textContent = _designMode ? 'Blockera en yta' : (isPhone() ? 'Tryck på ett hinder eller dra upp det på banan' : 'Dra in ett hinder');
   const previewDefs = `<defs><pattern id="blockhatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#aeb6c0" fill-opacity="0.35"/><line x1="0" y1="0" x2="0" y2="8" stroke="#6b7684" stroke-width="2.5" opacity="0.55"/></pattern></defs>`;
   Object.entries(OBSTACLES).filter(([type])=>
       _designMode ? DESIGN_TYPES.includes(type)
@@ -1342,14 +1650,15 @@ function buildPalette(){
     const b=document.createElement('button'); b.className='pitem'; b.dataset.type=type;
     // liten förhandsvisning i egen mini-svg
     b.innerHTML=`<svg width="40" height="30" viewBox="-24 -15 48 30">${isZone(type)?previewDefs:''}${def.draw({w:2.6,rot:0,d:Math.min(def.d||1,1.6)})}</svg><span>${def.namn}</span>`;
-    b.addEventListener('pointerdown', e=>startNew(e, type));
+    b.addEventListener('pointerdown', e=>{ if(isPhone()){ _pd={type,x:e.clientX,y:e.clientY,pid:e.pointerId}; return; } startNew(e, type); });
+    b.addEventListener('click', ()=>{ if(isPhone()){ if(Date.now()-_pdDragT<350) return; addAtCenter(type); } });
     pal.appendChild(b);
   });
   if(_designMode){
     const p=document.createElement('p'); p.className='phint';
     p.textContent='Blockera ytor som inte går att bygga på — träd, läktare, paddock-hörn. "Egen form": klicka ut hörnen på banan, dubbelklicka för att avsluta.';
     pal.appendChild(p);
-  } else pal.appendChild(hint);
+  } else { if(isPhone()) hint.textContent='Tryck på ett hinder så läggs det mitt på banan. Dra det sedan på plats.'; else hint.textContent='Dra ett hinder till banan. Klicka på ett hinder för att rotera, ändra bredd eller lägga till sockerbitar.'; pal.appendChild(hint); }
 }
 
 /* ---------- inspektor ----------
@@ -1374,31 +1683,33 @@ function renderInspector(){
     if(h) h.textContent=((o.num!=null&&o.num!=='')?('#'+o.num+' · '):'')+def.namn;
     return;
   }
-  _inspFor=o.id;
+  _inspFor=o.id; body.classList.remove('show-more');
   const zone=isZone(o.type);
   body.innerHTML=`
     <p id="inspHead" style="margin:0 0 10px;font-weight:600">${(o.num!=null&&o.num!=='')?('#'+o.num+' · '):''}${def.namn}</p>
-    ${zone?'':`<div class="irow"><label>Nummer</label><input type="number" id="iNum" min="1" max="99" placeholder="—" value="${o.num??''}" oninput="setNum(this.value)"></div>`}
-    <div class="irow"><label>Rotation</label><input type="number" id="iRot" min="0" max="359" value="${o.rot}" oninput="setRot(this.value)"></div>
-    <input type="range" id="iRotR" min="0" max="359" value="${o.rot}" oninput="setRot(this.value)" style="width:100%;margin-bottom:10px">
-    ${o.type==='zone_poly'?'':`<div class="irow"><label>Bredd (m)</label><input type="number" id="iW" min="1" max="${def.wMax||6}" step="0.1" value="${o.w}" oninput="setWidth(this.value)"></div>`}
-    ${def.dMin!==undefined? `<div class="irow"><label>Djup (m)</label><input type="number" id="iD" min="${def.dMin}" max="${def.dMax}" step="0.1" value="${o.d??def.d}" oninput="setDepth(this.value)"></div>`:''}
-    ${zone?'':`<div class="irow"><label>Färg</label><input type="color" id="iColor" value="${o.color||def.color||'#20252c'}" oninput="setColor(this.value)"></div>
-    <label class="chk"><input type="checkbox" ${o.sugar?'checked':''} onchange="toggleSugar(this.checked)"> Sockerbitar vid foten</label>
-    ${isMarker(o.type)?'':`<div class="irow"><label>Hoppriktning</label><select id="iDir" onchange="setDirMode(this.value)" style="padding:5px 6px;border:1px solid #cfd6de;border-radius:5px;max-width:122px">
+    ${zone?'':`<div class="irow i-more i-num"><label>Nr</label><input type="number" id="iNum" min="1" max="99" placeholder="—" value="${o.num??''}" oninput="setNum(this.value)"></div>`}
+    <div class="irow i-core"><label>Rotation</label><input type="number" id="iRot" min="0" max="359" value="${o.rot}" oninput="setRot(this.value)"></div>
+    <input type="range" id="iRotR" class="i-core" min="0" max="359" value="${o.rot}" oninput="setRot(this.value)" aria-label="Rotation" style="width:100%;margin-bottom:10px">
+    ${o.type==='zone_poly'?'':`<div class="irow i-more"><label>Bredd (m)</label><input type="number" id="iW" min="1" max="${def.wMax||6}" step="0.1" value="${o.w}" oninput="setWidth(this.value)"></div>`}
+    ${def.dMin!==undefined? `<div class="irow i-more"><label>Djup (m)</label><input type="number" id="iD" min="${def.dMin}" max="${def.dMax}" step="0.1" value="${o.d??def.d}" oninput="setDepth(this.value)"></div>`:''}
+    ${zone?'':`<div class="irow i-more"><label>Färg</label><input type="color" id="iColor" value="${o.color||def.color||'#20252c'}" oninput="setColor(this.value)"></div>
+    <label class="chk i-more"><input type="checkbox" ${o.sugar?'checked':''} onchange="toggleSugar(this.checked)"> Sockerbitar vid foten</label>
+    ${isMarker(o.type)?'':`<div class="irow i-more"><label>Hoppriktning</label><select id="iDir" onchange="setDirMode(this.value)" style="padding:5px 6px;border:1px solid #cfd6de;border-radius:5px;max-width:122px">
       <option value="one" ${(o.dirMode||'one')==='one'?'selected':''}>En riktning</option>
       <option value="both" ${o.dirMode==='both'?'selected':''}>Båda riktningarna</option>
       <option value="none" ${o.dirMode==='none'?'selected':''}>Ingen</option></select></div>`}
-    <button class="ibtn" onclick="flipSel()">⇅ ${(o.dirMode||'one')==='one'?'Byt hoppriktning':'Vänd hindret'}</button>`}
-    ${o._cavRad?`<div style="border-top:1px solid #cfd6de;margin:10px 0 8px;padding-top:8px">
+    <button class="ibtn i-act" onclick="flipSel()"><span class="dlbl">⇅ ${(o.dirMode||'one')==='one'?'Byt hoppriktning':'Vänd hindret'}</span><span class="plbl">Riktning</span></button>`}
+    ${o._cavRad?`<div class="i-more" style="border-top:1px solid #cfd6de;margin:10px 0 8px;padding-top:8px">
       <div class="irow"><label>Böj raden</label><span style="font-size:11px;color:#69747f">rakt ← → böjt</span></div>
       <input type="range" id="iBend" min="-100" max="100" step="1" value="${o._bend||0}"
         oninput="bendCavRad(this.value)" style="width:100%">
       <div class="irow" style="margin-top:6px"><label>Avstånd (m)</label>
         <input type="number" id="iCavGap" min="0.5" max="6" step="0.1" value="${o._cavGap||1.3}"
           oninput="setCavGap(this.value)"></div></div>`:''}
-    <button class="ibtn" onclick="duplicateSel()">Duplicera</button>
-    <button class="ibtn del" onclick="deleteSel()">${zone?'Ta bort yta':'Ta bort hinder'}</button>`;
+    <button class="ibtn ptool" onclick="stepRot(45)" aria-label="Vrid 45 grader">Vrid</button>
+    <button class="ibtn i-act" onclick="duplicateSel()"><span class="dlbl">Duplicera</span><span class="plbl">Kopiera</span></button>
+    <button class="ibtn del i-act" onclick="deleteSel()"><span class="dlbl">${zone?'Ta bort yta':'Ta bort hinder'}</span><span class="plbl">Ta bort</span></button>
+    <button class="ibtn ins-moreBtn" onclick="toggleInsMore()"><span class="dlbl">Fler val</span><span class="plbl">Mer</span></button>`;
 }
 function renderPrintHead(){
   const used=[...new Set(S.obstacles.map(o=>o.type))];
@@ -1442,16 +1753,19 @@ function doAlign(){
   const rot0=parts[0].rot; parts.forEach(o=>{ o.rot=rot0; });
 }
 let numMode=false, numNext=1;
+function numLabel(){ return isPhone() ? 'Numrera' : 'Klicka hinder → nr '+numNext+' (Esc avslutar)'; }
 function toggleNumMode(){
   numMode=!numMode; numNext=1;
   const b=document.getElementById('numBtn');
   b.classList.toggle('on', numMode);
-  b.textContent = numMode ? ('Klicka hinder → nr '+numNext+' (Esc avslutar)') : 'Numrera';
+  b.textContent = numMode ? numLabel() : 'Numrera';
+  syncAdvBtn();
+  if(numMode) showTip('nummode', isPhone()?'Tryck på hindren i hoppordning. Tryck sedan <b>Klar</b>.':'Klicka på hindren i hoppordning. Tryck Esc när du är klar.');
 }
 function numModeClick(o){
   o.num = numNext++; S.sel = o.id;
   const b=document.getElementById('numBtn');
-  b.textContent = 'Klicka hinder → nr '+numNext+' (Esc avslutar)';
+  b.textContent = numLabel();
   render();
 }
 function clearCourse(){ uiConfirm('Ta bort alla hinder på den här banan?', ()=>{ S.obstacles=[]; S.desc=''; S.sel=null; S_bends={}; S_labels={}; _lineHandles={}; render(); commit(); }, 'Ta bort'); }
@@ -1847,7 +2161,7 @@ function onStagePointerDown(e){
     const p=clientToMeter(e.clientX,e.clientY);
     // LAGER (order 36 2b): klick på ett REDAN markerat hinder när fler
     // ligger under pekaren → växla till nästa i högen. Större träffyta på mobil.
-    const isMobile = window.innerWidth <= 800;
+    const isMobile = isPhone();
     const stack = S.obstacles.filter(o=>{
       const r = isMobile ? Math.max(o.w/2 + 1.5, 2.5) : Math.max(o.w/2 + 0.8, 2);
       return Math.abs(o.x-p.x)<=r && Math.abs(o.y-p.y)<=r;
@@ -2131,6 +2445,7 @@ function renderGallery(){
       <span class="gx" onclick="delSaved('${x.id}')">✕</span></div></div>`).join('');
 }
 function openSaved(id){
+  document.body.classList.remove('gal-sheet');
   if(typeof galOpen==='function') galOpen(false);
   const x=getLib().find(v=>v.id===id); if(!x)return;
   if(typeof presClose==='function' && _pres) presClose();
@@ -2935,6 +3250,31 @@ window.__demoStart=function(){ window.__demoRun=true; window.__demoT0=0; };
 let BOARDS=[], activeBoard=0, _setupDone=false, _pendingSetup=false, _setupAddNew=false;
 function stashActive(){ if(BOARDS[activeBoard]){ BOARDS[activeBoard].bends=S_bends; BOARDS[activeBoard].labels=S_labels; BOARDS[activeBoard].lineH=_lineHandles; } }
 function loadActiveGlobals(){ S_bends=S.bends||{}; S_labels=S.labels||{}; _lineHandles=S.lineH||{}; }
+/* KOM IHÅG MIG: allt man ritat sparas av sig själv på enheten och finns kvar nästa gång appen öppnas */
+if(/norotate/.test(location.search)) document.documentElement.classList.add('norotate');
+try{ if(localStorage.getItem('banskiss_portrait')==='1') document.documentElement.classList.add('norotate'); }catch(e){}
+function stayPortrait(){ document.documentElement.classList.add('norotate'); try{ localStorage.setItem('banskiss_portrait','1'); }catch(e){} window.dispatchEvent(new Event('resize')); render(); }
+const LS_SESSION='banskiss_session_v1'; let _sessT=0;
+function saveSessionNow(){
+  clearTimeout(_sessT); if(!_setupDone) return;
+  try{ stashActive();
+    localStorage.setItem(LS_SESSION, JSON.stringify({v:1, t:Date.now(), active:activeBoard, boards:BOARDS.map(b=>({mode:b.mode, W:b.W, H:b.H, gridM:b.gridM, obstacles:b.obstacles,
+      showLines:b.showLines, marks:b.marks||[], slides:b.slides||null, name:b.name, bends:b.bends||{}, labels:b.labels||{}, lineH:b.lineH||{}}))}));
+  }catch(e){}
+}
+function saveSessionSoon(){ clearTimeout(_sessT); _sessT=setTimeout(saveSessionNow,500); }
+function restoreSession(){
+  try{ const d=JSON.parse(localStorage.getItem(LS_SESSION)||'null');
+    if(!d || !Array.isArray(d.boards) || !d.boards.length) return false;
+    const bs=d.boards.filter(b=>b && +b.W>0 && +b.H>0 && Array.isArray(b.obstacles)).map(b=>Object.assign(fresh(b.mode), b, {sel:null}));
+    if(!bs.length) return false;
+    BOARDS=bs; activeBoard=Math.min(Math.max(0,d.active|0),BOARDS.length-1); S=BOARDS[activeBoard]; loadActiveGlobals();
+    const nm=document.getElementById('courseName'); if(nm) nm.value=S.name||'Bana';
+    return true;
+  }catch(e){ return false; }
+}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') saveSessionNow(); });
+window.addEventListener('pagehide',()=>saveSessionNow());
 function switchBoard(i){
   if(i===activeBoard) return;
   if(_pres) presClose();
@@ -3136,22 +3476,30 @@ const selObs=()=>S.obstacles.find(x=>x.id===S.sel);
 const cnt=()=>S.obstacles.length;
 const GUIDE=[
   {t:'Dra in ett räcke', p:'Dra ett räcke från listan till vänster och släpp det på banan.', hl:'#palette .pitem[data-type="vertikal1"]',
+    pm:'Tryck <b>Hinder</b> och välj <b>Räcke</b>. Det läggs mitt på banan.', hlm:'#trayBtn',
     init:()=>S.obstacles.filter(o=>o.type==='vertikal1').length, done:b=>S.obstacles.filter(o=>o.type==='vertikal1').length>b},
   {t:'Vrid det ett varv', p:'Klicka på räcket. Dra i den gula <b>↻</b>-knappen och snurra ett helt varv.',
+    pm:'Sätt två fingrar på räcket och vrid, eller tryck <b>Vrid</b>, tills räcket snurrat ett helt varv.',
     init:()=>{_g.sec=new Set(); return 0;}, done:()=>{const o=selObs(); if(o) _g.sec.add(Math.floor(o.rot/45)%8); return _g.sec.size>=8;},
     prog:()=>'Vridet: '+(_g.sec?_g.sec.size:0)+' av 8', frac:()=>(_g.sec?_g.sec.size:0)/8},
   {t:'Byt färg', p:'Klicka på räcket. Tryck på rutan <b>Färg</b> till höger och välj en ny färg.',
+    pm:'Tryck på räcket, sedan <b>Mer</b> och på rutan <b>Färg</b>. Välj en ny färg.',
     init:()=>{const m={}; S.obstacles.forEach(o=>m[o.id]=o.color||''); return m;},
     done:b=>S.obstacles.some(o=>Object.prototype.hasOwnProperty.call(b,o.id)&&(o.color||'')!==b[o.id])},
   {t:'Dra in två hinder till', p:'Välj två hinder som du vill ha och dra ut dem på banan.',
+    pm:'Tryck <b>Hinder</b> och lägg till två hinder till. Dra dem på plats på banan.',
     init:cnt, done:b=>cnt()>=b+2, prog:()=>cnt()+' hinder på banan'},
   {t:'Ta bort ett hinder', p:'Klicka på ett hinder och tryck <b>Ta bort hinder</b> till höger. Behåll minst två.',
+    pm:'Tryck på ett hinder och sedan <b>Ta bort</b>. Behåll minst två.',
     init:cnt, done:b=>cnt()<b},
   {t:'Numrera hindren', p:'Tryck <b>Numrera</b> högst upp. Klicka på hindren i den ordning de ska hoppas. Tryck Esc när du är klar.', hl:'#numBtn',
+    pm:'Tryck <b>Alternativ</b> och sedan <b>Numrera</b>. Tryck på hindren i den ordning de ska hoppas. Tryck <b>Klar</b> när du är färdig.', hlm:'#advBtn',
     done:()=>S.obstacles.filter(o=>o.num!=null&&o.num!=='').length>=2, prog:()=>S.obstacles.filter(o=>o.num!=null&&o.num!=='').length+' numrerade'},
   {t:'Se avstånden', p:'Mellan hindren syns nu en streckad linje med <b>meter</b>. Syns inga meter? Tryck <b>Avancerat</b> och sedan <b>Avstånd på</b>. Tryck Nästa när du har tittat.',
+    pm:'Mellan hindren syns nu en streckad linje med <b>meter</b>. Syns inga meter? Tryck <b>Alternativ</b> och sedan <b>Avstånd på</b>. Tryck Nästa när du har tittat.',
     manual:true},
   {t:'Flytta ett hinder', p:'Dra ett hinder till en ny plats. Se hur metertalet ändras.',
+    pm:'Dra ett hinder med fingret till en ny plats. Se hur metertalet ändras.',
     init:()=>{const m={}; S.obstacles.forEach(o=>m[o.id]=[o.x,o.y]); return m;},
     done:b=>S.obstacles.some(o=>b[o.id]&&Math.hypot(o.x-b[o.id][0],o.y-b[o.id][1])>1)},
   {t:'Du kan det här!', p:'Nu kan du grunderna. Vill du se fler tips?', end:true}
@@ -3162,19 +3510,20 @@ function guideInit(){ const s=GUIDE[_g.i]; _g.hit=false; _g.base=s.init?s.init()
 function guideHl(sel){ document.querySelectorAll('.pulse').forEach(e=>e.classList.remove('pulse'));
   if(sel){ const e=document.querySelector(sel); if(e){ if(e.closest('#advPanel')) toggleAdv(true); e.classList.add('pulse'); } } }
 function renderCoach(){
-  const c=document.getElementById('coach'); if(!_g){ c.classList.remove('open','ok'); guideHl(null); return; }
+  const c=document.getElementById('coach'); if(!_g){ c.classList.remove('open','ok'); guideHl(null); fitCourt(); syncCourtBottom(); return; }
   const s=GUIDE[_g.i];
   c.classList.add('open'); c.classList.remove('ok');
   document.getElementById('coachStep').textContent='Steg '+(_g.i+1)+' av '+GUIDE.length;
   document.getElementById('coachH').textContent=s.t;
-  document.getElementById('coachP').innerHTML=s.p;
+  document.getElementById('coachP').innerHTML=(isPhone()&&s.pm)?s.pm:s.p;
   try{ document.getElementById('coachHide').checked=localStorage.getItem('banskiss_guide_hide')==='1'; }catch(e){}
   document.getElementById('coachProg').textContent='';
   document.getElementById('coachBar').style.width=Math.round(_g.i/(GUIDE.length-1)*100)+'%';
   const b=document.getElementById('coachBtns');
-  if(s.end) b.innerHTML='<button class="pri" onclick="endGuide();openAdv()">Fler tips →</button><button onclick="endGuide()">Klar</button>';
+  if(s.end) b.innerHTML='<button class="pri" onclick="endGuide(true);openAdv()">Fler tips →</button><button onclick="endGuide(true)">Klar</button>';
   else b.innerHTML=(s.manual?'<button class="pri" onclick="guideNext()">Nästa →</button>':'<button onclick="guideNext()">Hoppa över steget</button>')+'<button onclick="endGuide()">Stäng guiden</button>';
-  guideHl(s.hl);
+  guideHl((isPhone()&&s.hlm)?s.hlm:s.hl);
+  fitCourt(); syncCourtBottom();
 }
 function guideCheck(){
   if(!_g||_g.hit) return;
@@ -3185,8 +3534,12 @@ function guideCheck(){
   if(ok){ _g.hit=true; const c=document.getElementById('coach'); c.classList.add('ok');
     document.getElementById('coachProg').textContent='✓ Bra jobbat!'; setTimeout(guideNext,900); }
 }
-function guideNext(){ if(!_g) return; if(_g.i<GUIDE.length-1){ _g.i++; guideInit(); renderCoach(); } else endGuide(); }
-function endGuide(){ _g=null; renderCoach(); try{localStorage.setItem('banskiss_guide_done','1');}catch(e){} }
+function guideNext(){ if(!_g) return; if(_g.i<GUIDE.length-1){ _g.i++; guideInit(); renderCoach(); } else endGuide(true); }
+function endGuide(done){                      // done = man gick igenom hela. Annars räknas det som att man stängde den.
+  const was=!!_g; _g=null; renderCoach();
+  try{ if(done){ localStorage.setItem('banskiss_guide_done','1'); localStorage.setItem('banskiss_tips',JSON.stringify(['first','num','nummode','route'])); }
+       else if(was) localStorage.setItem('banskiss_guide_closed', String((+localStorage.getItem('banskiss_guide_closed')||0)+1)); }catch(e){}
+}
 
 /* =================== ALLA FUNKTIONER (avancerad guide) =================== */
 const ADV=[
@@ -3247,19 +3600,39 @@ function openNews(manual){
 }
 function closeNews(){ document.getElementById('newsModal').classList.remove('open'); }
 
-/* Vad ska hända när man kommit in i verktyget? Guiden (tills man valt Visa inte igen). Annars: nyheter efter en uppdatering. */
+/* Vad ska hända när man kommit in i verktyget? Guiden kommer själv bara tills man gått igenom den
+   (eller stängt den två gånger, eller kryssat Visa inte igen). Inga andra rutor kommer upp av sig själva. */
 let _entered=false;
 function afterEntry(){
   if(_entered) return;
   if(document.getElementById('landing').classList.contains('open')) return;
   if(document.getElementById('setupModal').classList.contains('open')) return;
   _entered=true;
-  let seen=null, hide=null;
-  try{ seen=localStorage.getItem('banskiss_seen_version'); hide=localStorage.getItem('banskiss_guide_hide'); }catch(e){}
-  if(!hide){                                                 // guiden visas varje gång man kommer in, tills man valt "Visa inte igen"
-    try{ localStorage.setItem('banskiss_seen_version',APP_VERSION); }catch(e){}
-    setTimeout(startGuide,400);
-  } else if(seen!==APP_VERSION){ setTimeout(()=>openNews(false),500); }
+  let hide=null, done=null, closed=0;
+  try{ hide=localStorage.getItem('banskiss_guide_hide'); done=localStorage.getItem('banskiss_guide_done'); closed=+localStorage.getItem('banskiss_guide_closed')||0;
+       localStorage.setItem('banskiss_seen_version',APP_VERSION); }catch(e){}
+  if(!hide && !done && closed<2) setTimeout(startGuide,400);
+}
+
+/* =================== KORTA TIPS: kommer en gång var, precis när man gör något första gången =================== */
+let _tipT=0, _tipPrev=null;
+function tipsSeen(){ try{ return JSON.parse(localStorage.getItem('banskiss_tips'))||[]; }catch(e){ return []; } }
+function showTip(id, html){
+  if(_g || !_entered) return false;                       // guiden pågår: den förklarar redan
+  const seen=tipsSeen(); if(seen.includes(id)) return false;
+  seen.push(id); try{ localStorage.setItem('banskiss_tips',JSON.stringify(seen)); }catch(e){}
+  document.getElementById('tipText').innerHTML=html; document.getElementById('tipbar').classList.add('open');
+  clearTimeout(_tipT); _tipT=setTimeout(tipClose,14000); return true;
+}
+function tipClose(){ clearTimeout(_tipT); document.getElementById('tipbar').classList.remove('open'); }
+function tipCheck(){
+  const n=S.obstacles.length, k=S.obstacles.filter(o=>o.num!=null&&o.num!=='').length;
+  const p=_tipPrev; _tipPrev={n,k,b:activeBoard};
+  if(!p || p.b!==activeBoard) return;                     // bara det man själv gör just nu ger ett tips
+  const ph=isPhone();
+  if(p.n===0 && n===1) showTip('first', ph?'Dra hindret dit du vill. Vrid det med två fingrar, eller med knappen <b>Vrid</b>.':'Dra hindret dit du vill ha det. Vrid det med den gula knappen.');
+  else if(n>=2 && n>p.n && k===0) showTip('num', ph?'Tryck <b>Alternativ</b>, sedan <b>Numrera</b>, och tryck på hindren i hoppordning.':'Tryck <b>Numrera</b> och sedan på hindren i hoppordning.');
+  else if(k>=2 && p.k<2) showTip('route', ph?'Linjen visar ridvägen i meter. Zooma in och dra i en <b>gul prick</b> för att böja den.':'Linjen visar ridvägen i meter. Dra i en <b>gul prick</b> för att böja den.');
 }
 
 
@@ -3614,12 +3987,82 @@ window.addEventListener('keydown', e=>{
 }, true);
 syncTools();
 
+
+/* =================== TELEFON: bottenfält, hinderlåda, kort markering =================== */
+const _mq=(window.matchMedia?window.matchMedia('(max-width:800px), (pointer:coarse) and (max-height:500px)'):{matches:false});
+function isPhone(){ return _mq.matches; }
+/* lådorna nere (hinder, markering, Avancerat) får aldrig täcka banan: mät var banan slutar */
+function syncCourtBottom(){
+  const r=document.documentElement.style, c=courtEl();
+  if(!c || !isPhone()){ r.removeProperty('--court-bottom'); r.removeProperty('--sheet-top'); return; }
+  const w=document.getElementById('stagewrap').getBoundingClientRect();
+  r.setProperty('--court-bottom', Math.ceil(Math.min(c.getBoundingClientRect().bottom, w.bottom))+'px');
+  const i=document.getElementById('inspector');                 // var rutan för markerat hinder börjar (zoomknapparna ställer sig ovanför)
+  if(i && document.body.classList.contains('has-sel') && getComputedStyle(i).display!=='none') r.setProperty('--sheet-top', Math.floor(i.getBoundingClientRect().top)+'px');
+  else r.removeProperty('--sheet-top');
+  const o=sel(); let left=false;                                 // liggande: rutan lägger sig på andra sidan än hindret
+  if(o){ const b=c.getBoundingClientRect(); left=(b.left+mx(o.x)*b.width/svgW()) > innerWidth*0.55; }
+  document.body.classList.toggle('insp-left', left);
+}
+window.addEventListener('resize',()=>{ fitCourt(); syncCourtBottom(); });
+(function(){ const w=document.getElementById('stagewrap'); if(w) w.addEventListener('scroll',()=>syncCourtBottom(),{passive:true}); })();
+const _homes={};
+function placePhone(){
+  const bar=document.getElementById('phoneBar'); if(!bar) return;
+  const phone=isPhone(); document.body.classList.toggle('phone',phone);
+  const ids=['advBtn','ovnOpenBtn','presBtn'];                      // nere på telefon: Hinder, Alternativ, Övningar, Presentation
+  ids.concat('numBtn').forEach(id=>{ const b=document.getElementById(id); if(b && !_homes[id]) _homes[id]={parent:b.parentNode,next:b.nextSibling}; });
+  const num=document.getElementById('numBtn'), row=document.querySelector('#advPanel .mrow');
+  const back=(b,h)=>h.parent.insertBefore(b,(h.next&&h.next.parentNode===h.parent)?h.next:null);
+  if(phone){ ids.forEach(id=>{ const b=document.getElementById(id); if(b && b.parentNode!==bar) bar.appendChild(b); });
+    if(num && row && num.parentNode!==row) row.insertBefore(num,row.firstChild); }       // Numrera ligger i lådan Alternativ
+  else{ ids.slice().reverse().forEach(id=>{ const b=document.getElementById(id), h=_homes[id]; if(b && h && b.parentNode===bar) back(b,h); });
+    if(num && _homes.numBtn && num.parentNode===row) back(num,_homes.numBtn);
+    document.body.classList.remove('tray-open','gal-sheet'); const t=document.getElementById('trayBtn'); if(t) t.classList.remove('on'); }
+  document.querySelectorAll('.toolbar .grp').forEach(g=>{ g.hidden=!g.querySelector('button'); });
+  syncAdvBtn();
+}
+/* knappen Alternativ: heter Klar medan man numrerar */
+function syncAdvBtn(){ const a=document.getElementById('advBtn'), p=document.getElementById('advPanel'); if(!a) return;
+  const nm=(typeof numMode!=='undefined')&&numMode, ph=isPhone();
+  a.textContent = ph ? (nm?'Klar':'Alternativ') : 'Avancerat';
+  a.classList.toggle('on', (ph&&nm) || (!!p&&p.classList.contains('open'))); }
+function advClick(){ if(isPhone() && numMode){ toggleNumMode(); return; } toggleAdv(); }
+let _wasPhone=isPhone();
+window.addEventListener('resize',()=>{ placePhone(); if(isPhone()!==_wasPhone){ _wasPhone=isPhone(); buildPalette(); } }); placePhone(); if(isPhone()) buildPalette();
+function toggleTray(force){
+  const open=force===undefined ? !document.body.classList.contains('tray-open') : !!force;
+  document.body.classList.toggle('tray-open',open);
+  const b=document.getElementById('trayBtn'); if(b) b.classList.toggle('on',open);
+  if(open){ toggleAdv(false); document.body.classList.remove('gal-sheet'); }
+}
+function toggleInsMore(){ const b=document.getElementById('inspBody'); if(b) b.classList.toggle('show-more'); }
+function openSavedSheet(){ toggleAdv(false); toggleTray(false); document.body.classList.toggle('gal-sheet'); }
+/* tryck på ett hinder i lådan: det läggs mitt på banan (på telefon dras inget ur lådan) */
+function addAtCenter(type){
+  const svg=courtEl(); if(!svg) return;
+  const r=svg.getBoundingClientRect(), sx=r.width/svgW();
+  // första lediga plats i en krans runt mitten, så nya hinder aldrig hamnar ovanpå varandra
+  const mxo=Math.max(0,S.W/2-4), myo=Math.max(0,S.H/2-3);
+  const offs=[[0,0],[-6,-3.5],[6,-3.5],[-6,3.5],[6,3.5],[-12,0],[12,0],[0,-7],[0,7],[-12,-7],[12,-7],[-12,7],[12,7],[-18,0],[18,0]].map(([dx,dy])=>[Math.max(-mxo,Math.min(mxo,dx)),Math.max(-myo,Math.min(myo,dy))]);
+  const pick=offs.find(([dx,dy])=>!S.obstacles.some(o=>Math.hypot(o.x-(S.W/2+dx),o.y-(S.H/2+dy))<3.5)) || [(Math.random()-.5)*2*mxo,(Math.random()-.5)*2*myo];
+  startNew({preventDefault(){}, clientX:r.left+mx(S.W/2+pick[0])*sx, clientY:r.top+my(S.H/2+pick[1])*sx}, type);
+  if(drag && drag.isNew){ const o=S.obstacles.find(x=>x.id===drag.id); if(o) delete o._new; drag=null; hideBadge(); render(); commit(); }
+  toggleTray(false);
+}
+document.addEventListener('pointerdown',e=>{
+  if(!isPhone()) return; const t=e.target; if(!(t&&t.closest)) return;
+  if(document.body.classList.contains('tray-open') && !t.closest('#palette') && !t.closest('#phoneBar') && !t.closest('.modal2') && !t.closest('.combo-dialog')) toggleTray(false);
+  if(document.body.classList.contains('gal-sheet') && !t.closest('.gallery') && !t.closest('#phoneBar') && !t.closest('#advPanel')) document.body.classList.remove('gal-sheet');
+},true);
+
 /* =================== AVANCERAT (allt utom Numrera, Övningar, Presentation) OCH SPARADE BANOR (visas vid hovring) =================== */
 function toggleAdv(force){
   const p=document.getElementById('advPanel'), b=document.getElementById('advBtn'); if(!p) return;
   const open = force===undefined ? !p.classList.contains('open') : !!force;
-  if(open){ const r=document.querySelector('.toolbar').getBoundingClientRect(); p.style.top=Math.max(0,r.bottom+6)+'px'; }
+  if(open){ if(isPhone()){ p.style.top='auto'; toggleTray(false); document.body.classList.remove('gal-sheet'); } else { const r=document.querySelector('.toolbar').getBoundingClientRect(); p.style.top=Math.max(0,r.bottom+6)+'px'; } }
   p.classList.toggle('open',open); if(b){ b.classList.toggle('on',open); b.setAttribute('aria-expanded',open?'true':'false'); }
+  syncAdvBtn();
 }
 function toggleMenu(f){ toggleAdv(f); }            // gammalt namn
 document.addEventListener('pointerdown',e=>{
@@ -3639,7 +4082,8 @@ document.getElementById('advPanel').addEventListener('click',e=>{
   document.addEventListener('pointerdown',e=>{ if(g.classList.contains('open') && !e.target.closest('.gallery')) galOpen(false); },true);
 })();
 window.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const p=document.getElementById('advPanel'); if(p&&p.classList.contains('open')){ toggleAdv(false); e.stopImmediatePropagation(); } } },true);
-function toggleGal(){        // tryck: öppna. Tryck igen: stäng. (Ignorerar klicket som hör ihop med att pekaren precis öppnade lådan.)
+function toggleGal(){
+  if(isPhone()){ document.body.classList.remove('gal-sheet'); return; }        // tryck: öppna. Tryck igen: stäng. (Ignorerar klicket som hör ihop med att pekaren precis öppnade lådan.)
   const open=document.querySelector('.gallery').classList.contains('open');
   if(!open) galOpen(true); else if(!galJustOpened()) galOpen(false);
 }
@@ -3652,12 +4096,206 @@ function shareApp(){
   uiShare(url);
 }
 
+/* =================== TELEFON 3: säkra fingrar ===================
+   - förlåtande träffyta: man behöver inte träffa hindret exakt
+   - bara fingret som började får styra, och ett avbrutet tryck lämnar allt som det var
+   - nyp med två fingrar = zooma, dra på tom yta = flytta vyn, tryck på tom yta = avmarkera */
+let _zoom=1;                              // 1 = hela banan (lika bred som skärmen)
+const _tp=new Map();                      // fingrar på ritytan just nu: pointerId -> {x,y}
+const TOUCH_R=22, TAP_SLOP=6;             // px
+const _wrapEl=()=>document.getElementById('stagewrap');
+let _wasPortrait=window.innerHeight>=window.innerWidth, _padB=8, _lastDown=null, _pd=null, _pdDragT=0;
+
+/* banans storlek på skärmen: stående = alltid lika bred som skärmen, liggande = hela banan ryms. Zoom gångrar. */
+function fitCourt(){
+  const st=document.getElementById('stage'), w=_wrapEl(); if(!st||!w) return;
+  if(!isPhone()){ if(st.style.width) st.style.width=''; if(w.style.paddingBottom) w.style.paddingBottom=''; _zoom=1; document.body.classList.remove('zoomed'); return; }
+  const portrait=window.innerHeight>=window.innerWidth;
+  if(portrait!==_wasPortrait){ _wasPortrait=portrait; _zoom=1; }
+  const cs=getComputedStyle(w); if(!w.style.paddingBottom) _padB=parseFloat(cs.paddingBottom)||0;
+  const ww=w.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight), wh=w.clientHeight-parseFloat(cs.paddingTop)-_padB;
+  let bw=ww; if(!portrait) bw=Math.min(ww, wh*svgW()/svgH());
+  const px=Math.max(120,Math.round(bw*_zoom))+'px';
+  if(st.style.width!==px) st.style.width=px;
+  const pb=_zoom>1.01 ? Math.round(w.clientHeight*0.6)+'px' : '';
+  if(w.style.paddingBottom!==pb) w.style.paddingBottom=pb;
+  document.body.classList.toggle('zoomed', _zoom>1.01); document.body.classList.toggle('zoomdots', _zoom>=1.5);
+}
+/* zooma så att punkten (cx,cy) på skärmen ligger still. Utan punkt: mot markerat hinder, annars mot mitten av det som syns. */
+function setCourtZoom(z, cx, cy){
+  const c=courtEl(), w=_wrapEl(); if(!c||!w||!isPhone()) return;
+  z=Math.max(1,Math.min(6,z)); if(z<1.08) z=1;
+  const r=c.getBoundingClientRect(), wr=w.getBoundingClientRect();
+  if(cx==null){ const o=sel();
+    if(o){ const sx=r.width/svgW(); cx=r.left+mx(o.x)*sx; cy=r.top+my(o.y)*sx; }
+    else { const t=Math.max(r.top,wr.top), b=Math.min(r.bottom,wr.bottom); cx=wr.left+wr.width/2; cy=t+(b-t)/2; } }
+  const fx=(cx-r.left)/r.width, fy=(cy-r.top)/r.height;
+  _zoom=z; fitCourt();
+  const r2=c.getBoundingClientRect();
+  w.scrollLeft+=(r2.left+fx*r2.width)-cx; w.scrollTop+=(r2.top+fy*r2.height)-cy;
+  syncCourtBottom();
+}
+function zoomStep(d){ setCourtZoom(d>0 ? _zoom*1.6 : _zoom/1.6); settleView(); }
+/* efter zoom med knapparna: lämna inget tomt band under banan om det finns mer bana att visa */
+function settleView(){
+  const w=_wrapEl(), c=courtEl(); if(!w||!c) return;
+  const i=document.getElementById('inspector'); let vb=w.getBoundingClientRect().bottom;
+  if(i && document.body.classList.contains('has-sel') && getComputedStyle(i).display!=='none') vb=Math.min(vb,i.getBoundingClientRect().top);
+  const gap=vb-8-c.getBoundingClientRect().bottom;
+  if(gap>0 && w.scrollTop>0){ w.scrollTop=Math.max(0,w.scrollTop-gap); syncCourtBottom(); }
+}
+
+/* det man siktar närmast på, inom TOUCH_R px från fingret. Metertalen har lägst företräde. */
+function nearTarget(cx,cy,q){
+  let best=null, bs=1e9;
+  document.querySelectorAll(q.split(',').map(x=>'svg.court '+x).join(',')).forEach(el=>{
+    let box=el; if(el.classList.contains('obst')){ box=el.querySelector('.hit'); if(!box) return; }
+    const r=box.getBoundingClientRect(); if(!r.width && !r.height) return;
+    const d=Math.hypot(Math.max(r.left-cx,0,cx-r.right), Math.max(r.top-cy,0,cy-r.bottom)); if(d>TOUCH_R) return;
+    let sc=d+Math.hypot(cx-(r.left+r.width/2), cy-(r.top+r.height/2));
+    if(el.classList.contains('dist-label')) sc+=16;
+    if(sc<bs){ bs=sc; best=el; }
+  });
+  return best;
+}
+function retargetEv(e, el){ return { target:el, clientX:e.clientX, clientY:e.clientY, button:e.button, pointerId:e.pointerId, pointerType:e.pointerType, preventDefault(){ e.preventDefault(); } }; }
+function revertDrag(){ if(drag && drag.kind==='move' && drag.orig) drag.orig.forEach(([id,x,y])=>{ const o=S.obstacles.find(q=>q.id===id); if(o){ o.x=x; o.y=y; } }); }
+
+function stageDown(e){
+  const inStage=!!(e.target.closest && e.target.closest('#stage'));
+  if(!isPhone()){ if(inStage){ onStagePointerDown(e); if(drag && drag.pid===undefined) drag.pid=e.pointerId; } return; }
+  if(e.target.closest && e.target.closest('.emptyhint')) return;
+  if(e.pointerType==='touch'){ _tp.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(_tp.size>=2){ pinchStart(); e.preventDefault(); return; } }
+  if(drag){ drag=null; hideBadge(); document.body.classList.remove('dragging'); }      // inget gammalt får hänga kvar
+  let ev=e, hit=null;
+  if(!_polyDraw){
+    hit=e.target.closest ? e.target.closest('.lab-del,.lab-rot,.mhandle,circle.chain-handle') : null;
+    if(!hit){
+      const q=_markTool!=='move' ? '.mhandle,.obst' : (numMode||alignMode) ? '.obst' : '.bend-handle,.obst,.dist-label';
+      hit=nearTarget(e.clientX,e.clientY,q) || (e.target.closest ? e.target.closest('.obst,.bend-handle,.dist-label') : null);
+      if(hit) ev=retargetEv(e,hit);
+    }
+  }
+  const plain=_markTool==='move' && !_polyDraw && !numMode && !alignMode;
+  if(plain && !hit){                                         // tom yta: dra = flytta vyn, släpp direkt = avmarkera
+    const w=_wrapEl(); drag={kind:'pan', pid:e.pointerId, x0:e.clientX, y0:e.clientY, sl:w.scrollLeft, st:w.scrollTop, moved:false};
+    e.preventDefault(); return;
+  }
+  if(!inStage && !hit) return;
+  _lastDown={sel:S.sel, lab:S.selLabel, t:Date.now()};
+  onStagePointerDown(ev);
+  if(drag){ drag.pid=e.pointerId; drag.x0=e.clientX; drag.y0=e.clientY; drag.slop=(e.pointerType==='mouse'?3:TAP_SLOP);
+    if(drag.kind==='move'){ const o=S.obstacles.find(x=>x.id===drag.id);
+      if(o) drag.orig=(o._comboId?S.obstacles.filter(x=>x._comboId===o._comboId):[o]).map(q=>[q.id,q.x,q.y]); } }
+}
+function stageMove(e){
+  const t=_tp.get(e.pointerId); if(t){ t.x=e.clientX; t.y=e.clientY; }
+  if(!drag) return;
+  if(drag.kind==='pinch'){ pinchMove(); e.preventDefault(); return; }
+  if(drag.kind==='twist'){ twistMove(); e.preventDefault(); return; }
+  if(drag.pid!=null && e.pointerId!==drag.pid) return;       // bara fingret som började får styra
+  if(drag.kind==='pan'){
+    const dx=e.clientX-drag.x0, dy=e.clientY-drag.y0;
+    if(!drag.moved && Math.hypot(dx,dy)<TAP_SLOP) return;
+    drag.moved=true; const w=_wrapEl(); w.scrollLeft=drag.sl-dx; w.scrollTop=drag.st-dy; e.preventDefault(); return;
+  }
+  if(drag.kind==='move' && drag.slop && !drag.go){             // ett tryck ska inte knuffa hindret: det börjar flytta sig först när fingret rört sig
+    if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<drag.slop) return;
+    drag.go=true; document.body.classList.add('dragging');
+  }
+  onPointerMove(e);
+  if(drag && drag.kind==='move' && drag.go) edgePan(e.clientX,e.clientY);
+}
+function stageUp(e, cancel){
+  _tp.delete(e.pointerId);
+  if(!isPhone()){
+    if(drag && drag.pid!=null && e.pointerId!==drag.pid) return;
+    if(cancel){ if(drag){ revertDrag(); drag=null; hideBadge(); render(); } return; }
+    onPointerUp(e); return;
+  }
+  if(drag && drag.kind==='twist'){ if(_tp.size<2){ if(cancel){ const o=S.obstacles.find(x=>x.id===drag.id); if(o) o.rot=drag.r0; } drag=null; hideBadge(); document.body.classList.remove('dragging'); render(); commit(); } return; }
+  if(drag && drag.kind==='pinch'){ if(_tp.size<2){ drag=null; if(_zoom<1.08){ _zoom=1; fitCourt(); } syncCourtBottom(); } return; }
+  if(drag && drag.pid!=null && e.pointerId!==drag.pid) return; // ett annat finger släppte
+  document.body.classList.remove('dragging');
+  if(drag && drag.kind==='pan'){
+    const tap=!drag.moved && !cancel; drag=null;
+    if(tap && (S.sel||S.selLabel)){ S.sel=null; S.selLabel=null; render(); }
+    return;
+  }
+  if(cancel){ if(drag){ revertDrag(); drag=null; hideBadge(); render(); commit(); } return; }
+  if(drag && drag.kind==='move' && drag.isNew){ _pdDragT=Date.now(); onPointerUp(e); return; }   // nytt hinder ur lådan: släpps det utanför banan blir det inget
+  if(drag && drag.kind==='move'){                              // på telefon raderas inget för att man råkar släppa utanför banan
+    const o=S.obstacles.find(x=>x.id===drag.id); if(o) delete o._new;
+    drag=null; hideBadge(); render(); commit(); return;
+  }
+  onPointerUp(e);
+}
+function pinchStart(){
+  const pts=[..._tp.values()], c=courtEl(); if(!c||pts.length<2){ drag=null; return; }
+  const a=pts[0], b=pts[1], r=c.getBoundingClientRect(), px=(a.x+b.x)/2, py=(a.y+b.y)/2;
+  // två fingrar på (eller vid) ett hinder: vrid hindret. Annars: zooma.
+  let tw=null;
+  if(_markTool==='move' && !numMode && !alignMode && !_polyDraw){
+    if(drag && drag.kind==='move') tw=S.obstacles.find(x=>x.id===drag.id);
+    if(!tw && S.sel){ const o=sel(), sx=r.width/svgW(); if(o && Math.hypot(r.left+mx(o.x)*sx-px, r.top+my(o.y)*sx-py)<64) tw=o; }
+  }
+  if(drag) revertDrag();                                       // det som pågick avbryts: ett hinder som börjat flyttas går tillbaka
+  hideBadge(); document.body.classList.remove('dragging');
+  if(tw){ S.sel=tw.id; _lastDown=null; drag={kind:'twist', id:tw.id, a0:Math.atan2(b.y-a.y,b.x-a.x), r0:tw.rot}; document.body.classList.add('dragging'); render(); return; }
+  if(_lastDown && Date.now()-_lastDown.t<800){ S.sel=_lastDown.sel; S.selLabel=_lastDown.lab; } _lastDown=null;
+  drag={kind:'pinch', d0:Math.max(20,Math.hypot(a.x-b.x,a.y-b.y)), z0:_zoom, fx:(px-r.left)/r.width, fy:(py-r.top)/r.height};
+  render();
+}
+function twistMove(){
+  const pts=[..._tp.values()]; if(pts.length<2||!drag) return;
+  const o=S.obstacles.find(x=>x.id===drag.id); if(!o) return;
+  const d=(Math.atan2(pts[1].y-pts[0].y,pts[1].x-pts[0].x)-drag.a0)*180/Math.PI;
+  const rot=((Math.round(drag.r0+d)%360)+360)%360;
+  if(rot!==o.rot){ o.rot=rot; showBadge(rot+'°'); scheduleRender(); }
+}
+function pinchMove(){
+  const pts=[..._tp.values()]; if(pts.length<2||!drag) return;
+  const a=pts[0], b=pts[1], px=(a.x+b.x)/2, py=(a.y+b.y)/2;
+  _zoom=Math.max(1,Math.min(6,drag.z0*Math.hypot(a.x-b.x,a.y-b.y)/drag.d0)); fitCourt();
+  const r=courtEl().getBoundingClientRect(), w=_wrapEl();
+  w.scrollLeft+=(r.left+drag.fx*r.width)-px; w.scrollTop+=(r.top+drag.fy*r.height)-py;
+}
+/* inzoomat: drar man ett hinder mot kanten följer vyn med */
+let _epRAF=0, _epPt=null;
+function edgePan(x,y){ _epPt=[x,y]; if(_zoom>1.01 && !_epRAF) _epRAF=requestAnimationFrame(edgeTick); }
+function edgeTick(){
+  _epRAF=0; if(!drag||drag.kind!=='move'||!drag.go||!_epPt) return;
+  const w=_wrapEl(), r=w.getBoundingClientRect(), m=34, x=_epPt[0], y=_epPt[1]; let dx=0, dy=0;
+  if(x<r.left+m) dx=-9; else if(x>r.right-m) dx=9;
+  if(y<r.top+m) dy=-9; else if(y>r.bottom-m) dy=9;
+  if(!dx && !dy) return;
+  const sl=w.scrollLeft, st=w.scrollTop; w.scrollLeft=sl+dx; w.scrollTop=st+dy;
+  if(w.scrollLeft!==sl||w.scrollTop!==st){ moveDragTo(x,y); scheduleRender(); _epRAF=requestAnimationFrame(edgeTick); }
+}
+/* styrplatta/mus i telefonläge: ctrl + hjul (nyp på styrplatta) zoomar */
+_wrapEl().addEventListener('wheel',e=>{ if(!isPhone()||!e.ctrlKey) return; e.preventDefault(); setCourtZoom(_zoom*Math.exp(-e.deltaY*0.012), e.clientX, e.clientY); },{passive:false});
+/* vrid i steg om 15 grader (knapparna bredvid reglaget) */
+function stepRot(d){ const o=sel(); if(!o) return; const k=Math.abs(d); setRot(d>0 ? Math.floor(o.rot/k)*k+k : Math.ceil(o.rot/k)*k-k); }
+
+_wrapEl().addEventListener('pointerdown', stageDown);
+/* telefon: dra ett hinder ur lådan upp på banan (ett vanligt tryck lägger det mitt på banan) */
+window.addEventListener('pointermove', e=>{
+  if(!_pd || e.pointerId!==_pd.pid) return;
+  if(Math.hypot(e.clientX-_pd.x, e.clientY-_pd.y)<10) return;
+  const type=_pd.type, pid=_pd.pid; _pd=null; _pdDragT=Date.now();
+  toggleTray(false); drag=null;
+  startNew({preventDefault(){}, clientX:e.clientX, clientY:e.clientY}, type);
+  if(drag && drag.kind==='move'){ drag.pid=pid; drag.go=true; document.body.classList.add('dragging'); }
+}, true);
+const _pdEnd=e=>{ if(_pd && e.pointerId===_pd.pid) _pd=null; };
+window.addEventListener('pointerup', _pdEnd, true); window.addEventListener('pointercancel', _pdEnd, true);
+document.addEventListener('gesturestart', e=>e.preventDefault());     // iPhone: hela sidan ska aldrig zoomas, bara banan
+
 load(); buildPalette(); render(); renderGallery(); renderPresets(); renderTabs(); maybeShowTut(); commit();
 if(!document.getElementById('landing').classList.contains('open')) enterBuilder();
 afterEntry();
 document.getElementById('printfoot').textContent='Ritad med Banskiss · '+location.host;
 updateProStatus();
-document.getElementById('stage').addEventListener('pointerdown', onStagePointerDown);
 // dubbelklick: avsluta egen form-ritning, annars hoppa till nummerfältet
 document.getElementById('stage').addEventListener('dblclick', e=>{
   if(_polyDraw){ finishPolyDraw(); return; }
@@ -3666,8 +4304,9 @@ document.getElementById('stage').addEventListener('dblclick', e=>{
   S.sel=g.dataset.id; render();
   const f=document.getElementById('iNum'); if(f){ f.focus(); f.select(); }
 });
-window.addEventListener('pointermove', onPointerMove);
-window.addEventListener('pointerup', onPointerUp);
+window.addEventListener('pointermove', stageMove);
+window.addEventListener('pointerup', e=>stageUp(e,false));
+window.addEventListener('pointercancel', e=>stageUp(e,true));
 document.getElementById('courseName').addEventListener('input', renderPrintHead);
 // Delete/Backspace raderar markerat hinder (order 35) — men aldrig när man skriver i ett fält
 // Esc: avsluta numreringsläge, träningsmode, etc.
@@ -3686,4 +4325,5 @@ window.addEventListener('keydown', e=>{
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA')) return;
   if(S.sel){ deleteSel(); e.preventDefault(); }
 });
-</script></body></html>
+</script>
+</body></html>
